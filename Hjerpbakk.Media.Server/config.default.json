@@ -1,0 +1,7 @@
+﻿{
+  "BlobStorageConnectionString": "[BlobStorageConnectionString]",
+  "ServiceDiscoveryURL": "[ServiceDiscoveryURL]",
+  "SlackToken": "[SlackToken]",
+  "TestChannelId": "[TestChannelId]",
+  "ProductionChannelId": "[ProductionChannelId]"
+}

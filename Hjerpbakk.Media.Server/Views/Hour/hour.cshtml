@@ -1,0 +1,19 @@
+﻿@using Hjerpbakk.Media.Server.Model;
+@{var hourOfInterest = (HourOfInterest)ViewData["hourOfInterest"];}
+<html>
+    <head>
+        <title>@hourOfInterest.Title</title>
+		<meta name="description" content="@hourOfInterest.Description">
+    </head>
+    <body>
+        <h1>
+            @hourOfInterest.Title
+        </h1>
+        <p>
+        @hourOfInterest.Description
+		</p>
+        <video width="400" controls><source src="@hourOfInterest.VideoURL" type="video/mp4"></source></video>
+
+		<iframe src="@hourOfInterest.SpeakerDeck"></iframe>
+    </body>
+</html>

@@ -1,0 +1,34 @@
+﻿@model Hjerpbakk.Media.Server.Model.HourOfInterest
+
+<html>
+    <head>
+        <title>Save</title>
+		<link rel="stylesheet" type ="text/css" href ="css/forms.css" media ="screen" />
+    </head>
+    <body>
+        <h1>
+            Create new interesting hour
+        </h1>
+        <form method="POST">
+			<p>
+                <label for="Title">Title</label>
+                <input type="text" id="Title" placeholder="Title" name="Title" />
+			</p>
+			<p>
+                <label for="Description">Description</label>
+                <input type="text" id="Description" placeholder="Description" name="Description" />
+			</p>
+            <p>
+			    <label for="Author">Author</label>
+                <input type="text" id="Author" placeholder="Author" name="Author" />
+			</p>
+            <p>
+                <label for="Id">Video</label>
+                @Html.DropDownListFor(model => model.Id, (SelectList)ViewBag.VideoList, "Select video", new { @class = "form-control"})
+			</p>
+            <p>
+                <input type="submit" title="Save"/>
+			</p>
+        </form>
+    </body>
+</html>
