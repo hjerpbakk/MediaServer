@@ -14,7 +14,6 @@
     <Folder Include="Environment\" />
     <Folder Include="Clients\" />
     <Folder Include="Views\Save\" />
-    <Folder Include="New Folder\" />
     <Folder Include="wwwroot\css\" />
   </ItemGroup>
 

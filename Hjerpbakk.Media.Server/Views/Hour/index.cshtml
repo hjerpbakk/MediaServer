@@ -12,7 +12,9 @@
         <p>
         Oppsummering av hva dette er for noe...
 		</p>
-
+         <p>
+			<button onclick="window.location='/save';">Add new</button>
+        </p>
 		@{var hoursOfInterest = (IReadOnlyList<HourOfInterestSummary>)ViewData["hoursOfInterest"];}
 		@if (hoursOfInterest != null) {
             <table style="width:100%" id="internalActivities">
@@ -28,5 +30,6 @@
             }
             </table>
         }
+		
     </body>
 </html>
