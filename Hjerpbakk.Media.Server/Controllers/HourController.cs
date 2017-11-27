@@ -22,6 +22,7 @@ namespace Hjerpbakk.Media.Server.Controllers
         {
             // TODO: Cache this fucker, ref save
             ViewData["hoursOfInterest"] = await cloudStorageClient.GetHoursOfInterest(HttpContext.Request);
+
             return View();
         }
 

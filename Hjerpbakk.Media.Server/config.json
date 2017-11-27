@@ -1,7 +1,0 @@
-﻿{
-  "BlobStorageConnectionString": "DefaultEndpointsProtocol=https;AccountName=dipsinternalstorage;AccountKey=INSeKcudRLX+u8hp93UGu9ifmBjuylLzEn2RktRe6smDox8WlM7bNdcPw3CPQzxhIHBd3Yvq51TzSfpsO/BDtA==;EndpointSuffix=core.windows.net",
-  "ServiceDiscoveryURL": "who-am-i.xyz",
-  "SlackToken": "xoxb-276587312165-b4DIPYUOopwZ1SOKhrWGGNAo",
-  "TestChannelId": "G73TGULC9",
-  "ProductionChannelId": "[ProductionChannelId]"
-}

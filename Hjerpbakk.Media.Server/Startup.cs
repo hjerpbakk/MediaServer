@@ -31,6 +31,8 @@ namespace Hjerpbakk.Media.Server
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
+            // For debugging
+            services.AddDirectoryBrowser();
 
             var configuration = ReadConfig();
             services.AddSingleton<ISlackConfiguration>(configuration);
@@ -52,6 +54,8 @@ namespace Hjerpbakk.Media.Server
             }
 
             app.UseStaticFiles();
+            // For debugging
+            app.UseDirectoryBrowser();
             app.UseMvc();
         }
 
