@@ -3,5 +3,12 @@
   "ServiceDiscoveryURL": "[ServiceDiscoveryURL]",
   "SlackToken": "[SlackToken]",
   "TestChannelId": "[TestChannelId]",
-  "ProductionChannelId": "[ProductionChannelId]"
+  "ProductionChannelId": "[ProductionChannelId]",
+  "Conference": [
+    {
+      "name": "[name]",
+      "description": "[description]",
+      "path": "[path]"
+    }
+  ]
 }

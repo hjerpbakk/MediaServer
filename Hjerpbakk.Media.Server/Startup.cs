@@ -38,6 +38,7 @@ namespace Hjerpbakk.Media.Server
             var configuration = ReadConfig();
             services.AddSingleton<ISlackConfiguration>(configuration);
             services.AddSingleton<IBlobStorageConfiguration>(configuration);
+            services.AddSingleton<IConferenceConfiguration>(configuration);
             services.AddSingleton<DebuggingService>();
             services.AddSingleton<ISlackConnector, SlackConnector.SlackConnector>();
             services.AddSingleton<SlackIntegration>();

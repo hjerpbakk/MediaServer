@@ -9,30 +9,35 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Hjerpbakk.Media.Server.Controllers
 {
-    [Route("/")]
+    [Route("/[controller]")]
     public class HourController : Controller
     {
         readonly CloudStorageClient cloudStorageClient;
+        readonly IConferenceConfiguration conferenceConfiguration;
 
-        public HourController(CloudStorageClient cloudStorageClient)
+        // TODO: Rename this and other to Talk
+        public HourController(CloudStorageClient cloudStorageClient, IConferenceConfiguration conferenceConfiguration)
         {
             this.cloudStorageClient = cloudStorageClient;
+            this.conferenceConfiguration = conferenceConfiguration;
         }
 
-        public async Task<IActionResult> Index()
+        [HttpGet("/hour/{conferenceName}")]
+        public async Task<IActionResult> Index(string conferenceName)
         {
-            // TODO: Fra config, vise utvalg av hvilke vi har. Eks devdays og interessanttimer
-            // TODO: Cache this fucker, ref save
-            ViewData["hoursOfInterest"] = await cloudStorageClient.GetHoursOfInterest(HttpContext.Request);
-
+            // TODO: Hente basert på hvilken conference dette er
+            // TODO: Cache this fucker
+            var conference = conferenceConfiguration.GetConference(conferenceName);
+            ViewData["hoursOfInterest"] = await cloudStorageClient.GetTalks(HttpContext.Request, conference);
+            ViewData["conferenceName"] = conferenceName;
             return View();
         }
 
-        [HttpGet("/hour/{id}")]
-        public async Task<IActionResult> Index(string id)
+        [HttpGet("/hour/{conference}/{id}")]
+        public async Task<IActionResult> Index(string conference, string id)
         {
-            // TODO: Cache this fucker, ref save
-            ViewData["hourOfInterest"] = await cloudStorageClient.Get(new HourOfInterestSummary { Id = Uri.EscapeUriString(id) });
+            // TODO: Cache this fucker
+            ViewData["hourOfInterest"] = await cloudStorageClient.Get(new TalkSummary { Id = Uri.EscapeUriString(id) });
             return View("hour");
         }
     }

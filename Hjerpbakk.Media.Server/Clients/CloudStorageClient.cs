@@ -20,7 +20,6 @@ namespace Hjerpbakk.Media.Server.Clients
         readonly CloudBlobClient blobClient;
 
         readonly CloudBlobContainer interestingContainer;
-        readonly CloudBlobContainer interestingSummaryContainer;
 
         public CloudStorageClient(IBlobStorageConfiguration blobStorageConfiguration, FileStorageClient fileStorageClient)
         {
@@ -29,22 +28,23 @@ namespace Hjerpbakk.Media.Server.Clients
 
             blobClient = storageAccount.CreateCloudBlobClient();
 
-            interestingContainer = blobClient.GetContainerReference("interesting");
+            interestingContainer = blobClient.GetContainerReference("talks");
             interestingContainer.CreateIfNotExistsAsync().GetAwaiter();
-
-            interestingSummaryContainer = blobClient.GetContainerReference("interesting-summary");
-            interestingSummaryContainer.CreateIfNotExistsAsync().GetAwaiter();
         }
 
-        public async Task<IReadOnlyList<Video>> GetAvailableNewVideos() {
+        public async Task<IReadOnlyList<Video>> GetAvailableNewVideos(Conference conference)
+        {
             var token = new BlobContinuationToken();
-            var blobList = await interestingSummaryContainer.ListBlobsSegmentedAsync(token);
+            var summaryContainer = blobClient.GetContainerReference(GetConferenceContainerName(conference.Name));
+            await summaryContainer.CreateIfNotExistsAsync();
+            var blobList = await summaryContainer.ListBlobsSegmentedAsync(token);
             var blobs = blobList.Results.Cast<CloudBlockBlob>().Select(b => b.Name).ToArray();
-            var videos = fileStorageClient.GetVideosOnDisk().ToArray();
+            var videos = fileStorageClient.GetVideosOnDisk(conference.Path).ToArray();
             var availableNewVideos = new List<Video>();
             foreach (var video in videos)
             {
-                if (!blobs.Contains(video.Id)) {
+                if (!blobs.Contains(video.Id))
+                {
                     availableNewVideos.Add(video);
                 }
             }
@@ -52,14 +52,15 @@ namespace Hjerpbakk.Media.Server.Clients
             return availableNewVideos;
         }
 
-        public async Task Save(HourOfInterest hourOfInterest) {
+        public async Task Save(Talk hourOfInterest)
+        {
             if (hourOfInterest == null || string.IsNullOrEmpty(hourOfInterest.Id))
             {
                 throw new ArgumentException(nameof(hourOfInterest));
             }
 
             var hourString = JsonConvert.SerializeObject(hourOfInterest);
-            var summary = new HourOfInterestSummary
+            var summary = new TalkSummary
             {
                 Id = hourOfInterest.Id,
                 Description = hourOfInterest.Description,
@@ -68,23 +69,30 @@ namespace Hjerpbakk.Media.Server.Clients
             var hourSummaryString = JsonConvert.SerializeObject(summary);
 
             var blobRef = interestingContainer.GetBlockBlobReference(hourOfInterest.Id);
-            await blobRef.UploadTextAsync(hourString);    
+            await blobRef.UploadTextAsync(hourString);
 
-            blobRef = interestingSummaryContainer.GetBlockBlobReference(summary.Id);
-            await blobRef.UploadTextAsync(hourSummaryString);    
+            var summaryContainer = blobClient.GetContainerReference(GetConferenceContainerName(hourOfInterest.ConferenceName));
+            // TODO: Create skjer tre ganger i denne klassen. Må flyttes og gjøres en gang der config leses... Ellers er det bare å hente ref
+            await summaryContainer.CreateIfNotExistsAsync();
+            blobRef = summaryContainer.GetBlockBlobReference(summary.Id);
+            await blobRef.UploadTextAsync(hourSummaryString);
         }
 
-        public async Task<IReadOnlyList<HourOfInterestSummary>> GetHoursOfInterest(HttpRequest request) {
+        public async Task<IReadOnlyList<TalkSummary>> GetTalks(HttpRequest request, Conference conference)
+        {
             var token = new BlobContinuationToken();
-            var blobList = await interestingSummaryContainer.ListBlobsSegmentedAsync(token);
+            var conferenceContainerName = GetConferenceContainerName(conference.Name);
+            var conferenceContainer = blobClient.GetContainerReference(conferenceContainerName);
+            await conferenceContainer.CreateIfNotExistsAsync();
+            var blobList = await conferenceContainer.ListBlobsSegmentedAsync(token);
 
-            var hoursOfInterest = new List<HourOfInterestSummary>();
+            var hoursOfInterest = new List<TalkSummary>();
             foreach (var blob in blobList.Results.Cast<CloudBlockBlob>())
             {
                 using (var memoryStream = new MemoryStream())
                 {
                     await blob.DownloadToStreamAsync(memoryStream);
-                    var hourOfInterest = JsonConvert.DeserializeObject<HourOfInterestSummary>(Encoding.UTF8.GetString(memoryStream.ToArray()));
+                    var hourOfInterest = JsonConvert.DeserializeObject<TalkSummary>(Encoding.UTF8.GetString(memoryStream.ToArray()));
                     hourOfInterest.URL = hourOfInterest.GetURL(request);
                     hoursOfInterest.Add(hourOfInterest);
                 }
@@ -94,24 +102,30 @@ namespace Hjerpbakk.Media.Server.Clients
             return hoursOfInterest;
         }
 
-        public async Task<HourOfInterest> Get(HourOfInterestSummary summary) {
-            if (summary == null || string.IsNullOrEmpty(summary.Id)) {
+        public async Task<Talk> Get(TalkSummary summary)
+        {
+            if (summary == null || string.IsNullOrEmpty(summary.Id))
+            {
                 throw new ArgumentException(nameof(summary));
             }
 
-            HourOfInterest hourOfInterest = null;
+            Talk hourOfInterest = null;
             var blob = interestingContainer.GetBlobReference(summary.Id);
             using (var memoryStream = new MemoryStream())
             {
                 await blob.DownloadToStreamAsync(memoryStream);
-                hourOfInterest = JsonConvert.DeserializeObject<HourOfInterest>(Encoding.UTF8.GetString(memoryStream.ToArray()));
+                hourOfInterest = JsonConvert.DeserializeObject<Talk>(Encoding.UTF8.GetString(memoryStream.ToArray()));
             }
 
-            if (hourOfInterest == null) {
+            if (hourOfInterest == null)
+            {
                 throw new ArgumentException(nameof(summary));
             }
 
             return hourOfInterest;
         }
+
+        // TODO: Move and use more checks like https://docs.microsoft.com/en-us/rest/api/storageservices/naming-and-referencing-containers--blobs--and-metadata
+        string GetConferenceContainerName(string conferenceName) => "conference-" + conferenceName.Replace(' ', '-').ToLower();
     }
 }

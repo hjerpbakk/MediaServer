@@ -9,7 +9,7 @@ namespace Hjerpbakk.Media.Server.Clients
 {
     public class FileStorageClient
     {
-        readonly DirectoryInfo videos;
+        readonly string videoPath;
 
         public FileStorageClient(Paths paths)
         {
@@ -17,10 +17,13 @@ namespace Hjerpbakk.Media.Server.Clients
                 throw new ArgumentNullException(nameof(paths));
             }
 
-            var videoPath = Path.Combine(paths.WebRootPath, "videos");
-            videos = new DirectoryInfo(videoPath);
+            videoPath = Path.Combine(paths.WebRootPath, "videos");
         }
 
-        public IEnumerable<Video> GetVideosOnDisk() => videos.EnumerateFiles($"*{Video.SupportedFileType}").Select(f => new Video(f.Name));
+        public IEnumerable<Video> GetVideosOnDisk(string conferencePath) {
+            var path = Path.Combine(videoPath, conferencePath);
+            var directory = new DirectoryInfo(path);
+            return directory.EnumerateFiles($"*{Video.SupportedFileType}").Select(f => new Video(f.Name));
+        } 
     }
 }

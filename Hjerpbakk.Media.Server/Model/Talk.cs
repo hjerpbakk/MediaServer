@@ -2,7 +2,7 @@
 
 namespace Hjerpbakk.Media.Server.Model
 {
-    public class HourOfInterest : HourOfInterestSummary
+    public class Talk : TalkSummary
     {
         public const string SpeakerDeckFileType = ".pdf";
 

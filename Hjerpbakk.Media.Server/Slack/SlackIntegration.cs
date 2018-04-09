@@ -22,7 +22,7 @@ namespace Hjerpbakk.Media.Server.Slack
             this.debuggingService = debuggingService;
         }
 
-        public async Task PostInterestingHourToChannel(HourOfInterest hourOfInterest) {
+        public async Task PostInterestingHourToChannel(Talk hourOfInterest) {
             // TODO: Try again etc
             var connection = await connector.Connect(configuration.SlackToken);
             if (connection == null)
