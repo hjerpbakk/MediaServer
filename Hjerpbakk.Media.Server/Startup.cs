@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Hjerpbakk.Media.Server.Clients;
 using Hjerpbakk.Media.Server.Configuration;
@@ -43,6 +44,7 @@ namespace Hjerpbakk.Media.Server
             services.AddSingleton<CloudStorageClient>();
             services.AddSingleton<FileStorageClient>();
             services.AddSingleton<Paths>();
+            services.AddSingleton<HttpClient>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -51,11 +53,11 @@ namespace Hjerpbakk.Media.Server
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                //app.UseDirectoryBrowser();
             }
 
             app.UseStaticFiles();
-            // For debugging
-            app.UseDirectoryBrowser();
+
             app.UseMvc();
         }
 

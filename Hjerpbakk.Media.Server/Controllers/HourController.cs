@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Hjerpbakk.Media.Server.Clients;
 using Hjerpbakk.Media.Server.Configuration;
@@ -20,6 +21,7 @@ namespace Hjerpbakk.Media.Server.Controllers
 
         public async Task<IActionResult> Index()
         {
+            // TODO: Fra config, vise utvalg av hvilke vi har. Eks devdays og interessanttimer
             // TODO: Cache this fucker, ref save
             ViewData["hoursOfInterest"] = await cloudStorageClient.GetHoursOfInterest(HttpContext.Request);
 

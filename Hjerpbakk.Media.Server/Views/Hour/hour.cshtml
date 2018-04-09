@@ -4,6 +4,8 @@
     <head>
         <title>@hourOfInterest.Title</title>
 		<meta name="description" content="@hourOfInterest.Description">
+        <link rel="stylesheet" type ="text/css" href ="../../css/all.css" media ="screen" />
+        <link rel="stylesheet" type ="text/css" href ="../../css/dips.css" media ="screen" />
     </head>
     <body>
         <h1>
@@ -12,8 +14,13 @@
         <p>
         @hourOfInterest.Description
 		</p>
+        
         <video width="400" controls><source src="@hourOfInterest.VideoURL" type="video/mp4"></source></video>
 
-		<iframe src="@hourOfInterest.SpeakerDeck"></iframe>
+        <object width="400" height="225" data="@(string.IsNullOrEmpty(hourOfInterest.SpeakerDeckURL) ? "../../SpeakerDeckNotFound.html" : hourOfInterest.SpeakerDeckURL)"></object>
+
+        <p>
+            <a href="../../">Back</a>
+        </p>
     </body>
 </html>
