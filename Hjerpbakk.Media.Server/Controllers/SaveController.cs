@@ -27,22 +27,21 @@ namespace Hjerpbakk.Media.Server.Controllers
             this.conferenceConfiguration = conferenceConfiguration;
         }
 
-        [HttpGet("/[controller]/{conferenceId}")]
-        public async Task<IActionResult> Index(string conferenceId)
+        [HttpGet("/[controller]/{conferenceName}")]
+        public async Task<IActionResult> Index(string conferenceName)
         {
-            if (string.IsNullOrEmpty(conferenceId)) {
-                throw new ArgumentNullException(nameof(conferenceId));
+            if (string.IsNullOrEmpty(conferenceName)) {
+                throw new ArgumentNullException(nameof(conferenceName));
             }
 
-            // TODO: Få conference ID over til save...
-            var conference = conferenceConfiguration.GetConference(conferenceId);
+            var conference = conferenceConfiguration.GetConference(conferenceName);
             var availableVideos = await cloudStorageClient.GetAvailableNewVideos(conference);
             ViewBag.VideoList = new SelectList(availableVideos, "Id", "Name");
             return View();
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Index([Bind("Title,Description,Author,Id")] Talk hourOfInterest)
+        [HttpPost("/[controller]/{conferenceName}")]
+        public async Task<IActionResult> Index(string conferenceName, [Bind("Title,Description,Author,Id,SpeakerDeckURL")] Talk hourOfInterest)
         {
             if (string.IsNullOrEmpty(hourOfInterest.Title) || string.IsNullOrEmpty(hourOfInterest.Description) || string.IsNullOrEmpty(hourOfInterest.Author) || string.IsNullOrEmpty(hourOfInterest.Id)) {
                 // TODO: Clientside verification together with enabling of button
@@ -50,9 +49,16 @@ namespace Hjerpbakk.Media.Server.Controllers
                 throw new Exception("Damned user...");
             }
 
+
+
+            // TODO: Select video first
+            // TODO: Populate title and speaker deck from files found on disk
+
+
             hourOfInterest.URL = hourOfInterest.GetURL(HttpContext.Request);
             var filePart = HttpContext.Request.Scheme + "://" + HttpContext.Request.Host + "/videos/" + hourOfInterest.Id;
             hourOfInterest.VideoURL = filePart + Video.SupportedFileType;
+            hourOfInterest.ConferenceName = conferenceName;
 
             if (string.IsNullOrEmpty(hourOfInterest.SpeakerDeckURL)) {
                 var potentialSpeakerDeckURL = filePart + Talk.SpeakerDeckFileType;

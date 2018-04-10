@@ -2,37 +2,56 @@
 
 <html>
     <head>
-        <title>Save</title>
+        <title>Create new talk</title>
         <link rel="stylesheet" type ="text/css" href ="../css/all.css" media ="screen" />
         <link rel="stylesheet" type ="text/css" href ="../css/dips.css" media ="screen" />
         <link rel="stylesheet" type ="text/css" href ="../css/forms.css" media ="screen" />
     </head>
     <body>
         <h1>
-            Create new interesting hour <img src="../images/logo.png" align="right" height="75">
+            Create new talk <img src="../images/logo.png" align="right" height="75">
         </h1>
-        <p>
-            <form method="POST">
-    			<p>
-                    <label for="Title">Title</label>
-                    <input type="text" id="Title" placeholder="Title" name="Title" />
-    			</p>
-    			<p>
-                    <label for="Description">Description</label>
-                    <input type="text" id="Description" placeholder="Description" name="Description" />
-    			</p>
-                <p>
-    			    <label for="Author">Author</label>
-                    <input type="text" id="Author" placeholder="Author" name="Author" />
-    			</p>
-                <p>
-                    <label for="Id">Video</label>
-                    @Html.DropDownListFor(model => model.Id, (SelectList)ViewBag.VideoList, "Select video", new { @class = "form-control"})
-    			</p>
-                <p>
-                    <input type="submit" value="Save"/>
-    			</p>
-            </form>
-        </p>
+        <form method="POST">
+			<p>
+                <label for="Title">Title</label>
+                <input type="text" id="Title" placeholder="Title" name="Title" disabled="true"/>
+			</p>
+			<p>
+                <label for="Description">Description</label>
+                <input type="text" id="Description" placeholder="Description" name="Description" disabled="true" />
+			</p>
+            <p>
+			    <label for="Author">Author</label>
+                <input type="text" id="Author" placeholder="Author" name="Author" disabled="true" />
+			</p>
+            <p>
+                <label for="Id">Video</label>
+                @Html.DropDownListFor(model => model.Id, (SelectList)ViewBag.VideoList, "Select video", new { @class = "form-control", @onchange="onVideoSelected(this.value)"})
+			</p>
+            <p>
+                <label for="SpeakerDeckURL">SpeakerDeckURL</label>
+                <input type="text" id="SpeakerDeckURL" placeholder="SpeakerDeckURL" name="SpeakerDeckURL" />
+            </p>
+            <p>
+                <input type="submit" value="Save"/>
+			</p>
+        </form>
+        <script type="text/javascript">
+            function onVideoSelected(video)
+            {
+                var title = document.getElementById("Title");
+                if (video === "") {
+                    title.disabled = 'true';
+                    title.value = "";
+                    document.getElementById("Author").disabled='true';
+                    document.getElementById("Description").disabled='true';
+                } else {
+                    title.disabled='';
+                    title.value = video;
+                    document.getElementById("Author").disabled='';
+                    document.getElementById("Description").disabled='';
+                }
+            }
+        </script>
     </body>
 </html>

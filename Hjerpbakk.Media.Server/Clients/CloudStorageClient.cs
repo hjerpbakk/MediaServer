@@ -35,9 +35,10 @@ namespace Hjerpbakk.Media.Server.Clients
         public async Task<IReadOnlyList<Video>> GetAvailableNewVideos(Conference conference)
         {
             var token = new BlobContinuationToken();
-            var summaryContainer = blobClient.GetContainerReference(GetConferenceContainerName(conference.Name));
-            await summaryContainer.CreateIfNotExistsAsync();
-            var blobList = await summaryContainer.ListBlobsSegmentedAsync(token);
+            var conferenceContainerName = GetConferenceContainerName(conference.Name);
+            var conferenceContainer = blobClient.GetContainerReference(conferenceContainerName);
+            await conferenceContainer.CreateIfNotExistsAsync();
+            var blobList = await conferenceContainer.ListBlobsSegmentedAsync(token);
             var blobs = blobList.Results.Cast<CloudBlockBlob>().Select(b => b.Name).ToArray();
             var videos = fileStorageClient.GetVideosOnDisk(conference.Path).ToArray();
             var availableNewVideos = new List<Video>();
@@ -125,6 +126,7 @@ namespace Hjerpbakk.Media.Server.Clients
             return hourOfInterest;
         }
 
+        // TODO: Create own container for talk proper also pr conference 
         // TODO: Move and use more checks like https://docs.microsoft.com/en-us/rest/api/storageservices/naming-and-referencing-containers--blobs--and-metadata
         string GetConferenceContainerName(string conferenceName) => "conference-" + conferenceName.Replace(' ', '-').ToLower();
     }

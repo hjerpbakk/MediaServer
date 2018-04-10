@@ -5,6 +5,7 @@ namespace Hjerpbakk.Media.Server.Model
 {
     public class TalkSummary
     {
+        // TOOD: Create unique id from Title and conference
         public string Id { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
@@ -14,6 +15,6 @@ namespace Hjerpbakk.Media.Server.Model
 
         // TODO: Must be agnostic regarding hosting environment
         public string GetURL(HttpRequest request) =>
-            request.Scheme + "://" + request.Host + "/hour/" + Id;
+        request.Scheme + "://" + request.Host + "/hour/" + ConferenceName + "/" +  Id;
     }
 }

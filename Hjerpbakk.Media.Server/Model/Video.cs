@@ -12,6 +12,7 @@ namespace Hjerpbakk.Media.Server.Model
             Id = Uri.EscapeUriString(name).TrimEnd(SupportedFileType.ToCharArray());
         }
 
+        // TODO: Må ha full sti også til video
         public string Id { get; }
         public string Name { get; }
 

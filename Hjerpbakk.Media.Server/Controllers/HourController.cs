@@ -33,8 +33,8 @@ namespace Hjerpbakk.Media.Server.Controllers
             return View();
         }
 
-        [HttpGet("/hour/{conference}/{id}")]
-        public async Task<IActionResult> Index(string conference, string id)
+        [HttpGet("/hour/{conferenceName}/{id}")]
+        public async Task<IActionResult> Index(string conferenceName, string id)
         {
             // TODO: Cache this fucker
             ViewData["hourOfInterest"] = await cloudStorageClient.Get(new TalkSummary { Id = Uri.EscapeUriString(id) });
