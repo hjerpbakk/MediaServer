@@ -16,7 +16,13 @@ namespace MediaServer.Services
     {
 		const string DbFileExtension = ".txt";
 
+		readonly static char[] dbFileExtension;
+
 		readonly CloudBlobClient blobClient;
+
+		static TalkService() {
+			dbFileExtension = DbFileExtension.ToCharArray();
+		}
 
 		public TalkService(IBlogStorageConfig blobStorageConfig)
 		{
@@ -79,6 +85,18 @@ namespace MediaServer.Services
 			var talkReference = containerForConference.GetBlockBlobReference(talkReferenceName);
 			await talkReference.UploadTextAsync(serializedTalk);
         }
+
+		public async Task<string[]> GetTalkNamesFromConference(Conference conference) {
+			// TODO: Support more than 200 items
+            var token = new BlobContinuationToken();
+			var containerForConference = GetContainerFromConference(conference);
+			var blobs = await containerForConference.ListBlobsSegmentedAsync(token);
+			var talkNames = blobs.Results.Cast<CloudBlockBlob>().
+				Select(b => b.Name.TrimEnd(dbFileExtension) + Video.SupportedVideoFileType).
+				ToArray();
+
+			return talkNames;
+		}
 
         /// <summary>
         /// Gets the container from conference.

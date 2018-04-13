@@ -71,7 +71,7 @@ namespace MediaServer.Controllers
 		}
 
 		[HttpGet("/[controller]/{conferenceId}/Save")]
-		public IActionResult GetSaveView(string conferenceId)
+		public async Task<IActionResult> GetSaveView(string conferenceId)
 		{
 			// TODO: Support Edit also...
 			var conference = GetConferenceFromId(conferenceId);
@@ -82,7 +82,8 @@ namespace MediaServer.Controllers
 
 			ViewData["Title"] = $"Create new talk from {conference.Name}";
 
-			var availableVideos = contentService.GetVideosFromConference(conference);
+			var controllerName = ControllerContext.RouteData.Values["controller"].ToString();
+			var availableVideos = await contentService.GetVideosFromConference(controllerName, conference);
 			ViewBag.VideoList = new SelectList(availableVideos, "Name", "Name");
 
 			return View("Save");
@@ -108,10 +109,10 @@ namespace MediaServer.Controllers
 			   conferenceConfig.Conferences[conferenceId] :
 			   null;
 
-		string GetTalkUrl(Conference conference, Talk talk) {
-			var baseUrl = $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}/{ControllerContext.RouteData.Values["controller"]}/{conference.Id}/";
-            var talkUrl = baseUrl + talk.UriEncodedName;
-			return talkUrl;
-		}
+		string GetTalkUrl(Conference conference, Talk talk)
+            => GetConferenceUrl(conference) + talk.UriEncodedName;
+
+		string GetConferenceUrl(Conference conference) 
+			=> $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}/{ControllerContext.RouteData.Values["controller"]}/{conference.Id}/";
     }
 }

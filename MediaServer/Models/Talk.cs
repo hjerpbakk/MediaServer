@@ -5,15 +5,13 @@ namespace MediaServer.Models
 {
     public class Talk
     {
-        public const string SupportedVideoFileType = ".mp4";
-
-		readonly static char[] supportedVideoFileType;
+        readonly static char[] supportedVideoFileType;
 
         string name;
 
 
 		static Talk() {
-			supportedVideoFileType = SupportedVideoFileType.ToCharArray();
+			supportedVideoFileType = Video.SupportedVideoFileType.ToCharArray();
 		}
 
         public Talk()

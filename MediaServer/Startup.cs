@@ -40,7 +40,7 @@ namespace MediaServer
 			services.AddSingleton<ISlackConnector, SlackConnector.SlackConnector>();
                         
             services.AddSingleton<ITalkService, TalkService>();
-            services.AddSingleton<IContentService, DummyContentService>();
+            services.AddSingleton<IContentService, ContentService>();
 			services.AddSingleton<ISlackService, SlackService>();
         }
 
