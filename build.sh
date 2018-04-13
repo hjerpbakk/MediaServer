@@ -1,6 +1,3 @@
-#!/bin/bash
-rm -r ./publish
+#! /bin/bash
 set -e
-#dotnet publish Hjerpbakk.Media.Server/Hjerpbakk.Media.Server.csproj -o ../publish -c Release
-dotnet publish -o ../publish -c Release
-docker build -t mediaserver .
+docker build -t dips/media-server .

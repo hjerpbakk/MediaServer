@@ -1,0 +1,65 @@
+﻿@using MediaServer.Models;
+
+@model Talk
+<div class="col-lg-12">
+    <h1 class="mt-4">@ViewData["Title"]</h1>
+</div>
+
+<div class="col-lg-6">    
+    <form method="POST">
+        <div class="form-group">
+            <label for="video">Video</label>
+            @Html.DropDownListFor(model => model.Name, (SelectList)ViewBag.VideoList, "Select video", new { @class = "form-control", @onchange="onVideoSelected(this.value)", @id = "video" })
+        </div>
+        <div class="form-group">
+            <label for="Description">Description</label>
+            <textarea class="form-control" id="Description" name="Description" rows="3" disabled="true" required></textarea>
+        </div>
+        <div class="form-group">
+            <label for="Speaker">Speaker</label>
+            <input type="text" class="form-control" id="Speaker" name="Speaker" disabled="true" required>
+        </div>
+        <div class="form-group">
+            <label for="SpeakerDeck">Speaker Deck</label>
+            <input type="text" class="form-control" id="SpeakerDeck" name="SpeakerDeck" disabled="true">
+        </div>
+        <div class="row justify-content-end">
+            <button type="button" onclick="location.href='.';" class="btn btn-danger mr-2" style="width: 80px">Cancel</button>
+            <button type="submit" class="btn btn-success mr-3" id="saveButton" style="width: 80px" disabled="true">Save</button>
+        </div>
+        <script type="text/javascript">
+            function onVideoSelected(video)
+            {
+                var speakerDeck = document.getElementById("SpeakerDeck");
+                var disabled = video === "";
+                document.getElementById("Description").disabled=disabled;
+                document.getElementById("Speaker").disabled=disabled;
+                speakerDeck.disabled=disabled;
+                document.getElementById("saveButton").disabled=disabled;
+
+                var speakerDeckUrl = video.replace("mp4", "pdf");
+            
+                var request;
+                if(window.XMLHttpRequest)
+                    request = new XMLHttpRequest();
+                else
+                    request = new ActiveXObject("Microsoft.XMLHTTP");
+
+                request.open('GET', speakerDeckUrl, true);
+                request.onreadystatechange = checkReadyState;
+                // TODO: Do I need send here?
+                request.send();
+                function checkReadyState() {
+                    if (request.readyState === 4) {
+                        if (request.status == 200) { 
+                            speakerDeck.value = speakerDeckUrl;
+                        } else {
+                            speakerDeck.value = "";
+                        }
+                    }
+                }
+            }
+        </script>
+    </form>
+</div>
+

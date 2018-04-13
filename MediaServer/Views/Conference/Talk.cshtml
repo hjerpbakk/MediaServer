@@ -1,0 +1,19 @@
+﻿@using MediaServer.Models;
+<div class="col-lg-12">
+    @{var talk = (TalkViewModel)ViewData["Talk"];}
+    <h1 class="mt-4">@ViewData["Title"]</h1>
+    <h4 class="text-muted">@talk.Speaker, @talk.ZonedTimeStamp</h4>
+    <p class="font-weight-normal">@talk.Description</p>
+
+<!--    TODO: Width og responsiveness. Ved å hardkode, ser det ut til at jeg fucker flowen-->
+    <div class="d-flex justify-content-between">
+      <div>
+         <video width="535" height="301" controls><source src="@talk.Video" type="video/mp4"></source></video>
+      </div>
+      <div>
+         <object width="535" height="301" data="@(talk.SpeakerDeck ?? "../../../SpeakerDeckNotFound.html")"></object>
+      </div>
+    </div>
+    
+</div>
+
