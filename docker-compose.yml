@@ -7,5 +7,5 @@ services:
     ports:
       - 80:5000
     volumes:
-      - "/mnt/dips/Linjeorganisasjon/Utviklingsavdelingen/Video utviklerforum, sprintdemo, møter og kurs/Utviklerforum/Dev days 2018/DevDays2018Video":/app/wwwroot/Conference
+      - "/mnt/dips/Linjeorganisasjon/Utviklingsavdelingen/Video utviklerforum, sprintdemo, møter og kurs/Utviklerforum/Dev days 2018/DevDays2018Video":/app/wwwroot/Conference/DevDays2018
   
