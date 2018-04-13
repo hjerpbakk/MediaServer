@@ -19,10 +19,13 @@ namespace MediaServer.Services
         }
 
         public async Task<Video[]> GetVideosFromConference(string conferenceBasePath, Conference conference) {
-            var talkNames = await talkService.GetTalkNamesFromConference(conference);
-
             var path = Path.Combine(hostingPath, conferenceBasePath, conference.Id);
             var directory = new DirectoryInfo(path);
+            if (!directory.Exists) {
+                return new Video[0];
+            }
+
+            var talkNames = await talkService.GetTalkNamesFromConference(conference);
             var candidateFiles = directory.EnumerateFiles($"*{Video.SupportedVideoFileType}");
             var availableVideos = candidateFiles
                 .Where(f => !talkNames.Contains(f.Name))

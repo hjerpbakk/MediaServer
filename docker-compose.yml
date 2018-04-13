@@ -6,4 +6,6 @@ services:
     restart: always
     ports:
       - 80:5000
+    volumes:
+      - ./testdata/:/app/wwwroot/Conference
   

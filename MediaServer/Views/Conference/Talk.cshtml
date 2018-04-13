@@ -8,7 +8,7 @@
 <!--    TODO: Width og responsiveness. Ved å hardkode, ser det ut til at jeg fucker flowen-->
     <div class="d-flex justify-content-between">
       <div>
-         <video width="535" height="301" controls><source src="@talk.Video" type="video/mp4"></source></video>
+         <video width="535" height="301" controls><source src="@talk.UriEncodedVideoName" type="video/mp4"></source></video>
       </div>
       <div>
          <object width="535" height="301" data="@(talk.SpeakerDeck ?? "../../../SpeakerDeckNotFound.html")"></object>

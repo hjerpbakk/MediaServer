@@ -1,7 +1,9 @@
 #! /bin/bash
 set -e
 
-export repo_pre=vt-optimus-solr02:5000/
-export tag=:1.0.0
+#vt-optimus-solr02:5000/
+#:1.0.1
+export repo_pre=
+export tag=:latest
 
 docker-compose up -d
