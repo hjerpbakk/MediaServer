@@ -92,7 +92,6 @@ namespace MediaServer.Controllers
 		[HttpPost("/[controller]/{conferenceId}/Save")]
 		public async Task<IActionResult> SaveTalk(string conferenceId, [Bind("Name", "Description, Speaker, SpeakerDeck")] Talk talk)
 		{
-			// TODO: Progressbar eller noe???
 			var conference = conferenceConfig.Conferences[conferenceId];
 
 			talk.TimeStamp = DateTime.UtcNow;

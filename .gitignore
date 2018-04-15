@@ -323,3 +323,6 @@ ASALocalRun/
 *.binlog
 
 MediaServer/config.json
+MediaServer/wwwroot/Conference/DevDays2018/Gudd talk.mp4
+MediaServer/wwwroot/Conference/DevDays2018/IoC-container i Arena-plugin.mp4
+MediaServer/wwwroot/Conference/DevDays2018/IoC-container i Arena-plugin.pdf
