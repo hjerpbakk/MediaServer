@@ -25,12 +25,4 @@
     <Folder Include="wwwroot\Conference\DevDays2018\" />
     <Folder Include="Extensions\" />
   </ItemGroup>
-  <ItemGroup>
-    <Content Remove="Views\Conference\Contact.cshtml" />
-    <Content Remove="Views\Conference\About.cshtml" />
-    <Content Remove="wwwroot\collection.gif" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="wwwroot\under-construction.gif" />
-  </ItemGroup>
 </Project>

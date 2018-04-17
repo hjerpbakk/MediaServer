@@ -5,14 +5,7 @@ namespace MediaServer.Models
 {
     public class Talk
     {
-        readonly static char[] supportedVideoFileType;
-
         string name;
-
-
-		static Talk() {
-			supportedVideoFileType = Video.SupportedVideoFileType.ToCharArray();
-		}
 
         public Talk()
         {
@@ -38,7 +31,7 @@ namespace MediaServer.Models
         public string Name { 
             get { return name; } 
             set { 
-				name = value.TrimEnd(supportedVideoFileType);
+				name = value;
 				UriEncodedName = Uri.EscapeUriString(name);
             } 
         }

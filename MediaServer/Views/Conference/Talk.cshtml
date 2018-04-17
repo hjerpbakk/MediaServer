@@ -1,7 +1,17 @@
 ﻿@using MediaServer.Models;
 <div class="col-lg-12">
     @{var talk = (TalkViewModel)ViewData["Talk"];}
-    <h1 class="mt-4">@ViewData["Title"]</h1>
+    <div class="d-flex justify-content-between">
+        <div>
+            <h1 class="mt-4">@ViewData["Title"]</h1>
+        </div>
+        <div>
+            <form action="/@this.ViewContext.RouteData.Values["controller"].ToString()/@ViewData["ConferenceId"]/@talk.Name/Edit" style="display: inline;">
+            <button type="submit" class="btn btn-primary mt-4 align-text-top">Edit</button>
+            </form>
+        </div>
+    </div>
+
     <h4 class="text-muted">@talk.Speaker, @talk.ZonedTimeStamp</h4>
     <p class="font-weight-normal">@talk.Description</p>
 

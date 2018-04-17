@@ -7,6 +7,7 @@ using MediaServer.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace MediaServer.Controllers
 {
@@ -51,42 +52,69 @@ namespace MediaServer.Controllers
 		public async Task<IActionResult> GetTalkView(string conferenceId, string talkName)
 		{
 			var conference = GetConferenceFromId(conferenceId);
-			if (conference == null)
-			{
-				return NotFound();
-			}
+            if (conference == null)
+            {
+                return NotFound();
+            }
 
 			var talk = await talkService.GetTalkByName(conference, talkName);
-			if (talk == null)
-			{
+			if (talk == null) {
 				// TODO: Lag en fin 404
-				return NotFound();
-			}
+                return NotFound();
+            }
 
 			ViewData["Title"] = talkName;
+			ViewData["ConferenceId"] = conferenceId;
 			var talkVM = new TalkViewModel(talk);
 			ViewData["Talk"] = talkVM;
 
 			return View("Talk");
 		}
 
+        [HttpGet("/[controller]/{conferenceId}/{talkName}/Edit")]
+		public async Task<IActionResult> GetEditView(string conferenceId, string talkName)
+		{
+			var conference = GetConferenceFromId(conferenceId);
+            if (conference == null)
+            {
+                return NotFound();
+            }
+
+            var talk = await talkService.GetTalkByName(conference, talkName);
+            if (talk == null)
+            {
+                return NotFound();
+            }
+                     
+            var controllerName = ControllerContext.RouteData.Values["controller"].ToString();
+			var availableVideos = new List<Video>() { new Video(talk.Name) };
+			var videosFromConference = await contentService.GetVideosFromConference(controllerName, conference);
+			availableVideos.AddRange(videosFromConference);
+			ViewBag.VideoList = new SelectList(availableVideos, "Name", "Name", talk.Name);
+                     
+            ViewData["Title"] = $"Edit {talk.Name}"; 
+			ViewData["ConferenceId"] = conferenceId;
+			ViewData["DisableEntries"] = false;
+			return View("Save", talk);
+		}
+
 		[HttpGet("/[controller]/{conferenceId}/Save")]
 		public async Task<IActionResult> GetSaveView(string conferenceId)
 		{
-			// TODO: Support Edit also...
-			var conference = GetConferenceFromId(conferenceId);
+            var conference = GetConferenceFromId(conferenceId);
 			if (conference == null)
 			{
 				return NotFound();
 			}
 
-			ViewData["Title"] = $"Create new talk from {conference.Name}";
-
-			var controllerName = ControllerContext.RouteData.Values["controller"].ToString();
+            var controllerName = ControllerContext.RouteData.Values["controller"].ToString();
 			var availableVideos = await contentService.GetVideosFromConference(controllerName, conference);
 			ViewBag.VideoList = new SelectList(availableVideos, "Name", "Name");
 
-			return View("Save");
+			ViewData["Title"] = $"Create new talk from {conference.Name}";
+			ViewData["ConferenceId"] = conferenceId;
+			ViewData["DisableEntries"] = true;
+			return View("Save", new Talk());
 		}
 
 		[HttpPost("/[controller]/{conferenceId}/Save")]
