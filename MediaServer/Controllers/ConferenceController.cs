@@ -94,13 +94,16 @@ namespace MediaServer.Controllers
                      
             ViewData["Title"] = $"Edit {talk.Name}"; 
 			ViewData["ConferenceId"] = conferenceId;
-			ViewData["DisableEntries"] = false;
+			ViewData["IsSave"] = false;
+			ViewData["OldName"] = talk.Name;
 			return View("Save", talk);
 		}
 
 		[HttpGet("/[controller]/{conferenceId}/Save")]
 		public async Task<IActionResult> GetSaveView(string conferenceId)
 		{
+			// TODO: Support uploading slides
+			// TODO: Support uploading video
             var conference = GetConferenceFromId(conferenceId);
 			if (conference == null)
 			{
@@ -113,18 +116,25 @@ namespace MediaServer.Controllers
 
 			ViewData["Title"] = $"Create new talk from {conference.Name}";
 			ViewData["ConferenceId"] = conferenceId;
-			ViewData["DisableEntries"] = true;
+			ViewData["IsSave"] = true;         
+			ViewData["OldName"] = null;
 			return View("Save", new Talk());
 		}
 
 		[HttpPost("/[controller]/{conferenceId}/Save")]
-		public async Task<IActionResult> SaveTalk(string conferenceId, [Bind("Name", "Description, Speaker, SpeakerDeck")] Talk talk)
+		public async Task<IActionResult> SaveTalk(string conferenceId, [FromQuery] string oldName, [Bind("Name", "Description, Speaker, SpeakerDeck")] Talk talk)
 		{
 			var conference = conferenceConfig.Conferences[conferenceId];
 
+			if (oldName != null)
+			{
+				var oldTalk = new Talk { Name = oldName };
+				await talkService.DeleteTalkFromConference(conference, oldTalk);
+            }
+
 			talk.TimeStamp = DateTime.UtcNow;
 			await talkService.SaveTalkFromConference(conference, talk);
-
+            
 			var talkUrl = GetTalkUrl(conference, talk);
 			await slackService.PostTalkToChannel(conference, talk, talkUrl);
 

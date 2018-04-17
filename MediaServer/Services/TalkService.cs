@@ -86,6 +86,14 @@ namespace MediaServer.Services
 			await talkReference.UploadTextAsync(serializedTalk);
         }
 
+		public async Task DeleteTalkFromConference(Conference conference, Talk talk) {
+			var containerForConference = GetContainerFromConference(conference);
+
+			var talkReferenceName = GetBlobNameFromTalkName(talk.Name);
+			var talkReference = containerForConference.GetBlockBlobReference(talkReferenceName);
+			await talkReference.DeleteAsync();
+		}
+
 		public async Task<string[]> GetTalkNamesFromConference(Conference conference) {
 			// TODO: Support more than 200 items
             var token = new BlobContinuationToken();

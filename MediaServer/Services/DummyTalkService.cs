@@ -38,5 +38,10 @@ namespace MediaServer.Services
         public Task<string[]> GetTalkNamesFromConference(Conference conference) {
             return Task.FromResult(new string[0]);
         }
+
+		public Task DeleteTalkFromConference(Conference conference, Talk talk)
+        {
+            return Task.CompletedTask;
+        }
     }
 }
