@@ -7,23 +7,21 @@
         </div>
         <div>
             <form action="/@this.ViewContext.RouteData.Values["controller"].ToString()/@ViewData["ConferenceId"]/@talk.Name/Edit" style="display: inline;">
-            <button type="submit" class="btn btn-primary mt-4 align-text-top">Edit</button>
+                <button type="submit" class="btn btn-primary mt-4 align-text-top">Edit</button>
             </form>
         </div>
     </div>
-
     <h4 class="text-muted">@talk.Speaker, @talk.ZonedTimeStamp</h4>
     <p class="font-weight-normal">@talk.Description</p>
-
-<!--    TODO: Width og responsiveness. Ved å hardkode, ser det ut til at jeg fucker flowen-->
-    <div class="d-flex justify-content-between">
-      <div>
-         <video width="535" height="301" controls><source src="@talk.UriEncodedVideoName" type="video/mp4"></source></video>
-      </div>
-      <div>
-         <object width="535" height="301" data="@(talk.SpeakerDeck ?? "../../../SpeakerDeckNotFound.html")"></object>
-      </div>
+    <div class="row">
+        <div class="col-sm">
+            <video class="w-100" controls><source src="@talk.UriEncodedVideoName" type="video/mp4"></source></video>
+        </div>
+        <div class="col-sm">
+            <!--    TODO: Check how it looks with presentation... -->
+            <object class="w-100 h-100" data="@(talk.SpeakerDeck ?? "../../../SpeakerDeckNotFound.html")"></object>
+        </div>
     </div>
-    
+
 </div>
 
