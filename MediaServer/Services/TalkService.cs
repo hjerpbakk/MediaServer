@@ -52,21 +52,7 @@ namespace MediaServer.Services
                     await blob.DownloadToStreamAsync(memoryStream);
 					var talkContent = Encoding.UTF8.GetString(memoryStream.ToArray());
                     var talk = JsonConvert.DeserializeObject<Talk>(talkContent);
-
-                    var thumbnailReference = containerForConference.GetBlockBlobReference(talk.Name);
-                    var exists = await thumbnailReference.ExistsAsync();
-                    if (exists)
-                    {
-                        var imageData = new byte[thumbnailReference.Properties.Length];
-                        await thumbnailReference.DownloadToByteArrayAsync(imageData, 0);
-                        var imageAsBase64String = Convert.ToBase64String(imageData);
-                        talk.Thumbnail = $"data:{thumbnailReference.Properties.ContentType};base64, {imageAsBase64String}";
-                    }
-                    else
-                    {
-                        talk.Thumbnail = "http://placehold.it/700x400";
-                    }
-
+                    await AddThumbnail(containerForConference, talk);
 					talks.Add(talk);
                 }
             }         
@@ -74,7 +60,7 @@ namespace MediaServer.Services
 			return talks.ToArray();
 		}
 
-		public async Task<Talk> GetTalkByName(Conference conference, string name)
+        public async Task<Talk> GetTalkByName(Conference conference, string name)
 		{
 			var containerForConference = GetContainerFromConference(conference);
 
@@ -89,6 +75,7 @@ namespace MediaServer.Services
                 await blob.DownloadToStreamAsync(memoryStream);
 				var talkContent = Encoding.UTF8.GetString(memoryStream.ToArray());
 				var talk = JsonConvert.DeserializeObject<Talk>(talkContent);
+                await AddThumbnail(containerForConference, talk);
                 return talk;
             }
 		}
@@ -149,7 +136,7 @@ namespace MediaServer.Services
             return containerForConference;
         }
 
-		async Task SaveThumbnail(CloudBlobContainer containerForConference, Talk talk) {
+        static async Task SaveThumbnail(CloudBlobContainer containerForConference, Talk talk) {
 			if (talk.ThumbnailImageFile == null) {
                 return;
             }
@@ -171,5 +158,22 @@ namespace MediaServer.Services
             thumbnailReference.Properties.ContentType = imageFile.ContentType;
             await thumbnailReference.SetPropertiesAsync();
 		}
+
+        static async Task AddThumbnail(CloudBlobContainer containerForConference, Talk talk)
+        {
+            var thumbnailReference = containerForConference.GetBlockBlobReference(talk.Name);
+            var exists = await thumbnailReference.ExistsAsync();
+            if (exists)
+            {
+                var imageData = new byte[thumbnailReference.Properties.Length];
+                await thumbnailReference.DownloadToByteArrayAsync(imageData, 0);
+                var imageAsBase64String = Convert.ToBase64String(imageData);
+                talk.Thumbnail = $"data:{thumbnailReference.Properties.ContentType};base64, {imageAsBase64String}";
+            }
+            else
+            {
+                talk.Thumbnail = "http://placehold.it/700x400";
+            }
+        }
     }
 }
