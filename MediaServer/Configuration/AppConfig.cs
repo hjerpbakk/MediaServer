@@ -9,8 +9,13 @@ namespace MediaServer.Configuration
         {
             // TODO: Move from here?
             Conferences = new Dictionary<string, Conference> {
-				{ "DevDays2018", new Conference("DevDays2018", "Dev Days 2018", "G73TGULC9") },
-				{ "HoursOfInterest", new Conference("HoursOfInterest", "Hours of Interest", "G73TGULC9") }
+                { 
+                    "DevDays2018", 
+                    new Conference("DevDays2018", 
+                                    "Dev Days 2018", 
+                                    "G73TGULC9", 
+                                    @"\\p-fs01\DIPS\Linjeorganisasjon\Utviklingsavdelingen\Video utviklerforum, sprintdemo, møter og kurs\Utviklerforum\Dev days 2018\DevDays2018Video") }
+				//{ "HoursOfInterest", new Conference("HoursOfInterest", "Hours of Interest", "G73TGULC9", "TODO") }
             };
         }
 

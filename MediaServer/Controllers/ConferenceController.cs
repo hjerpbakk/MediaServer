@@ -37,8 +37,10 @@ namespace MediaServer.Controllers
 				return NotFound();
 			}
 
+            // TODO: Create a conference viewmodel and use model binding
 			ViewData["Title"] = conference.Name;
 			ViewData["ConferenceId"] = conferenceId;
+            ViewData["VideoPath"] = conference.VideoPath;
 
             var talks = (await talkService.GetTalksFromConference(conference)).
                             OrderByDescending(t => t.TimeStamp).
