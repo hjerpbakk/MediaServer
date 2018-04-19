@@ -4,12 +4,13 @@
 <div class="col-lg-12">
     <h1 class="mt-4">@ViewData["Title"]</h1>
     <!-- TODO: Simplify URLs of this form -->
-    <form method="POST" id="saveForm" action="/@this.ViewContext.RouteData.Values["controller"].ToString()/@ViewData["ConferenceId"]/Save?oldName=@ViewData["OldName"]">
+    <form method="POST" id="saveForm" enctype="multipart/form-data" action="/@this.ViewContext.RouteData.Values["controller"].ToString()/@ViewData["ConferenceId"]/Save?oldName=@ViewData["OldName"]" >
         <div class="row">
             <div class="col-sm">
                 <div class="form-group">
                     <label for="Thumbnail">Thumbnail</label>
-                    <img class="img-fluid" id="Thumbnail" name="Thumbnail" src="@Model.Thumbnail" alt="Talk thumbnail">
+                    <img id="Thumbnail" class="img-fluid" src="@Model.Thumbnail" alt="Talk thumbnail">
+                    <input type="file" class="form-control-file mt-3" id="browseButton" name="ThumbnailImageFile" onchange="loadFile(event)" accept="image/*" value="@Model.Thumbnail">
                 </div>
             </div>
             <div class="col-sm">
@@ -35,13 +36,83 @@
                 </div>
             </div>
         </div>
-        <script type="text/javascript">document.querySelector("#saveForm").addEventListener("submit", function(e) {
+        <script type="text/javascript">
+            // Disable save button while saving
+        // TODO: Works? And Vanilla JS
+        document.querySelector("#saveForm").addEventListener("submit", function(e) {
             var saveButton = document.getElementById("saveButton");
             var loadingText = '<i class="fa fa-circle-o-notch fa-spin"></i>';
             saveButton.innerHTML = loadingText;
             saveButton.disabled = 'true';
         });
 
+            let thumbnail = document.getElementById('Thumbnail')
+
+            // Preview thumbnail added by browse button
+        function loadFile(event) {
+            var reader = new FileReader();
+            reader.onloadend = function(){
+                thumbnail.src = reader.result;
+            };
+            reader.readAsDataURL(event.target.files[0]);
+          };
+
+
+
+
+        // Drag and Drop support for Thumbnail
+        ;['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+          thumbnail.addEventListener(eventName, preventDefaults, false)
+        })
+
+        function preventDefaults (e) {
+          e.preventDefault()
+          e.stopPropagation()
+        }
+
+        ;['dragenter', 'dragover'].forEach(eventName => {
+          thumbnail.addEventListener(eventName, highlight, false)
+        })
+
+        ;['dragleave', 'drop'].forEach(eventName => {
+          thumbnail.addEventListener(eventName, unhighlight, false)
+        })
+
+        function highlight(e) {
+          thumbnail.classList.add('img-thumbnail')
+        }
+
+        function unhighlight(e) {
+          thumbnail.classList.remove('img-thumbnail')
+        }
+
+       thumbnail.addEventListener('drop', handleDrop, false)
+
+        function handleDrop(e) {
+          let dt = e.dataTransfer
+          let files = dt.files
+            let file = dt.files[0];
+            var imageType = /image.*/;
+            if (file.type.match(imageType)) {
+                document.getElementById('browseButton').files = files;
+              previewFile(file)
+            }
+        }
+
+        function previewFile(file) {
+          let reader = new FileReader()
+          reader.readAsDataURL(file)
+          reader.onloadend = function() {
+            thumbnail.src = reader.result
+          }
+        }
+
+
+
+
+
+
+            // Enable buttons and check for slides
         function onVideoSelected(video) {
             var speakerDeck = document.getElementById("SpeakerDeck");
             var disabled = video === "";
@@ -77,7 +148,7 @@
                 }
             }
         }
-    </script>
+        </script>
     </form>
 </div>
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 
 namespace MediaServer.Models
@@ -11,19 +12,6 @@ namespace MediaServer.Models
         {
             // TODO: Get thumbnail from speaker notes or video
             Thumbnail = "http://placehold.it/700x400";
-        }
-
-        [JsonConstructor]
-        public Talk(string name, string description, string thumbnail, DateTime timeStamp, string speaker, string speakerDeck = null)
-        {
-            Name = name;
-            Description = description;
-            Thumbnail = thumbnail;
-            TimeStamp = timeStamp;
-            Speaker = speaker;
-            SpeakerDeck = speakerDeck;
-
-            // TODO: If no thumbnail: http://placehold.it/700x393
         }
 
         public string UriEncodedName { get; private set; }
@@ -40,7 +28,15 @@ namespace MediaServer.Models
         public DateTime TimeStamp { get; set; }
         public string Speaker { get; set; }
         public string SpeakerDeck { get; set; }
+        
+		// TODO: Create VM and move around stuff
+		[JsonIgnore]
+		public IFormFile ThumbnailImageFile { get; set; }
 
-        public string Thumbnail { get; }
+		[JsonIgnore]
+		public string ThumbnailName { get; set; }
+
+		[JsonIgnore]
+		public string Thumbnail { get; set; }
     }
 }

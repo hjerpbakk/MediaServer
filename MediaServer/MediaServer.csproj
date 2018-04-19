@@ -25,4 +25,7 @@
     <Folder Include="wwwroot\Conference\DevDays2018\" />
     <Folder Include="Extensions\" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Remove="wwwroot\Thumbs\1.png" />
+  </ItemGroup>
 </Project>

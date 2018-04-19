@@ -18,14 +18,14 @@ namespace MediaServer.Controllers
 		readonly ITalkService talkService;
 		readonly IContentService contentService;
 		readonly ISlackService slackService;
-
+        
 		public ConferenceController(IConferenceConfig conferenceConfig, ITalkService talkService, IContentService contentService, ISlackService slackService)
 		{
 			// TODO: Too many services, move around?
 			this.conferenceConfig = conferenceConfig;
 			this.talkService = talkService;
 			this.contentService = contentService;
-			this.slackService = slackService;
+			this.slackService = slackService;        
 		}
 
 		[HttpGet("/[controller]/{conferenceId}")]
@@ -122,7 +122,7 @@ namespace MediaServer.Controllers
 		}
 
 		[HttpPost("/[controller]/{conferenceId}/Save")]
-		public async Task<IActionResult> SaveTalk(string conferenceId, [FromQuery] string oldName, [Bind("Name", "Description, Speaker, SpeakerDeck")] Talk talk)
+		public async Task<IActionResult> SaveTalk(string conferenceId, [FromQuery] string oldName, [Bind("Name", "Description, Speaker, SpeakerDeck, ThumbnailImageFile")] Talk talk)
 		{
 			var conference = conferenceConfig.Conferences[conferenceId];
 
@@ -132,7 +132,7 @@ namespace MediaServer.Controllers
 				await talkService.DeleteTalkFromConference(conference, oldTalk);
             }
 
-			talk.TimeStamp = DateTime.UtcNow;
+            talk.TimeStamp = DateTime.UtcNow;
 			await talkService.SaveTalkFromConference(conference, talk);
             
 			var talkUrl = GetTalkUrl(conference, talk);
