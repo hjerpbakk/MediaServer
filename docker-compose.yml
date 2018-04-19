@@ -7,5 +7,4 @@ services:
     ports:
       - 80:5000
     volumes:
-      - ./DevDays2018:/app/wwwroot/Conference/DevDays2018
-  
+      - "./DevDays2018:/app/wwwroot/Conference/DevDays2018"
