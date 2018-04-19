@@ -7,3 +7,9 @@
         padding-top: 56px
     }
 }
+
+.card-img-top {
+    height: 150px;
+    object-fit: cover;
+
+}

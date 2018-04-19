@@ -26,6 +26,7 @@ namespace MediaServer.Models
 
         public string Description { get; set; }
         public DateTime TimeStamp { get; set; }
+        // TODO: Get speaker from AD or something with auto-complete
         public string Speaker { get; set; }
         public string SpeakerDeck { get; set; }
         
