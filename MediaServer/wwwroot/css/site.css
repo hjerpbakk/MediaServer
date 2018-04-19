@@ -11,5 +11,10 @@
 .card-img-top {
     height: 150px;
     object-fit: cover;
+}
 
+.float-on-iframe {
+    position: absolute;
+    top: 0;
+    right: 0;
 }
