@@ -2,7 +2,7 @@ version: '3'
 
 services:
   media-server:
-    image: ${repo_pre}dips/media-server${tag}
+    image: dips/media-server
     restart: always
     ports:
       - 80:5000
