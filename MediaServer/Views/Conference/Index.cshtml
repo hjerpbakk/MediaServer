@@ -11,7 +11,7 @@
         </form>
       </div>
     </div>
-    <h5 class="text-muted">@ViewData["VideoPath"]</h5>
+    <h5 class="text-muted mb-3">@ViewData["VideoPath"]</h5>
     <div class="row">
         @{var talks = (IEnumerable<TalkSummaryViewModel>)ViewData["Talks"];}
         @foreach(var talk in talks) {

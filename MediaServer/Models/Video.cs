@@ -10,7 +10,7 @@ namespace MediaServer.Models
 
 		static Video()
         {
-            supportedVideoFileType = Video.SupportedVideoFileType.ToCharArray();
+            supportedVideoFileType = SupportedVideoFileType.ToCharArray();
         }
         
         public Video(string name)

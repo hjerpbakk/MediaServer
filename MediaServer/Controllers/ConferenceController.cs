@@ -65,7 +65,6 @@ namespace MediaServer.Controllers
                 return NotFound();
             }
 
-			ViewData["Title"] = talkName;
 			ViewData["ConferenceId"] = conferenceId;
 			var talkVM = new TalkViewModel(talk);
 			ViewData["Talk"] = talkVM;
@@ -124,7 +123,7 @@ namespace MediaServer.Controllers
 		}
 
 		[HttpPost("/[controller]/{conferenceId}/Save")]
-		public async Task<IActionResult> SaveTalk(string conferenceId, [FromQuery] string oldName, [Bind("Name", "Description, Speaker, SpeakerDeck, ThumbnailImageFile")] Talk talk)
+        public async Task<IActionResult> SaveTalk(string conferenceId, [FromQuery] string oldName, [Bind("Name, Description, Speaker, SpeakerDeck, ThumbnailImageFile, TalkName")] Talk talk)
 		{
 			var conference = conferenceConfig.Conferences[conferenceId];
 

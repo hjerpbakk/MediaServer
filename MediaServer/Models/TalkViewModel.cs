@@ -28,6 +28,7 @@ namespace MediaServer.Models
         public string UriEncodedVideoName { get; }
         public string SpeakerDeck { get; }
 
+        public string TalkName => talk.TalkName;
         public string Name => talk.Name;
         public string Description => talk.Description;
         public string Speaker => talk.Speaker;

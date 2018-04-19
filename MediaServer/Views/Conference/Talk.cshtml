@@ -3,7 +3,7 @@
     @{var talk = (TalkViewModel)ViewData["Talk"];}
     <div class="d-flex justify-content-between">
         <div>
-            <h1 class="mt-4">@ViewData["Title"]</h1>
+            <h1 class="mt-4">@talk.TalkName</h1>
         </div>
         <div>
             <form action="/@this.ViewContext.RouteData.Values["controller"].ToString()/@ViewData["ConferenceId"]/@talk.Name/Edit" style="display: inline;">

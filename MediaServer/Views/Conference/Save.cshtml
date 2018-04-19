@@ -16,23 +16,27 @@
             <div class="col-sm">
                 <div class="form-group">
                     <label for="video">Video</label>
-                    @Html.DropDownListFor(video => video.Name, (IEnumerable<SelectListItem>)ViewBag.VideoList, "Select video", new { @class = "form-control", @onchange = "onVideoSelected(this.value)", @id = "video" })
+                    @Html.DropDownListFor(talk => talk.Name, (IEnumerable<SelectListItem>)ViewBag.VideoList, "Select video", new { @class = "form-control", @onchange = "onVideoSelected(this.value)", @id = "video" })
+                </div>
+                <div class="form-group">
+                    <label for="TalkName">Name</label>
+                    <input type="text" class="form-control" id="TalkName" name="TalkName" disabled="@ViewData["IsSave"]" value="@Model.TalkName" required>
                 </div>
                 <div class="form-group">
                     <label for="Description">Description</label>
-                    <textarea class="form-control" id="Description" name="Description" rows="3" disabled="@ViewData[" IsSave"]" required>@Model.Description</textarea>
+                    <textarea class="form-control" id="Description" name="Description" rows="3" disabled="@ViewData["IsSave"]" required>@Model.Description</textarea>
                 </div>
                 <div class="form-group">
                     <label for="Speaker">Speaker</label>
-                    <input type="text" class="form-control" id="Speaker" name="Speaker" disabled="@ViewData[" IsSave"]" value="@Model.Speaker" required>
+                    <input type="text" class="form-control" id="Speaker" name="Speaker" disabled="@ViewData["IsSave"]" value="@Model.Speaker" required>
                 </div>
                 <div class="form-group">
                     <label for="SpeakerDeck">Speaker Deck</label>
-                    <input type="text" class="form-control" id="SpeakerDeck" name="SpeakerDeck" value="@Model.SpeakerDeck" disabled="@ViewData[" IsSave"]">
+                    <input type="text" class="form-control" id="SpeakerDeck" name="SpeakerDeck" value="@Model.SpeakerDeck" disabled="@ViewData["IsSave"]">
                 </div>
                 <div class="row justify-content-end">
                     <button type="button" onclick="location.href='.';" class="btn btn-danger mr-2" style="width: 80px">Cancel</button>
-                    <button type="submit" class="btn btn-success mr-3" id="saveButton" style="width: 80px" disabled="@ViewData[" IsSave"]">Save</button>
+                    <button type="submit" class="btn btn-success mr-3" id="saveButton" style="width: 80px" disabled="@ViewData["IsSave"]">Save</button>
                 </div>
             </div>
         </div>
@@ -115,16 +119,19 @@
             // Enable buttons and check for slides
         function onVideoSelected(video) {
             var speakerDeck = document.getElementById("SpeakerDeck");
+            var talkName = document.getElementById("TalkName");
             var disabled = video === "";
             document.getElementById("Description").disabled = disabled;
             document.getElementById("Speaker").disabled = disabled;
             speakerDeck.disabled = disabled;
             document.getElementById("saveButton").disabled = disabled;
+            talkName.disabled = disabled;
 
             if (disabled) {
                 return;
             }
 
+            talkName.value = video;
             speakerDeckName = video + ".pdf";
             var speakerDeckUrl = "/@this.ViewContext.RouteData.Values["controller"].ToString()/@ViewData["ConferenceId"]/" + speakerDeckName;
 
