@@ -10,7 +10,6 @@ namespace MediaServer.Models
         public TalkViewModel(Talk talk)
         {
             this.talk = talk;
-            ZonedTimeStamp = talk.TimeStamp.GetDateString();
 			UriEncodedVideoName = talk.UriEncodedName + Video.SupportedVideoFileType;
 
             if (talk.SpeakerDeck == null) {
@@ -24,7 +23,7 @@ namespace MediaServer.Models
             }
         }
 
-        public string ZonedTimeStamp { get; } 
+        public string ZonedTimeStamp => talk.DateOfTalkString; 
         public string UriEncodedVideoName { get; }
         public string SpeakerDeck { get; }
 

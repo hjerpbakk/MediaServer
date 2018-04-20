@@ -90,7 +90,9 @@ namespace MediaServer.Services
 
 			var talkReferenceName = GetBlobNameFromTalkName(talk.Name);
 			var talkReference = containerForConference.GetBlockBlobReference(talkReferenceName);
-			await talkReference.DeleteAsync();
+            if (await talkReference.ExistsAsync()) {
+                await talkReference.DeleteAsync();
+            }
 		}
 
 		public async Task<string[]> GetTalkNamesFromConference(Conference conference) {

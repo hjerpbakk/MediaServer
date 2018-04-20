@@ -11,11 +11,10 @@ namespace MediaServer.Models
         {
             this.talk = talk;
 			Url = getTalkUrl(talk);
-            ZonedTimeStamp = talk.TimeStamp.GetDateString();
         }
 
         public string Url { get; }
-        public string ZonedTimeStamp { get; } 
+        public string ZonedTimeStamp => talk.DateOfTalkString;
         
         public string Name => talk.TalkName;
         public string Description => talk.Description;

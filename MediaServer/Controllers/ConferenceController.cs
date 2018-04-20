@@ -43,7 +43,7 @@ namespace MediaServer.Controllers
             ViewData["VideoPath"] = conference.VideoPath;
 
             var talks = (await talkService.GetTalksFromConference(conference)).
-                            OrderByDescending(t => t.TimeStamp).
+                            OrderByDescending(t => t.DateOfTalk).
                             Select(t => new TalkSummaryViewModel(t, talk => GetTalkUrl(conference, talk)));
 			ViewData["Talks"] = talks;
 
@@ -123,7 +123,7 @@ namespace MediaServer.Controllers
 		}
 
 		[HttpPost("/[controller]/{conferenceId}/Save")]
-        public async Task<IActionResult> SaveTalk(string conferenceId, [FromQuery] string oldName, [Bind("Name, Description, Speaker, SpeakerDeck, ThumbnailImageFile, TalkName")] Talk talk)
+        public async Task<IActionResult> SaveTalk(string conferenceId, [FromQuery] string oldName, [Bind("Name, Description, Speaker, SpeakerDeck, ThumbnailImageFile, TalkName, DateOfTalkString")] Talk talk)
 		{
 			var conference = conferenceConfig.Conferences[conferenceId];
 
@@ -133,7 +133,6 @@ namespace MediaServer.Controllers
 				await talkService.DeleteTalkFromConference(conference, oldTalk);
             }
 
-            talk.TimeStamp = DateTime.UtcNow;
 			await talkService.SaveTalkFromConference(conference, talk);
             
 			var talkUrl = GetTalkUrl(conference, talk);

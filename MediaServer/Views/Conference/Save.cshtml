@@ -23,6 +23,10 @@
                     <input type="text" class="form-control" id="TalkName" name="TalkName" disabled="@ViewData["IsSave"]" value="@Model.TalkName" required>
                 </div>
                 <div class="form-group">
+                    <label for="DateOfTalkString">Date of Talk</label>
+                    <input type="text" class="form-control" id="DateOfTalkString" name="DateOfTalkString" disabled="@ViewData["IsSave"]" value="@Model.DateOfTalkString">
+                </div>
+                <div class="form-group">
                     <label for="Description">Description</label>
                     <textarea class="form-control" id="Description" name="Description" rows="3" disabled="@ViewData["IsSave"]" required>@Model.Description</textarea>
                 </div>
@@ -125,6 +129,7 @@
             document.getElementById("Speaker").disabled = disabled;
             speakerDeck.disabled = disabled;
             document.getElementById("saveButton").disabled = disabled;
+            document.getElementById("DateOfTalkString").disabled = disabled;
             talkName.disabled = disabled;
 
             if (disabled) {

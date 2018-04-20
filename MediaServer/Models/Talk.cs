@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
+using MediaServer.Extensions;
 
 namespace MediaServer.Models
 {
@@ -12,6 +13,7 @@ namespace MediaServer.Models
         {
             // TODO: Get thumbnail from speaker notes or video
             Thumbnail = "http://placehold.it/700x400";
+            DateOfTalk = DateTime.UtcNow;
         }
 
         public string UriEncodedName { get; private set; }
@@ -26,7 +28,21 @@ namespace MediaServer.Models
 
         public string TalkName { get; set; }
         public string Description { get; set; }
+
+        // TODO: Set in service after get from BlobStore metadata
+        [JsonIgnore]
         public DateTime TimeStamp { get; set; }
+
+        // TODO: Analytics
+        // TODO: Background color
+        public DateTime DateOfTalk { get; set; }
+
+        [JsonIgnore]
+        public string DateOfTalkString {
+            get { return DateOfTalk.GetDateString(); }
+            set { DateOfTalk = DateTimeExtensions.GetDateTime(value); }
+        }
+
         // TODO: Get speaker from AD or something with auto-complete
         public string Speaker { get; set; }
         public string SpeakerDeck { get; set; }
