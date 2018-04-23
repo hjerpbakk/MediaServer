@@ -35,5 +35,8 @@ namespace MediaServer.Models
 		// TODO: Create VM and move around stuff
 		[JsonIgnore]
 		public IFormFile ThumbnailImageFile { get; set; }
+
+        [JsonIgnore]
+        public string Thumbnail { get; set; }
     }
 }

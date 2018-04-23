@@ -97,7 +97,8 @@ namespace MediaServer.Controllers
             {
                 return NotFound();
             }
-                     
+
+            talk.Thumbnail = GetThumbnailUrl(conference, talk);
             var controllerName = ControllerContext.RouteData.Values["controller"].ToString();
             var availableVideos = new List<Video>() { new Video(talk.VideoName) };
 			var videosFromConference = await contentService.GetVideosFromConference(controllerName, conference);
