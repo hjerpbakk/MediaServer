@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Http;
 
 namespace MediaServer.Controllers
 {
@@ -134,7 +135,8 @@ namespace MediaServer.Controllers
 				await talkService.DeleteTalkFromConference(conference, oldTalk);
             }
 
-            talk.TalkName = talk.TalkName.Trim('?');
+            // TODO: Client verification also and proper replace here
+            talk.TalkName = talk.TalkName.Replace("?", "").Replace(":", "");
 			await talkService.SaveTalkFromConference(conference, talk);
             
 			var talkUrl = GetTalkUrl(conference, talk);
@@ -144,7 +146,9 @@ namespace MediaServer.Controllers
                 await slackService.PostTalkToChannel(conference, talk, talkUrl);
             }
 
-            return new RedirectResult(talk.TalkName, false, false);
+            // TODO: Selection of video names...
+            var escapedTalkName = Uri.EscapeUriString(talk.TalkName);
+            return new RedirectResult(escapedTalkName, false, false);
 		}
 
 		Conference GetConferenceFromId(string conferenceId)
