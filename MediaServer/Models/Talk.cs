@@ -33,8 +33,6 @@ namespace MediaServer.Models
         [JsonIgnore]
         public DateTime TimeStamp { get; set; }
 
-        // TODO: Analytics
-        // TODO: Background color
         public DateTime DateOfTalk { get; set; }
 
         [JsonIgnore]

@@ -1,5 +1,6 @@
 ﻿body {
-    padding-top: 54px
+    padding-top: 54px;
+    background-color: whitesmoke;
 }
 
 @media (min-width: 992px) {
