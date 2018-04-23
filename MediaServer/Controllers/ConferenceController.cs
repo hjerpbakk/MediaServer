@@ -134,7 +134,7 @@ namespace MediaServer.Controllers
 				await talkService.DeleteTalkFromConference(conference, oldTalk);
             }
 
-            talk.TalkName = talk.TalkName.Remove('?');
+            talk.TalkName = talk.TalkName.Trim('?');
 			await talkService.SaveTalkFromConference(conference, talk);
             
 			var talkUrl = GetTalkUrl(conference, talk);
