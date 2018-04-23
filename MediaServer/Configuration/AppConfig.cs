@@ -13,7 +13,7 @@ namespace MediaServer.Configuration
                     "DevDays2018", 
                     new Conference("DevDays2018", 
                                     "Dev Days 2018", 
-                                    "G73TGULC9", 
+                                    "CA0G970P5", 
                                     @"\\p-fs01\DIPS\Linjeorganisasjon\Utviklingsavdelingen\Video utviklerforum, sprintdemo, møter og kurs\Utviklerforum\Dev days 2018\DevDays2018Video") }
 				//{ "HoursOfInterest", new Conference("HoursOfInterest", "Hours of Interest", "G73TGULC9", "TODO") }
             };
