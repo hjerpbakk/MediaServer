@@ -2,9 +2,12 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
+    <ApplicationInsightsResourceId>/subscriptions/9f8196d5-f5eb-4d8e-8e3f-be1f906f3e35/resourcegroups/RSG_Slack/providers/microsoft.insights/components/dipstube-insights</ApplicationInsightsResourceId>
+    <ApplicationInsightsAnnotationResourceId>/subscriptions/9f8196d5-f5eb-4d8e-8e3f-be1f906f3e35/resourcegroups/RSG_Slack/providers/microsoft.insights/components/dipstube-insights</ApplicationInsightsAnnotationResourceId>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.1.0-preview1-final" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
     <PackageReference Include="WindowsAzure.Storage" Version="9.1.1" />
@@ -27,5 +30,8 @@
   </ItemGroup>
   <ItemGroup>
     <Content Remove="wwwroot\Thumbs\1.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Connected Services" />
   </ItemGroup>
 </Project>
