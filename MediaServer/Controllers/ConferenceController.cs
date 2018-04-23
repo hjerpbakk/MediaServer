@@ -48,12 +48,14 @@ namespace MediaServer.Controllers
                             Select(t => new TalkSummaryViewModel(t, talk => GetTalkUrl(conference, talk)));
 			ViewData["Talks"] = talks;
 
+            // TODO: Implement async image loading...
 			return View("Index");
 		}
 
 		[HttpGet("/[controller]/{conferenceId}/{talkName}")]
 		public async Task<IActionResult> GetTalkView(string conferenceId, string talkName)
 		{
+            // TODO: Show image of speaker from Slack
 			var conference = GetConferenceFromId(conferenceId);
             if (conference == null)
             {
@@ -105,6 +107,7 @@ namespace MediaServer.Controllers
 		[HttpGet("/[controller]/{conferenceId}/Save")]
 		public async Task<IActionResult> GetSaveView(string conferenceId)
 		{
+            // TODO: Support choosing speaker name from Slack...
 			// TODO: Support uploading slides
 			// TODO: Support uploading video
             var conference = GetConferenceFromId(conferenceId);
@@ -146,7 +149,6 @@ namespace MediaServer.Controllers
                 await slackService.PostTalkToChannel(conference, talk, talkUrl);
             }
 
-            // TODO: Selection of video names...
             var escapedTalkName = Uri.EscapeUriString(talk.TalkName);
             return new RedirectResult(escapedTalkName, false, false);
 		}
