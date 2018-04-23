@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace MediaServer.Services
 {
@@ -34,7 +35,7 @@ namespace MediaServer.Services
             blobClient = storageAccount.CreateCloudBlobClient();         
 		}
 
-		public async Task<Talk[]> GetTalksFromConference(Conference conference) {
+        public async Task<IReadOnlyList<Talk>> GetTalksFromConference(Conference conference) {
 			var containerForConference = GetContainerFromConference(conference);
 			if (!(await containerForConference.ExistsAsync())) {
 				return new Talk[0];
@@ -95,16 +96,23 @@ namespace MediaServer.Services
             }
 		}
 
-		public async Task<string[]> GetTalkNamesFromConference(Conference conference) {
+        public async Task<IReadOnlyList<string>> GetTalkNamesFromConference(Conference conference) {
 			// TODO: Support more than 200 items
             var token = new BlobContinuationToken();
 			var containerForConference = GetContainerFromConference(conference);
-			var blobs = await containerForConference.ListBlobsSegmentedAsync(TalkPrefix, token);    
-            var talkNames = blobs.Results.Cast<CloudBlockBlob>().
-                Select(b => Path.GetFileNameWithoutExtension(b.Name.TrimStart(dbTalkPrefix)) + Video.SupportedVideoFileType).
-				ToArray();
-   
-			return talkNames;
+			var blobs = await containerForConference.ListBlobsSegmentedAsync(TalkPrefix, token); 
+            var usedVideos = new List<string>();
+            foreach (var blob in blobs.Results.Cast<CloudBlockBlob>()) {
+                using (var memoryStream = new MemoryStream()) {
+                    await blob.DownloadToStreamAsync(memoryStream);
+                    var talkContent = Encoding.UTF8.GetString(memoryStream.ToArray());
+                    var talk = JObject.Parse(talkContent);
+                    var videoName = (string)talk["VideoName"];
+                    usedVideos.Add(videoName);
+                }
+            }
+
+            return usedVideos;
 		}
       
         /// <summary>
