@@ -7,8 +7,6 @@ namespace MediaServer.Models
 {
     public class Talk
     {
-        string name;
-
         public Talk()
         {
             // TODO: Get thumbnail from speaker notes or video
@@ -16,16 +14,7 @@ namespace MediaServer.Models
             DateOfTalk = DateTime.UtcNow;
         }
 
-        public string UriEncodedName { get; private set; }
-
-        public string Name { 
-            get { return name; } 
-            set { 
-				name = value;
-				UriEncodedName = Uri.EscapeUriString(name);
-            } 
-        }
-
+        public string VideoName { get; set; }
         public string TalkName { get; set; }
         public string Description { get; set; }
 

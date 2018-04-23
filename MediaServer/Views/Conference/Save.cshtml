@@ -16,7 +16,7 @@
             <div class="col-sm">
                 <div class="form-group">
                     <label for="video">Video</label>
-                    @Html.DropDownListFor(talk => talk.Name, (IEnumerable<SelectListItem>)ViewBag.VideoList, "Select video", new { @class = "form-control", @onchange = "onVideoSelected(this.value)", @id = "video" })
+                    @Html.DropDownListFor(talk => talk.VideoName, (IEnumerable<SelectListItem>)ViewBag.VideoList, "Select video", new { @class = "form-control", @onchange = "onVideoSelected(this.value)", @id = "video" })
                 </div>
                 <div class="form-group">
                     <label for="TalkName">Name</label>
@@ -136,8 +136,9 @@
                 return;
             }
 
-            talkName.value = video;
-            speakerDeckName = video + ".pdf";
+            var talk = video.slice(0, -4);
+            talkName.value = talk;
+            speakerDeckName = talk + ".pdf";
             var speakerDeckUrl = "/@this.ViewContext.RouteData.Values["controller"].ToString()/@ViewData["ConferenceId"]/" + speakerDeckName;
 
             var request;

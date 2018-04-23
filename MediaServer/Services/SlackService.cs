@@ -9,6 +9,8 @@ namespace MediaServer.Services
 {
 	public class SlackService : ISlackService
     {
+        const string TestSlackChannel = "G73TGULC9";
+
 		readonly ISlackConnector connector;
 		readonly ISlackConfig config;
         
@@ -27,14 +29,15 @@ namespace MediaServer.Services
 				return;
 			}
 
-			var channel = new SlackChatHub { Id = conference.SlackChannelId };
+            var channelId = config.UseTestSlackChannel ? TestSlackChannel : conference.SlackChannelId;
+            var channel = new SlackChatHub { Id = channelId };
             var message = new BotMessage
             {
 				// TODO: Ta med Thumbnail når vi har støtte for det
                 ChatHub = channel,
                 Attachments = new[] {
                     new SlackAttachment {
-						Title = talk.Name,
+                        Title = talk.TalkName,
 						TitleLink = talkUrl,
 						Text = talk.Description,
 						Fallback = talk.Description,                 

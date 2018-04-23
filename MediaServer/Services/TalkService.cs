@@ -88,7 +88,7 @@ namespace MediaServer.Services
         public async Task DeleteTalkFromConference(Conference conference, Talk talk) {
 			var containerForConference = GetContainerFromConference(conference);
 
-			var talkReferenceName = GetBlobNameFromTalkName(talk.Name);
+            var talkReferenceName = GetBlobNameFromTalkName(talk.TalkName);
 			var talkReference = containerForConference.GetBlockBlobReference(talkReferenceName);
             if (await talkReference.ExistsAsync()) {
                 await talkReference.DeleteAsync();
@@ -129,7 +129,7 @@ namespace MediaServer.Services
 
             var serializedTalk = JsonConvert.SerializeObject(talk);
 
-            var talkReferenceName = GetBlobNameFromTalkName(talk.Name);
+            var talkReferenceName = GetBlobNameFromTalkName(talk.TalkName);
             var talkReference = containerForConference.GetBlockBlobReference(talkReferenceName);
             await talkReference.UploadTextAsync(serializedTalk);
                         
@@ -147,7 +147,7 @@ namespace MediaServer.Services
             // https://blogs.msdn.microsoft.com/dotnet/2017/01/19/net-core-image-processing/
             var imageFile = talk.ThumbnailImageFile;
             var extension = Path.GetExtension(imageFile.FileName);
-			var thumbnailReference = containerForConference.GetBlockBlobReference(talk.Name);
+            var thumbnailReference = containerForConference.GetBlockBlobReference(talk.TalkName);
             var exists = await thumbnailReference.ExistsAsync();
 			if (exists && thumbnailReference.Properties.Length == imageFile.Length) {
                 return;
@@ -163,7 +163,7 @@ namespace MediaServer.Services
 
         static async Task AddThumbnail(CloudBlobContainer containerForConference, Talk talk)
         {
-            var thumbnailReference = containerForConference.GetBlockBlobReference(talk.Name);
+            var thumbnailReference = containerForConference.GetBlockBlobReference(talk.TalkName);
             var exists = await thumbnailReference.ExistsAsync();
             if (exists)
             {

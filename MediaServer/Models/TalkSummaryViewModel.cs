@@ -16,7 +16,7 @@ namespace MediaServer.Models
         public string Url { get; }
         public string ZonedTimeStamp => talk.DateOfTalkString;
         
-        public string Name => talk.TalkName;
+        public string TalkName => talk.TalkName;
         public string Description => talk.Description;
         public string Thumbnail => talk.Thumbnail;
         public string Speaker => talk.Speaker;

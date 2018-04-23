@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 
 namespace MediaServer.Models
 {
@@ -15,7 +16,7 @@ namespace MediaServer.Models
         
         public Video(string name)
         {
-			Name = name.TrimEnd(supportedVideoFileType);
+            Name = Path.GetFileNameWithoutExtension(name) + SupportedVideoFileType;
         }
 
         public string Name { get; }

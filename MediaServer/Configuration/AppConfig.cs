@@ -23,5 +23,6 @@ namespace MediaServer.Configuration
 
         public string BlobStorageConnectionString { get; set; }
 		public string SlackToken { get; set; }
+        public bool UseTestSlackChannel { get; set; }
     }
 }

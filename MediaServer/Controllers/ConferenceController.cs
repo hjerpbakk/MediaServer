@@ -88,15 +88,15 @@ namespace MediaServer.Controllers
             }
                      
             var controllerName = ControllerContext.RouteData.Values["controller"].ToString();
-			var availableVideos = new List<Video>() { new Video(talk.Name) };
+            var availableVideos = new List<Video>() { new Video(talk.VideoName) };
 			var videosFromConference = await contentService.GetVideosFromConference(controllerName, conference);
 			availableVideos.AddRange(videosFromConference);
-			ViewBag.VideoList = new SelectList(availableVideos, "Name", "Name", talk.Name);
+            ViewBag.VideoList = new SelectList(availableVideos, "Name", "Name", talk.VideoName);
                      
-            ViewData["Title"] = $"Edit {talk.Name}"; 
+            ViewData["Title"] = $"Edit {talk.TalkName}"; 
 			ViewData["ConferenceId"] = conferenceId;
 			ViewData["IsSave"] = false;
-			ViewData["OldName"] = talk.Name;
+            ViewData["OldName"] = talk.TalkName;
 			return View("Save", talk);
 		}
 
@@ -123,22 +123,26 @@ namespace MediaServer.Controllers
 		}
 
 		[HttpPost("/[controller]/{conferenceId}/Save")]
-        public async Task<IActionResult> SaveTalk(string conferenceId, [FromQuery] string oldName, [Bind("Name, Description, Speaker, SpeakerDeck, ThumbnailImageFile, TalkName, DateOfTalkString")] Talk talk)
+        public async Task<IActionResult> SaveTalk(string conferenceId, [FromQuery] string oldName, [Bind("VideoName, Description, Speaker, SpeakerDeck, ThumbnailImageFile, TalkName, DateOfTalkString")] Talk talk)
 		{
 			var conference = conferenceConfig.Conferences[conferenceId];
 
 			if (oldName != null)
 			{
-				var oldTalk = new Talk { Name = oldName };
+                var oldTalk = new Talk { TalkName = oldName };
 				await talkService.DeleteTalkFromConference(conference, oldTalk);
             }
 
 			await talkService.SaveTalkFromConference(conference, talk);
             
 			var talkUrl = GetTalkUrl(conference, talk);
-			await slackService.PostTalkToChannel(conference, talk, talkUrl);
 
-			return new RedirectResult(talk.UriEncodedName, false, false);
+            if (oldName == null)
+            {
+                await slackService.PostTalkToChannel(conference, talk, talkUrl);
+            }
+
+            return new RedirectResult(talk.TalkName, false, false);
 		}
 
 		Conference GetConferenceFromId(string conferenceId)
@@ -147,7 +151,7 @@ namespace MediaServer.Controllers
 			   null;
 
 		string GetTalkUrl(Conference conference, Talk talk)
-            => GetConferenceUrl(conference) + talk.UriEncodedName;
+            => GetConferenceUrl(conference) + talk.TalkName;
 
 		string GetConferenceUrl(Conference conference) 
 			=> $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}/{ControllerContext.RouteData.Values["controller"]}/{conference.Id}/";

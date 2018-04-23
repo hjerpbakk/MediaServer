@@ -10,7 +10,7 @@ namespace MediaServer.Models
         public TalkViewModel(Talk talk)
         {
             this.talk = talk;
-			UriEncodedVideoName = talk.UriEncodedName + Video.SupportedVideoFileType;
+            UriEncodedVideoName = Uri.EscapeUriString(talk.VideoName);
 
             if (talk.SpeakerDeck == null) {
                 return;
@@ -28,9 +28,8 @@ namespace MediaServer.Models
         public string SpeakerDeck { get; }
 
         public string TalkName => talk.TalkName;
-        public string Name => talk.Name;
+        public string VideoName => talk.VideoName;
         public string Description => talk.Description;
         public string Speaker => talk.Speaker;
-        //public string SpeakerDeck => talk.SpeakerDeck;
     }
 }
