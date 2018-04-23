@@ -23,7 +23,6 @@
     <Folder Include="Views\Conference\" />
     <Folder Include="Configuration\" />
     <Folder Include="Services\" />
-    <Folder Include="wwwroot\images\thumbs\" />
     <Folder Include="wwwroot\Conference\" />
     <Folder Include="wwwroot\Conference\DevDays2018\" />
     <Folder Include="Extensions\" />

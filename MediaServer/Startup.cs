@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using MediaServer.Configuration;
@@ -8,6 +9,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 using SlackConnector;
 
 namespace MediaServer
@@ -38,6 +40,8 @@ namespace MediaServer
 			services.AddSingleton<ISlackConfig>(config);
 
 			services.AddSingleton<ISlackConnector, SlackConnector.SlackConnector>();
+
+            services.AddSingleton<IFileProvider>(new PhysicalFileProvider(Directory.GetCurrentDirectory()));
                         
             services.AddSingleton<ITalkService, TalkService>();
             services.AddSingleton<IContentService, ContentService>();

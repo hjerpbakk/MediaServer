@@ -10,6 +10,7 @@ namespace MediaServer.Services
         Task<Talk> GetTalkByName(Conference conference, string name);
         Task SaveTalkFromConference(Conference conference, Talk talk);
         Task DeleteTalkFromConference(Conference conference, Talk talk);
-        Task<IReadOnlyList<string>> GetTalkNamesFromConference(Conference conference);     
+        Task<IReadOnlyList<string>> GetTalkNamesFromConference(Conference conference);
+        Task<Image> GetTalkThumbnail(Conference conference, string name);
     }
 }

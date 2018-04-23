@@ -22,6 +22,7 @@ namespace MediaServer.Services
             var path = Path.Combine(hostingPath, conferenceBasePath, conference.Id);
             var directory = new DirectoryInfo(path);
             if (!directory.Exists) {
+                // TODO: Logg her at oppsett er feil
                 return new Video[0];
             }
 

@@ -45,10 +45,9 @@ namespace MediaServer.Controllers
 
             var talks = (await talkService.GetTalksFromConference(conference)).
                             OrderByDescending(t => t.DateOfTalk).
-                            Select(t => new TalkSummaryViewModel(t, talk => GetTalkUrl(conference, talk)));
+                            Select(t => new TalkSummaryViewModel(t, talk => GetTalkUrl(conference, talk), talk => GetThumbnailUrl(conference, talk)));
 			ViewData["Talks"] = talks;
 
-            // TODO: Implement async image loading...
 			return View("Index");
 		}
 
@@ -75,6 +74,14 @@ namespace MediaServer.Controllers
 
 			return View("Talk");
 		}
+
+        [HttpGet("/[controller]/{conferenceId}/Thumbnails/{talkName}")]
+        public async Task<IActionResult> GetTalkThumbnail(string conferenceId, string talkName)
+        {
+            var conference = GetConferenceFromId(conferenceId);
+            var thumbnail = await talkService.GetTalkThumbnail(conference, talkName);
+            return File(thumbnail.ImageData, thumbnail.ContentType);
+        }
 
         [HttpGet("/[controller]/{conferenceId}/{talkName}/Edit")]
 		public async Task<IActionResult> GetEditView(string conferenceId, string talkName)
@@ -130,6 +137,7 @@ namespace MediaServer.Controllers
 		[HttpPost("/[controller]/{conferenceId}/Save")]
         public async Task<IActionResult> SaveTalk(string conferenceId, [FromQuery] string oldName, [Bind("VideoName, Description, Speaker, SpeakerDeck, ThumbnailImageFile, TalkName, DateOfTalkString")] Talk talk)
 		{
+            // TODO: Get thumbnail from speaker notes or video if not set
 			var conference = conferenceConfig.Conferences[conferenceId];
 
 			if (oldName != null)
@@ -157,6 +165,9 @@ namespace MediaServer.Controllers
 			=> conferenceConfig.Conferences.ContainsKey(conferenceId) ?
 			   conferenceConfig.Conferences[conferenceId] :
 			   null;
+
+        string GetThumbnailUrl(Conference conference, Talk talk)
+            => GetConferenceUrl(conference) + "Thumbnails/" + talk.TalkName;
 
 		string GetTalkUrl(Conference conference, Talk talk)
             => GetConferenceUrl(conference) + talk.TalkName;

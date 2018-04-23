@@ -9,8 +9,6 @@ namespace MediaServer.Models
     {
         public Talk()
         {
-            // TODO: Get thumbnail from speaker notes or video
-            Thumbnail = "http://placehold.it/700x400";
             DateOfTalk = DateTime.UtcNow;
         }
 
@@ -37,8 +35,5 @@ namespace MediaServer.Models
 		// TODO: Create VM and move around stuff
 		[JsonIgnore]
 		public IFormFile ThumbnailImageFile { get; set; }
-
-		[JsonIgnore]
-		public string Thumbnail { get; set; }
     }
 }

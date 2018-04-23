@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using MediaServer.Configuration;
 using MediaServer.Models;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
 using Newtonsoft.Json;
@@ -22,17 +23,20 @@ namespace MediaServer.Services
         readonly static char[] dbFileExtension;
 		readonly static char[] dbTalkPrefix;
 
-		readonly CloudBlobClient blobClient;     
+		readonly CloudBlobClient blobClient;
+        readonly IFileProvider fileProvider;
 
 		static TalkService() {
 			dbFileExtension = DbFileExtension.ToCharArray();
 			dbTalkPrefix = TalkPrefix.ToCharArray();
 		}
 
-		public TalkService(IBlogStorageConfig blobStorageConfig)
+        public TalkService(IBlogStorageConfig blobStorageConfig, IFileProvider fileProvider)
 		{
 			var storageAccount = CloudStorageAccount.Parse(blobStorageConfig.BlobStorageConnectionString);         
-            blobClient = storageAccount.CreateCloudBlobClient();         
+            blobClient = storageAccount.CreateCloudBlobClient();
+
+            this.fileProvider = fileProvider;
 		}
 
         public async Task<IReadOnlyList<Talk>> GetTalksFromConference(Conference conference) {
@@ -53,7 +57,6 @@ namespace MediaServer.Services
                     await blob.DownloadToStreamAsync(memoryStream);
 					var talkContent = Encoding.UTF8.GetString(memoryStream.ToArray());
                     var talk = JsonConvert.DeserializeObject<Talk>(talkContent);
-                    await AddThumbnail(containerForConference, talk);
 					talks.Add(talk);
                 }
             }         
@@ -76,7 +79,6 @@ namespace MediaServer.Services
                 await blob.DownloadToStreamAsync(memoryStream);
 				var talkContent = Encoding.UTF8.GetString(memoryStream.ToArray());
 				var talk = JsonConvert.DeserializeObject<Talk>(talkContent);
-                await AddThumbnail(containerForConference, talk);
                 return talk;
             }
 		}
@@ -89,6 +91,7 @@ namespace MediaServer.Services
         public async Task DeleteTalkFromConference(Conference conference, Talk talk) {
 			var containerForConference = GetContainerFromConference(conference);
 
+            // TODO: Delete thumnail too
             var talkReferenceName = GetBlobNameFromTalkName(talk.TalkName);
 			var talkReference = containerForConference.GetBlockBlobReference(talkReferenceName);
             if (await talkReference.ExistsAsync()) {
@@ -169,20 +172,22 @@ namespace MediaServer.Services
             await thumbnailReference.SetPropertiesAsync();
 		}
 
-        static async Task AddThumbnail(CloudBlobContainer containerForConference, Talk talk)
-        {
-            var thumbnailReference = containerForConference.GetBlockBlobReference(talk.TalkName);
+        public async Task<Image> GetTalkThumbnail(Conference conference, string name) {
+            var containerForConference = GetContainerFromConference(conference);
+            var thumbnailReference = containerForConference.GetBlockBlobReference(name);
             var exists = await thumbnailReference.ExistsAsync();
-            if (exists)
-            {
+            if (exists) {
                 var imageData = new byte[thumbnailReference.Properties.Length];
                 await thumbnailReference.DownloadToByteArrayAsync(imageData, 0);
-                var imageAsBase64String = Convert.ToBase64String(imageData);
-                talk.Thumbnail = $"data:{thumbnailReference.Properties.ContentType};base64, {imageAsBase64String}";
+                return new Image(thumbnailReference.Properties.ContentType, imageData);
             }
-            else
-            {
-                talk.Thumbnail = "http://placehold.it/700x400";
+
+            var fileInfo = fileProvider.GetFileInfo("wwwroot/Placeholder.png");
+            using(var readStream = fileInfo.CreateReadStream()) {
+                using (MemoryStream ms = new MemoryStream()) {
+                    await readStream.CopyToAsync(ms);
+                    return new Image("image/png", ms.ToArray());
+                }
             }
         }
     }
