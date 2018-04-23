@@ -65,6 +65,7 @@ namespace MediaServer.Controllers
                 return NotFound();
             }
 
+            ViewData["Title"] = talk.TalkName;
 			ViewData["ConferenceId"] = conferenceId;
 			var talkVM = new TalkViewModel(talk);
 			ViewData["Talk"] = talkVM;
@@ -133,6 +134,7 @@ namespace MediaServer.Controllers
 				await talkService.DeleteTalkFromConference(conference, oldTalk);
             }
 
+            talk.TalkName = talk.TalkName.Remove('?');
 			await talkService.SaveTalkFromConference(conference, talk);
             
 			var talkUrl = GetTalkUrl(conference, talk);
