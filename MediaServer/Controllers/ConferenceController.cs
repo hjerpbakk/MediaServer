@@ -32,6 +32,7 @@ namespace MediaServer.Controllers
 		[HttpGet("/[controller]/{conferenceId}")]
 		public async Task<IActionResult> GetConferenceView(string conferenceId)
 		{
+            // TODO: Phone home so we can see most popular conference
 			var conference = GetConferenceFromId(conferenceId);
 			if (conference == null)
 			{
@@ -54,6 +55,7 @@ namespace MediaServer.Controllers
 		[HttpGet("/[controller]/{conferenceId}/{talkName}")]
 		public async Task<IActionResult> GetTalkView(string conferenceId, string talkName)
 		{
+            // TODO: Phone home so we can see most popular talk
             // TODO: Show image of speaker from Slack
 			var conference = GetConferenceFromId(conferenceId);
             if (conference == null)

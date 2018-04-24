@@ -46,8 +46,9 @@ namespace MediaServer
 			services.AddSingleton<ISlackConnector, SlackConnector.SlackConnector>();
 
             services.AddSingleton<IFileProvider>(new PhysicalFileProvider(Directory.GetCurrentDirectory()));
-                        
-            services.AddSingleton<ITalkService, TalkService>();
+
+            services.AddSingleton<TalkService>();
+            services.AddSingleton<ITalkService, CachedTalkService>();
             services.AddSingleton<IContentService, ContentService>();
 			services.AddSingleton<ISlackService, SlackService>();
         }
