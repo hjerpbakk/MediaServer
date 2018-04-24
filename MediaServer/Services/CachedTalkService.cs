@@ -8,6 +8,8 @@ namespace MediaServer.Services
 {
     public class CachedTalkService : ITalkService
     {
+        const string LatestTalksKey = "lastettalks";
+
         readonly TalkService talkService;
         readonly IMemoryCache memoryCache;
 
@@ -28,6 +30,7 @@ namespace MediaServer.Services
             memoryCache.Remove(talk.TalkName);
             memoryCache.Remove(conference.Id);
             memoryCache.Remove(GetConferenceTalkKey(conference.Id));
+            memoryCache.Remove(LatestTalksKey);
             await talkService.DeleteTalkFromConference(conference, talk);
         }
 
@@ -77,8 +80,18 @@ namespace MediaServer.Services
         {
             memoryCache.Remove(conference.Id);
             memoryCache.Remove(GetConferenceTalkKey(conference.Id));
+            memoryCache.Remove(LatestTalksKey);
             await talkService.SaveTalkFromConference(conference, talk);
             memoryCache.Set(talk.TalkName, talk, cacheEntryOptions);
+        }
+
+        public async Task<IEnumerable<LatestTalk>> GetLatestTalks(IEnumerable<Conference> conferences) {
+            if (!memoryCache.TryGetValue(LatestTalksKey, out IEnumerable<LatestTalk> latestTalks)) {
+                latestTalks = await talkService.GetLatestTalks(conferences);
+                memoryCache.Set(LatestTalksKey, latestTalks, cacheEntryOptions);
+            }
+
+            return latestTalks;
         }
 
         string GetConferenceTalkKey(string conferenceId) => conferenceId + "talk";

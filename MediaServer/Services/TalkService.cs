@@ -39,6 +39,9 @@ namespace MediaServer.Services
             this.fileProvider = fileProvider;
 		}
 
+        // TODO: 404 på dette: Hvordan og hvorfor? dips.talk.Kyrre%20-%20Integrasjon%20mellom%20programpakker%20-%206.%20april%202018%2009.47.33.pdf.json
+        // TODO: Støtte å se talks av en gitt presentatør...
+
         public async Task<IReadOnlyList<Talk>> GetTalksFromConference(Conference conference) {
 			var containerForConference = GetContainerFromConference(conference);
 			if (!(await containerForConference.ExistsAsync())) {
@@ -189,6 +192,28 @@ namespace MediaServer.Services
                     return new Image("image/png", ms.ToArray());
                 }
             }
+        }
+
+        public async Task<IEnumerable<LatestTalk>> GetLatestTalks(IEnumerable<Conference> conferences) {
+            var talks = new List<LatestTalk>();
+            foreach (var conference in conferences) {
+                var containerForConference = GetContainerFromConference(conference);
+                await containerForConference.CreateIfNotExistsAsync();
+                // TODO: Support more than 200 items....
+                var token = new BlobContinuationToken();
+                var blobs = await containerForConference.ListBlobsSegmentedAsync(TalkPrefix, token); 
+                foreach (var blob in blobs.Results.Cast<CloudBlockBlob>()) {
+                    using (var memoryStream = new MemoryStream()) {
+                        await blob.DownloadToStreamAsync(memoryStream);
+                        var talkContent = Encoding.UTF8.GetString(memoryStream.ToArray());
+                        var talk = JsonConvert.DeserializeObject<Talk>(talkContent);
+                        var latestTalk = new LatestTalk(conference, talk, blob.Properties.LastModified.Value);
+                        talks.Add(latestTalk);
+                    }
+                }
+            }
+
+            return talks.OrderByDescending(t => t.TimeStamp).Take(9);
         }
     }
 }

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
-using System.Diagnostics;
 using MediaServer.Configuration;
+using MediaServer.Extensions;
 using MediaServer.Models;
 using MediaServer.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -32,6 +32,10 @@ namespace MediaServer.Controllers
 		[HttpGet("/[controller]/{conferenceId}")]
 		public async Task<IActionResult> GetConferenceView(string conferenceId)
 		{
+            // TODO: Move O: link to bottom
+            // TODO: Make O: link clickable
+            // TODO: Button for add is blue on click
+            // TODO: Button for add is ugly
             // TODO: Phone home so we can see most popular conference
 			var conference = GetConferenceFromId(conferenceId);
 			if (conference == null)
@@ -44,9 +48,9 @@ namespace MediaServer.Controllers
 			ViewData["ConferenceId"] = conferenceId;
             ViewData["VideoPath"] = conference.VideoPath;
 
-            var talks = (await talkService.GetTalksFromConference(conference)).
-                            OrderByDescending(t => t.DateOfTalk).
-                            Select(t => new TalkSummaryViewModel(t, talk => GetTalkUrl(conference, talk), talk => GetThumbnailUrl(conference, talk)));
+            var talks = (await talkService.GetTalksFromConference(conference))
+                .OrderByDescending(talk => talk.DateOfTalk)
+                .Select(talk => new TalkSummaryViewModel(conference, talk, HttpContext));
 			ViewData["Talks"] = talks;
 
 			return View("Index");
@@ -69,6 +73,14 @@ namespace MediaServer.Controllers
                 return NotFound();
             }
 
+            /// TODO: Support single click pause / resume
+            /// 
+            /// TODO: hotkeys:
+           // -space: play / pause
+           //- f: fullscreen
+           //- opp / ned: volumkontroll
+             //- venstre / høyre: skip back/ frem 5 sec elns
+            /// 
             ViewData["Title"] = talk.TalkName;
 			ViewData["ConferenceId"] = conferenceId;
 			var talkVM = new TalkViewModel(talk);
@@ -88,6 +100,7 @@ namespace MediaServer.Controllers
         [HttpGet("/[controller]/{conferenceId}/{talkName}/Edit")]
 		public async Task<IActionResult> GetEditView(string conferenceId, string talkName)
 		{
+            // TODO: SpeakerDeck dissapears if not from PDF
 			var conference = GetConferenceFromId(conferenceId);
             if (conference == null)
             {
@@ -100,7 +113,7 @@ namespace MediaServer.Controllers
                 return NotFound();
             }
 
-            talk.Thumbnail = GetThumbnailUrl(conference, talk);
+            talk.Thumbnail = HttpContext.GetThumbnailUrl(conference, talk);
             var controllerName = ControllerContext.RouteData.Values["controller"].ToString();
             var availableVideos = new List<Video>() { new Video(talk.VideoName) };
 			var videosFromConference = await contentService.GetVideosFromConference(controllerName, conference);
@@ -153,7 +166,7 @@ namespace MediaServer.Controllers
             talk.TalkName = talk.TalkName.Replace("?", "").Replace(":", "");
 			await talkService.SaveTalkFromConference(conference, talk);
             
-			var talkUrl = GetTalkUrl(conference, talk);
+			var talkUrl = HttpContext.GetTalkUrl(conference, talk);
 
             if (oldName == null)
             {
@@ -168,14 +181,5 @@ namespace MediaServer.Controllers
 			=> conferenceConfig.Conferences.ContainsKey(conferenceId) ?
 			   conferenceConfig.Conferences[conferenceId] :
 			   null;
-
-        string GetThumbnailUrl(Conference conference, Talk talk)
-            => GetConferenceUrl(conference) + "Thumbnails/" + talk.TalkName;
-
-		string GetTalkUrl(Conference conference, Talk talk)
-            => GetConferenceUrl(conference) + talk.TalkName;
-
-		string GetConferenceUrl(Conference conference) 
-			=> $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}/{ControllerContext.RouteData.Values["controller"]}/{conference.Id}/";
     }
 }

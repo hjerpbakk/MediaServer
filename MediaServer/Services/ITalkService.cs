@@ -12,5 +12,6 @@ namespace MediaServer.Services
         Task DeleteTalkFromConference(Conference conference, Talk talk);
         Task<IReadOnlyList<string>> GetTalkNamesFromConference(Conference conference);
         Task<Image> GetTalkThumbnail(Conference conference, string name);
+        Task<IEnumerable<LatestTalk>> GetLatestTalks(IEnumerable<Conference> conferences);
     }
 }

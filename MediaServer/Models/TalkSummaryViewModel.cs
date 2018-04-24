@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MediaServer.Extensions;
+using Microsoft.AspNetCore.Http;
 
 namespace MediaServer.Models
 {
@@ -6,11 +7,11 @@ namespace MediaServer.Models
     {
         readonly Talk talk;
 
-        public TalkSummaryViewModel(Talk talk, Func<Talk, string> getTalkUrl, Func<Talk, string> getThumbnailUrl)
+        public TalkSummaryViewModel(Conference conference, Talk talk, HttpContext httpContext)
         {
             this.talk = talk;
-			Url = getTalkUrl(talk);
-            Thumbnail = getThumbnailUrl(talk);
+            Url = httpContext.GetTalkUrl(conference, talk);
+            Thumbnail = httpContext.GetThumbnailUrl(conference, talk);
         }
 
         public string Url { get; }

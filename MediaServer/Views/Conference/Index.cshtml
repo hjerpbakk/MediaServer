@@ -1,17 +1,17 @@
-﻿@using MediaServer.Models;
-@using System.Collections.Generic;
+﻿@using System.Collections.Generic;
 <div class="col-lg-12">
     <div class="d-flex justify-content-between">
       <div>
          <h1 class="mt-4">@ViewData["Title"]</h1>
       </div>
       <div>
+        <!--TODO: Move to code...-->
         <form action="/@this.ViewContext.RouteData.Values["controller"].ToString()/@ViewData["ConferenceId"]/Save" style="display: inline;">
             <button type="submit" class="btn btn-primary mt-4 align-text-top">+</button>
         </form>
       </div>
     </div>
-    <h5 class="text-muted mb-3">@ViewData["VideoPath"]</h5>
+
     <div class="row">
         @{var talks = (IEnumerable<TalkSummaryViewModel>)ViewData["Talks"];}
         @foreach(var talk in talks) {
@@ -30,6 +30,9 @@
                 </div>
             </div>
         }
+    </div>
+    <div class="row">
+        <h5 class="text-muted mb-3">@ViewData["VideoPath"]</h5>
     </div>
 </div>
 

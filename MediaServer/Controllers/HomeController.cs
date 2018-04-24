@@ -5,17 +5,31 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using MediaServer.Models;
+using MediaServer.Services;
+using MediaServer.Configuration;
 
 namespace MediaServer.Controllers
 {
     public class HomeController : Controller
     {
-        public IActionResult Index()
-        {
+        readonly IConferenceConfig conferenceConfig;
+        readonly ITalkService talkService;
+
+        public HomeController(IConferenceConfig conferenceConfig, ITalkService talkService) {
+            this.conferenceConfig = conferenceConfig;
+            this.talkService = talkService;
+        }
+
+        public async Task<IActionResult> Index() {
             // TODO: Ta inn konferansene programmatisk fra config i _Layout.cshtml
             ViewData["Title"] = "Latest Talks";
 
-            // TODO: Vis siste opplastede uansett conference
+            var talks = (await talkService.GetLatestTalks(conferenceConfig.Conferences.Values))
+                .Select(latestTalk => new TalkSummaryViewModel(latestTalk.Conference, latestTalk.Talk, HttpContext));
+            ViewData["Talks"] = talks;
+
+            // TODO: Show conference link on card
+            // TODO: Use model binding
             return View();
         }
 

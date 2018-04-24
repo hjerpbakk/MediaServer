@@ -1,4 +1,26 @@
-﻿<div class="col-lg-12">
-    <h1 class="mt-4">@ViewData["Title"]</h1>
-    <img src="../../under-construction.gif" />
+﻿@using System.Collections.Generic;
+<div class="col-lg-12">
+    <div class="d-flex justify-content-between">
+      <h1 class="mt-4">@ViewData["Title"]</h1>
+    </div>
+    <div class="row">
+        @{var talks = (IEnumerable<TalkSummaryViewModel>)ViewData["Talks"];}
+        @foreach(var talk in talks) {
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="card h-100">
+                    <a href="@talk.Url">
+                        <img class="card-img-top b-lazy" src="/Transparent.gif" data-src="@talk.Thumbnail" alt="Talk thumbnail">
+                    </a>
+                    <div class="card-body">
+                        <h4 class="card-title">
+                            <a href="@talk.Url">@talk.TalkName</a>
+                        </h4>
+                        <h6 class="text-muted">@talk.Speaker, @talk.ZonedTimeStamp</h6>
+                        <p class="card-text">@talk.Description</p>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
 </div>
+

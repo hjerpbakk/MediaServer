@@ -7,18 +7,13 @@ namespace MediaServer.Models
 {
     public class Talk
     {
-        public Talk()
-        {
+        public Talk() {
             DateOfTalk = DateTime.UtcNow;
         }
 
         public string VideoName { get; set; }
         public string TalkName { get; set; }
         public string Description { get; set; }
-
-        // TODO: Set in service after get from BlobStore metadata
-        [JsonIgnore]
-        public DateTime TimeStamp { get; set; }
 
         public DateTime DateOfTalk { get; set; }
 
