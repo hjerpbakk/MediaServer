@@ -65,20 +65,27 @@ namespace MediaServer
                 app.UseExceptionHandler("/Home/Error");
             }
 
+            const int OneYear = 31536000;
+            var MaxAgeStaticFiles = "public,max-age=" + OneYear;
+            var OneYearTimeSpan = TimeSpan.FromSeconds(OneYear);
             app.UseResponseCaching();
             app.Use(async (context, next) =>
             {
                 context.Response.GetTypedHeaders().CacheControl = new CacheControlHeaderValue()
                 {
                     Public = true,
-                    MaxAge = TimeSpan.FromSeconds(31536000)
+                    MaxAge = OneYearTimeSpan
                 };
                 context.Response.Headers[HeaderNames.Vary] = new string[] { "Accept-Encoding" };
 
                 await next();
             });
 
-            app.UseStaticFiles();
+            app.UseStaticFiles(new StaticFileOptions {
+                OnPrepareResponse = ctx => {
+                    ctx.Context.Response.Headers[HeaderNames.CacheControl] = MaxAgeStaticFiles;
+                }
+            });
 
 			// TODO: Delete and use latest talks in conference controller as deafult
             app.UseMvc(routes =>
