@@ -134,7 +134,7 @@ namespace MediaServer.Controllers
 			ViewData["ConferenceId"] = conferenceId;
 			ViewData["IsSave"] = true;         
 			ViewData["OldName"] = null;
-			return View("Save", new Talk());
+            return View("Save", new Talk { Thumbnail = "/Placeholder.png" });
 		}
 
 		[HttpPost("/[controller]/{conferenceId}/Save")]
