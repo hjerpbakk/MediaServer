@@ -8,3 +8,4 @@ services:
       - 80:5000
     volumes:
       - "./DevDays2018:/app/wwwroot/Conference/DevDays2018"
+      - "./Interesting:/app/wwwroot/Conference/Interesting"

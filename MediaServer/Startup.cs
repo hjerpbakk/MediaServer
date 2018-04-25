@@ -12,6 +12,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Net.Http.Headers;
+using Newtonsoft.Json;
 using SlackConnector;
 
 namespace MediaServer
@@ -22,7 +23,7 @@ namespace MediaServer
         {
             var builder = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath)
-                .AddJsonFile("appsettings.json", true, true)
+                .AddJsonFile("appsettings.json", false, true)
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", true)
                 .AddEnvironmentVariables()
                 .AddJsonFile($"config.json", true);
@@ -38,7 +39,7 @@ namespace MediaServer
             services.AddResponseCaching();
             services.AddMvc();
 
-            var config = Configuration.Get<AppConfig>();
+            var config = Configuration.Get<AppConfig>();         
             services.AddSingleton<IConferenceConfig>(config);
             services.AddSingleton<IBlogStorageConfig>(config);
 			services.AddSingleton<ISlackConfig>(config);
