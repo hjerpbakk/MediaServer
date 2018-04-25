@@ -43,9 +43,18 @@ a:hover, a:focus {
 }
 
 .navbar-dark .navbar-nav .nav-link {
-    color: rgba(255, 255, 255, 0.8)
+    color: rgba(255, 255, 255, 1.0)
 }
 
 .navbar-dark .navbar-nav .nav-link:hover {
-    color: white
+    color: rgba(255, 255, 255, 1.0);
+    text-decoration: underline
+}
+
+.nav-item {
+    color: rgba(255, 255, 255, 1.0)
+}
+
+li.nav-item.active {
+    text-decoration: underline;
 }

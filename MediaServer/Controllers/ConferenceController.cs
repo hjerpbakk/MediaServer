@@ -9,21 +9,20 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
+using MediaServer.ViewModels;
 
 namespace MediaServer.Controllers
 {
-	public class ConferenceController : Controller
+	public class ConferenceController : NavigateableController
 	{
-		readonly IConferenceConfig conferenceConfig;
-
 		readonly ITalkService talkService;
 		readonly IContentService contentService;
 		readonly ISlackService slackService;
         
 		public ConferenceController(IConferenceConfig conferenceConfig, ITalkService talkService, IContentService contentService, ISlackService slackService)
+			: base(conferenceConfig)
 		{
-			// TODO: Too many services, move around?
-			this.conferenceConfig = conferenceConfig;
+			// TODO: Too many services, move around?         
 			this.talkService = talkService;
 			this.contentService = contentService;
 			this.slackService = slackService;        
@@ -36,16 +35,16 @@ namespace MediaServer.Controllers
             // TODO: Make O: link clickable
             // TODO: Button for add is blue on click
             // TODO: Button for add is ugly
-            // TODO: Phone home so we can see most popular conference
-			var conference = GetConferenceFromId(conferenceId);
-			if (conference == null)
+            // TODO: Phone home so we can see most popular conference         
+			if (!ConferenceExists(conferenceId))
 			{
 				return NotFound();
 			}
 
+			var conference = GetConferenceFromId(conferenceId);
+			SetCurrentNavigation(conference, conference.Name);
+
             // TODO: Create a conference viewmodel and use model binding
-			ViewData["Title"] = conference.Name;
-			ViewData["ConferenceId"] = conferenceId;
             ViewData["VideoPath"] = conference.VideoPath;
 
             var talks = (await talkService.GetTalksFromConference(conference))
@@ -61,11 +60,13 @@ namespace MediaServer.Controllers
 		{
             // TODO: Phone home so we can see most popular talk
             // TODO: Show image of speaker from Slack
-			var conference = GetConferenceFromId(conferenceId);
-            if (conference == null)
+			if (!ConferenceExists(conferenceId))
             {
                 return NotFound();
             }
+
+            var conference = GetConferenceFromId(conferenceId);
+
 
 			var talk = await talkService.GetTalkByName(conference, talkName);
 			if (talk == null) {
@@ -73,6 +74,7 @@ namespace MediaServer.Controllers
                 return NotFound();
             }
 
+			SetCurrentNavigation(conference, talk.TalkName);
             /// TODO: Support single click pause / resume
             /// 
             /// TODO: hotkeys:
@@ -81,9 +83,7 @@ namespace MediaServer.Controllers
            //- opp / ned: volumkontroll
              //- venstre / høyre: skip back/ frem 5 sec elns
             /// 
-            ViewData["Title"] = talk.TalkName;
-			ViewData["ConferenceId"] = conferenceId;
-			var talkVM = new TalkViewModel(talk);
+           var talkVM = new TalkViewModel(talk);
 			ViewData["Talk"] = talkVM;
 
 			return View("Talk");
@@ -101,17 +101,21 @@ namespace MediaServer.Controllers
 		public async Task<IActionResult> GetEditView(string conferenceId, string talkName)
 		{
             // TODO: SpeakerDeck dissapears if not from PDF
-			var conference = GetConferenceFromId(conferenceId);
-            if (conference == null)
+			if (!ConferenceExists(conferenceId))
             {
                 return NotFound();
             }
+
+            var conference = GetConferenceFromId(conferenceId);
+
 
             var talk = await talkService.GetTalkByName(conference, talkName);
             if (talk == null)
             {
                 return NotFound();
             }
+
+			SetCurrentNavigation(conference, $"Edit {talk.TalkName}");
 
             talk.Thumbnail = HttpContext.GetThumbnailUrl(conference, talk);
             var controllerName = ControllerContext.RouteData.Values["controller"].ToString();
@@ -120,9 +124,7 @@ namespace MediaServer.Controllers
 			availableVideos.AddRange(videosFromConference);
             ViewBag.VideoList = new SelectList(availableVideos, "Name", "Name", talk.VideoName);
                      
-            ViewData["Title"] = $"Edit {talk.TalkName}"; 
-			ViewData["ConferenceId"] = conferenceId;
-			ViewData["IsSave"] = false;
+            ViewData["IsSave"] = false;
             ViewData["OldName"] = talk.TalkName;
 			return View("Save", talk);
 		}
@@ -133,18 +135,19 @@ namespace MediaServer.Controllers
             // TODO: Support choosing speaker name from Slack...
 			// TODO: Support uploading slides
 			// TODO: Support uploading video
+			if (!ConferenceExists(conferenceId))
+            {
+                return NotFound();
+            }
+
             var conference = GetConferenceFromId(conferenceId);
-			if (conference == null)
-			{
-				return NotFound();
-			}
+
+			SetCurrentNavigation(conference, $"Create new talk from {conference.Name}");
 
             var controllerName = ControllerContext.RouteData.Values["controller"].ToString();
 			var availableVideos = await contentService.GetVideosFromConference(controllerName, conference);
 			ViewBag.VideoList = new SelectList(availableVideos, "Name", "Name");
-
-			ViewData["Title"] = $"Create new talk from {conference.Name}";
-			ViewData["ConferenceId"] = conferenceId;
+            
 			ViewData["IsSave"] = true;         
 			ViewData["OldName"] = null;
             return View("Save", new Talk { Thumbnail = "/Placeholder.png" });
@@ -154,7 +157,12 @@ namespace MediaServer.Controllers
         public async Task<IActionResult> SaveTalk(string conferenceId, [FromQuery] string oldName, [Bind("VideoName, Description, Speaker, SpeakerDeck, ThumbnailImageFile, TalkName, DateOfTalkString")] Talk talk)
 		{
             // TODO: Get thumbnail from speaker notes or video if not set
-			var conference = conferenceConfig.Conferences[conferenceId];
+			if (!ConferenceExists(conferenceId))
+            {
+                return NotFound();
+            }
+
+            var conference = GetConferenceFromId(conferenceId);
 
 			if (oldName != null)
 			{
@@ -176,10 +184,6 @@ namespace MediaServer.Controllers
             var escapedTalkName = Uri.EscapeUriString(talk.TalkName);
             return new RedirectResult(escapedTalkName, false, false);
 		}
-
-		Conference GetConferenceFromId(string conferenceId)
-			=> conferenceConfig.Conferences.ContainsKey(conferenceId) ?
-			   conferenceConfig.Conferences[conferenceId] :
-			   null;
+        
     }
 }

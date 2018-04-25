@@ -27,6 +27,7 @@
     <Folder Include="wwwroot\Conference\" />
     <Folder Include="wwwroot\Conference\DevDays2018\" />
     <Folder Include="Extensions\" />
+    <Folder Include="ViewModels\" />
   </ItemGroup>
   <ItemGroup>
     <Content Remove="wwwroot\Thumbs\1.png" />

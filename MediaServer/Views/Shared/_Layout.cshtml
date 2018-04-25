@@ -29,15 +29,12 @@
     <environment include="Development">
         <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
         <link rel="stylesheet" href="~/css/site.css" />
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-        
     </environment>
     <environment exclude="Development">
         <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css"
               asp-fallback-href="~/lib/bootstrap/dist/css/bootstrap.min.css"
               asp-fallback-test-class="sr-only" asp-fallback-test-property="position" asp-fallback-test-value="absolute" />
         <link rel="stylesheet" href="~/css/site.min.css" asp-append-version="true" />
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     </environment>
     @Html.Raw(JavaScriptSnippet.FullScript)
 </head>
@@ -52,11 +49,12 @@
           <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarResponsive">
-          <ul class="navbar-nav ml-auto">
-            <li class="nav-item"><a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Latest Talks</a></li>
-            <li class="nav-item"><a class="nav-link" asp-area="" asp-controller="Conference" asp-action="DevDays2018">Dev Days 2018</a></li>
-<!--            <li class="nav-item"><a class="nav-link" asp-area="" asp-controller="Conference" asp-action="HoursOfInterest">Hours of Interest</a></li>-->
-          </ul>
+            <ul class="navbar-nav ml-auto">
+                @{var navigations = (IReadOnlyList<Navigation>)ViewData["Navigations"];}
+                @foreach (var navigation in navigations) {
+                    <li class="nav-item @(@navigation.Slug == (string)ViewData["Slug"] ? "active" : "")"><a class="nav-link" asp-area="" asp-controller="@navigation.Controller" asp-action="@navigation.Slug">@navigation.Title</a></li>
+                }
+            </ul>
         </div>
       </div>
     </nav>
