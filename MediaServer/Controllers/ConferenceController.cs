@@ -144,6 +144,7 @@ namespace MediaServer.Controllers
 
 			SetCurrentNavigation(conference, $"Create new talk from {conference.Name}");
 
+			// TODO: Find all usage and remove...
             var controllerName = ControllerContext.RouteData.Values["controller"].ToString();
 			var availableVideos = await contentService.GetVideosFromConference(controllerName, conference);
 			ViewBag.VideoList = new SelectList(availableVideos, "Name", "Name");
