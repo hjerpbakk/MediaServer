@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MediaServer.Configuration;
+using MediaServer.Extensions;
 using MediaServer.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.FileProviders;
@@ -23,27 +24,26 @@ namespace MediaServer.Services
         readonly static char[] dbFileExtension;
 		readonly static char[] dbTalkPrefix;
 
-		readonly CloudBlobClient blobClient;
-        readonly IFileProvider fileProvider;
+		readonly CloudBlobClient cloudBlobClient;
+		readonly IThumbnailService thumbnailService;
 
 		static TalkService() {
 			dbFileExtension = DbFileExtension.ToCharArray();
 			dbTalkPrefix = TalkPrefix.ToCharArray();
 		}
 
-        public TalkService(IBlogStorageConfig blobStorageConfig, IFileProvider fileProvider)
+		public TalkService(IBlogStorageConfig blobStorageConfig, IThumbnailService thumbnailService)
 		{
 			var storageAccount = CloudStorageAccount.Parse(blobStorageConfig.BlobStorageConnectionString);         
-            blobClient = storageAccount.CreateCloudBlobClient();
-
-            this.fileProvider = fileProvider;
+            cloudBlobClient = storageAccount.CreateCloudBlobClient();
+			this.thumbnailService = thumbnailService;
 		}
 
         // TODO: 404 på dette: Hvordan og hvorfor? dips.talk.Kyrre%20-%20Integrasjon%20mellom%20programpakker%20-%206.%20april%202018%2009.47.33.pdf.json
         // TODO: Støtte å se talks av en gitt presentatør...
 
 		public async Task<IEnumerable<Talk>> GetTalksFromConference(Conference conference) {
-			var containerForConference = GetContainerFromConference(conference);
+			var containerForConference = cloudBlobClient.GetContainerForConference(conference);
 			if (!(await containerForConference.ExistsAsync())) {
 				return new Talk[0];
 			}
@@ -69,7 +69,7 @@ namespace MediaServer.Services
 
         public async Task<Talk> GetTalkByName(Conference conference, string name)
 		{
-			var containerForConference = GetContainerFromConference(conference);
+			var containerForConference = cloudBlobClient.GetContainerForConference(conference);
 
 			var talkReferenceName = GetBlobNameFromTalkName(name);
 			var blob = containerForConference.GetBlobReference(talkReferenceName);
@@ -87,12 +87,12 @@ namespace MediaServer.Services
 		}
 
 		public async Task SaveTalkFromConference(Conference conference, Talk talk) {
-			var containerForConference = await SaveTalk(conference, talk);
-			await SaveThumbnail(containerForConference, talk);
+			await SaveTalk(conference, talk);
+			await thumbnailService.SaveThumbnail(conference, talk);
 		}
 
         public async Task DeleteTalkFromConference(Conference conference, Talk talk) {
-			var containerForConference = GetContainerFromConference(conference);
+			var containerForConference = cloudBlobClient.GetContainerForConference(conference);
 
             // TODO: Delete thumnail too
             var talkReferenceName = GetBlobNameFromTalkName(talk.TalkName);
@@ -105,7 +105,7 @@ namespace MediaServer.Services
         public async Task<IReadOnlyList<string>> GetTalkNamesFromConference(Conference conference) {
 			// TODO: Support more than 200 items
             var token = new BlobContinuationToken();
-			var containerForConference = GetContainerFromConference(conference);
+			var containerForConference = cloudBlobClient.GetContainerForConference(conference);
 			var blobs = await containerForConference.ListBlobsSegmentedAsync(TalkPrefix, token); 
             var usedVideos = new List<string>();
             foreach (var blob in blobs.Results.Cast<CloudBlockBlob>()) {
@@ -120,25 +120,13 @@ namespace MediaServer.Services
 
             return usedVideos;
 		}
-      
-        /// <summary>
-        /// Gets the container from conference.
-		/// 
-		/// Ref: https://docs.microsoft.com/en-us/rest/api/storageservices/naming-and-referencing-containers--blobs--and-metadata
-        /// </summary>
-        /// <returns>The container from conference.</returns>
-        /// <param name="conference">Conference.</param>
-		CloudBlobContainer GetContainerFromConference(Conference conference) {
-			var containerId = conference.Id.ToLower();
-			return blobClient.GetContainerReference(containerId);
-		}
 		            
 		string GetBlobNameFromTalkName(string talkName)
 		    => TalkPrefix + talkName + DbFileExtension;
 
-		async Task<CloudBlobContainer> SaveTalk(Conference conference, Talk talk)
+		async Task SaveTalk(Conference conference, Talk talk)
         {
-            var containerForConference = GetContainerFromConference(conference);
+			var containerForConference = cloudBlobClient.GetContainerForConference(conference);
             await containerForConference.CreateIfNotExistsAsync();
 
             var serializedTalk = JsonConvert.SerializeObject(talk);
@@ -149,55 +137,12 @@ namespace MediaServer.Services
                         
 			talkReference.Properties.ContentType = "application/json";
 			await talkReference.SetPropertiesAsync();        
-            return containerForConference;
-        }
-
-        static async Task SaveThumbnail(CloudBlobContainer containerForConference, Talk talk) {
-			if (talk.ThumbnailImageFile == null) {
-                return;
-            }
-
-			// TODO: Protect against other filetypes and set a max size. Can maxsize be checked i JS too?
-            // https://blogs.msdn.microsoft.com/dotnet/2017/01/19/net-core-image-processing/
-            var imageFile = talk.ThumbnailImageFile;
-            var extension = Path.GetExtension(imageFile.FileName);
-            var thumbnailReference = containerForConference.GetBlockBlobReference(talk.TalkName);
-            var exists = await thumbnailReference.ExistsAsync();
-			if (exists && thumbnailReference.Properties.Length == imageFile.Length) {
-                return;
-            }
-
-            using (var image = imageFile.OpenReadStream()) {
-                await thumbnailReference.UploadFromStreamAsync(image, imageFile.Length);
-            }
-
-            thumbnailReference.Properties.ContentType = imageFile.ContentType;
-            await thumbnailReference.SetPropertiesAsync();
-		}
-
-        public async Task<Image> GetTalkThumbnail(Conference conference, string name) {
-            var containerForConference = GetContainerFromConference(conference);
-            var thumbnailReference = containerForConference.GetBlockBlobReference(name);
-            var exists = await thumbnailReference.ExistsAsync();
-            if (exists) {
-                var imageData = new byte[thumbnailReference.Properties.Length];
-                await thumbnailReference.DownloadToByteArrayAsync(imageData, 0);
-                return new Image(thumbnailReference.Properties.ContentType, imageData);
-            }
-
-            var fileInfo = fileProvider.GetFileInfo("wwwroot/Placeholder.png");
-            using(var readStream = fileInfo.CreateReadStream()) {
-                using (MemoryStream ms = new MemoryStream()) {
-                    await readStream.CopyToAsync(ms);
-                    return new Image("image/png", ms.ToArray());
-                }
-            }
         }
 
         public async Task<IEnumerable<LatestTalk>> GetLatestTalks(IEnumerable<Conference> conferences) {			
             var talks = new List<LatestTalk>();
             foreach (var conference in conferences) {
-                var containerForConference = GetContainerFromConference(conference);
+				var containerForConference = cloudBlobClient.GetContainerForConference(conference);
                 await containerForConference.CreateIfNotExistsAsync();
                 // TODO: Support more than 200 items....
                 var token = new BlobContinuationToken();

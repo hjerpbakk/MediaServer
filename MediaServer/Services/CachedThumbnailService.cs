@@ -1,0 +1,38 @@
+﻿using System;
+using System.Threading.Tasks;
+using MediaServer.Models;
+using MediaServer.Services.Cache;
+using Microsoft.Extensions.Caching.Memory;
+
+namespace MediaServer.Services
+{
+	public class CachedThumbnailService : IThumbnailService
+    {
+		readonly ThumbnailService thumbnailService;
+		readonly IMemoryCache memoryCache;
+        
+		public CachedThumbnailService(ThumbnailService thumbnailService, IMemoryCache memoryCache)
+        {
+			this.thumbnailService = thumbnailService;
+			this.memoryCache = memoryCache;         
+        }
+
+		public async Task<Image> GetTalkThumbnail(Conference conference, string name)
+		{
+			var key = Keys.GetThumbnailKey(name);
+            if (!memoryCache.TryGetValue(key, out Image image))
+            {
+				image = await thumbnailService.GetTalkThumbnail(conference, name);
+                memoryCache.Set(key, image, Keys.Options);
+            }
+
+            return image;
+		}
+
+		public async Task SaveThumbnail(Conference conference, Talk talk)
+		{
+            memoryCache.Remove(Keys.GetThumbnailKey(talk.TalkName));
+			await thumbnailService.SaveThumbnail(conference, talk);
+		}
+	}
+}

@@ -50,8 +50,13 @@ namespace MediaServer
 
             services.AddSingleton<TalkService>();
             services.AddSingleton<ITalkService, CachedTalkService>();
+
+            services.AddSingleton<ThumbnailService>();
+			services.AddSingleton<IThumbnailService, CachedThumbnailService>();
+
 			services.AddSingleton<IConferenceService, ConferenceService>();
-            services.AddSingleton<IContentService, ContentService>();
+            
+			services.AddSingleton<IContentService, ContentService>();
 			services.AddSingleton<ISlackService, SlackService>();
         }
 

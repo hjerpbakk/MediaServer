@@ -19,8 +19,9 @@ namespace MediaServer.Controllers
 		readonly IContentService contentService;
 		readonly ISlackService slackService;
 		readonly IConferenceService conferenceService;
+		readonly IThumbnailService thumbnailService;
         
-		public ConferenceController(IConferenceConfig conferenceConfig, ITalkService talkService, IContentService contentService, ISlackService slackService, IConferenceService conferenceService)
+		public ConferenceController(IConferenceConfig conferenceConfig, ITalkService talkService, IContentService contentService, ISlackService slackService, IConferenceService conferenceService, IThumbnailService thumbnailService)
 			: base(conferenceConfig)
 		{
 			// TODO: Too many services, move around?         
@@ -28,6 +29,7 @@ namespace MediaServer.Controllers
 			this.contentService = contentService;
 			this.slackService = slackService;
 			this.conferenceService = conferenceService;
+			this.thumbnailService = thumbnailService;
 		}
               
 		[HttpGet("/[controller]/{conferenceId}")]
@@ -92,7 +94,7 @@ namespace MediaServer.Controllers
         public async Task<IActionResult> GetTalkThumbnail(string conferenceId, string talkName)
         {
             var conference = GetConferenceFromId(conferenceId);
-            var thumbnail = await talkService.GetTalkThumbnail(conference, talkName);
+			var thumbnail = await thumbnailService.GetTalkThumbnail(conference, talkName);
             return File(thumbnail.ImageData, thumbnail.ContentType);
         }
 

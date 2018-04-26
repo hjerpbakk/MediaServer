@@ -13,8 +13,7 @@ namespace MediaServer.Services
         Task DeleteTalkFromConference(Conference conference, Talk talk);
 		// TODO: Move to IConferenceService
 		Task<IReadOnlyList<string>> GetTalkNamesFromConference(Conference conference);
-        Task<Image> GetTalkThumbnail(Conference conference, string name);
-		// TODO: Move to IConferenceService
+        // TODO: Move to IConferenceService
         Task<IEnumerable<LatestTalk>> GetLatestTalks(IEnumerable<Conference> conferences);
     }
 }
