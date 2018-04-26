@@ -3,7 +3,7 @@
     <div class="d-flex justify-content-between">
       <h1 class="mt-4">@ViewData["Title"]</h1>
     </div>
-    <div class="row">
+    <div class="row mt-2">
         @{var talks = (IEnumerable<TalkSummary>)ViewData["Talks"];}
         @foreach(var talk in talks) {
             <div class="col-lg-4 col-md-6 mb-4">

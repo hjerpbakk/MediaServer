@@ -175,6 +175,7 @@ namespace MediaServer.Controllers
             }
 
             // TODO: Client verification also and proper replace here
+			// TODO: Talks with # in filename or name doesn't work now
             talk.TalkName = talk.TalkName.Replace("?", "").Replace(":", "");
 			await talkService.SaveTalkFromConference(conference, talk);
 			await thumbnailService.SaveThumbnail(conference, talk);
