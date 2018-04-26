@@ -19,6 +19,7 @@ namespace MediaServer.Controllers
 			this.memoryCache = memoryCache;
 		}
 
+		// TODO: Add a top speaker list
 		[ResponseCache(NoStore = true)]
 		[HttpGet("/[controller]/{speakerName}")]
 		public async Task<IActionResult> Index(string speakerName)
