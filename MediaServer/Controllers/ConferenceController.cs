@@ -18,14 +18,16 @@ namespace MediaServer.Controllers
 		readonly ITalkService talkService;
 		readonly IContentService contentService;
 		readonly ISlackService slackService;
+		readonly IConferenceService conferenceService;
         
-		public ConferenceController(IConferenceConfig conferenceConfig, ITalkService talkService, IContentService contentService, ISlackService slackService)
+		public ConferenceController(IConferenceConfig conferenceConfig, ITalkService talkService, IContentService contentService, ISlackService slackService, IConferenceService conferenceService)
 			: base(conferenceConfig)
 		{
 			// TODO: Too many services, move around?         
 			this.talkService = talkService;
 			this.contentService = contentService;
-			this.slackService = slackService;        
+			this.slackService = slackService;
+			this.conferenceService = conferenceService;
 		}
               
 		[HttpGet("/[controller]/{conferenceId}")]
@@ -47,11 +49,7 @@ namespace MediaServer.Controllers
 
             // TODO: Create a conference viewmodel and use model binding
             ViewData["VideoPath"] = conference.VideoPath;
-
-            var talks = (await talkService.GetTalksFromConference(conference))
-                .OrderByDescending(talk => talk.DateOfTalk)
-                .Select(talk => new TalkSummaryViewModel(conference, talk, HttpContext));
-			ViewData["Talks"] = talks;
+            ViewData["Talks"] = await conferenceService.GetTalksForConference(conference, HttpContext);
 
 			return View("Index");
 		}

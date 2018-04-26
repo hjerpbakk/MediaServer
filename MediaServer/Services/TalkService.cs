@@ -42,7 +42,7 @@ namespace MediaServer.Services
         // TODO: 404 på dette: Hvordan og hvorfor? dips.talk.Kyrre%20-%20Integrasjon%20mellom%20programpakker%20-%206.%20april%202018%2009.47.33.pdf.json
         // TODO: Støtte å se talks av en gitt presentatør...
 
-        public async Task<IReadOnlyList<Talk>> GetTalksFromConference(Conference conference) {
+		public async Task<IEnumerable<Talk>> GetTalksFromConference(Conference conference) {
 			var containerForConference = GetContainerFromConference(conference);
 			if (!(await containerForConference.ExistsAsync())) {
 				return new Talk[0];
@@ -64,7 +64,7 @@ namespace MediaServer.Services
                 }
             }         
            
-			return talks.ToArray();
+			return talks.OrderByDescending(talk => talk.DateOfTalk);
 		}
 
         public async Task<Talk> GetTalkByName(Conference conference, string name)
@@ -213,7 +213,7 @@ namespace MediaServer.Services
                 }
             }
 
-            return talks.OrderByDescending(t => t.TimeStamp).Take(9);
+			return talks.OrderByDescending(t => t.TimeStamp).Take(9);
         }
     }
 }

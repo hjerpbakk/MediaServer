@@ -23,7 +23,7 @@ namespace MediaServer
         {
             var builder = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath)
-                .AddJsonFile("appsettings.json", false, true)
+                .AddJsonFile("appsettings.json")
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", true)
                 .AddEnvironmentVariables()
                 .AddJsonFile($"config.json", true);
@@ -50,6 +50,7 @@ namespace MediaServer
 
             services.AddSingleton<TalkService>();
             services.AddSingleton<ITalkService, CachedTalkService>();
+			services.AddSingleton<IConferenceService, ConferenceService>();
             services.AddSingleton<IContentService, ContentService>();
 			services.AddSingleton<ISlackService, SlackService>();
         }

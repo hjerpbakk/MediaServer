@@ -3,11 +3,11 @@ using Microsoft.AspNetCore.Http;
 
 namespace MediaServer.Models
 {
-    public class TalkSummaryViewModel
+    public class TalkSummary
     {
         readonly Talk talk;
 
-        public TalkSummaryViewModel(Conference conference, Talk talk, HttpContext httpContext)
+        public TalkSummary(Conference conference, Talk talk, HttpContext httpContext)
         {
             this.talk = talk;
             Url = httpContext.GetTalkUrl(conference, talk);

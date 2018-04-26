@@ -6,25 +6,24 @@ using MediaServer.Models;
 using MediaServer.Services;
 using MediaServer.Configuration;
 using MediaServer.ViewModels;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace MediaServer.Controllers
 {
 	public class HomeController : NavigateableController
     {
-        readonly ITalkService talkService;
-
-		public HomeController(IConferenceConfig conferenceConfig, ITalkService talkService) 
+		readonly IConferenceService conferenceService;
+        
+		public HomeController(IConferenceConfig conferenceConfig, IConferenceService conferenceService) 
 			: base(conferenceConfig) {
-            this.talkService = talkService;
+			this.conferenceService = conferenceService;
         }
 
 		[ResponseCache(NoStore = true)]
         public async Task<IActionResult> Index() {
 			SetHomeNavigation();
-
-            var talks = (await talkService.GetLatestTalks(conferences.Values))
-                .Select(latestTalk => new TalkSummaryViewModel(latestTalk.Conference, latestTalk.Talk, HttpContext));
-            ViewData["Talks"] = talks;
+   
+			ViewData["Talks"] = await conferenceService.GetLatestTalks(HttpContext);
 
             // TODO: Show conference link on card
             // TODO: Use model binding

@@ -13,7 +13,7 @@
     </div>
 
     <div class="row">
-        @{var talks = (IEnumerable<TalkSummaryViewModel>)ViewData["Talks"];}
+        @{var talks = (IEnumerable<TalkSummary>)ViewData["Talks"];}
         @foreach(var talk in talks) {
             <div class="col-lg-4 col-md-6 mb-4">
                 <div class="card h-100">

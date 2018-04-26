@@ -56,10 +56,10 @@ namespace MediaServer.Services
             return talks;
         }
 
-        public async Task<IReadOnlyList<Talk>> GetTalksFromConference(Conference conference)
+		public async Task<IEnumerable<Talk>> GetTalksFromConference(Conference conference)
         {
             var key = GetConferenceTalkKey(conference.Id);
-            if(!memoryCache.TryGetValue(key, out IReadOnlyList<Talk> talks)) {
+			if(!memoryCache.TryGetValue(key, out IEnumerable<Talk> talks)) {
                 talks = await talkService.GetTalksFromConference(conference);
                 memoryCache.Set(key, talks, cacheEntryOptions);
             }
