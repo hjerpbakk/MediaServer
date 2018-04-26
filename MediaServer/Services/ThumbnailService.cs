@@ -42,7 +42,7 @@ namespace MediaServer.Services
             var fileInfo = fileProvider.GetFileInfo("wwwroot/Placeholder.png");
             using (var readStream = fileInfo.CreateReadStream())
             {
-                using (MemoryStream ms = new MemoryStream())
+                using (var ms = new MemoryStream())
                 {
                     await readStream.CopyToAsync(ms);
                     return new Image("image/png", ms.ToArray());

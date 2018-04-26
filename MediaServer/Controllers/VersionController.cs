@@ -1,6 +1,9 @@
 ﻿using System.Diagnostics;
-using System.Reflection;
+using System.IO;
+using System.Text;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.FileProviders;
 
 namespace MediaServer.Controllers
 {
@@ -11,9 +14,25 @@ namespace MediaServer.Controllers
 
         static VersionController() => CheckIfDEBUG();
 
-		// TODO: Fetch VERSION from version file...
-        [HttpGet]
-        public string Get() => $"{Assembly.GetExecutingAssembly().GetName().Version} {(debugging ? "DEBUG" : "RELEASE")}";
+		readonly IFileProvider fileProvider;
+
+		public VersionController(IFileProvider fileProvider)
+		    => this.fileProvider = fileProvider;      
+
+		[HttpGet]
+		public async Task<string> Get() {
+			var file = fileProvider.GetFileInfo("wwwroot/VERSION.txt");
+			using (var readStream = file.CreateReadStream())
+			{
+				using (var ms = new MemoryStream())
+				{
+					await readStream.CopyToAsync(ms);
+					var bytes = ms.ToArray();
+					var version = Encoding.UTF8.GetString(bytes);
+					return $"{version} {(debugging ? "DEBUG" : "RELEASE")}";
+				}            
+			}         
+		} 
 
         [Conditional("DEBUG")]
         static void CheckIfDEBUG() => debugging = true;

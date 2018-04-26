@@ -35,7 +35,7 @@ namespace MediaServer.Controllers {
 
 		protected bool ConferenceExists(string conferenceId) 
 		    => conferences.ContainsKey(conferenceId);
-
+        
 		protected Conference GetConferenceFromId(string conferenceId)
 			=> conferences[conferenceId];
 
