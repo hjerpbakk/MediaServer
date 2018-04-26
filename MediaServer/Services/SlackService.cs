@@ -29,6 +29,7 @@ namespace MediaServer.Services
                 return;
             }
             
+			// TODO: Thumbnail URL does not work... Image does not appear in Slack
             var channelId = config.UseTestSlackChannel ? TestSlackChannel : conference.SlackChannelId;
             var channel = new SlackChatHub { Id = channelId };
             var message = new BotMessage
