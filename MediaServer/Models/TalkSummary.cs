@@ -7,18 +7,16 @@ namespace MediaServer.Models
     {
         readonly Talk talk;
 
-        public TalkSummary(Conference conference, Talk talk, HttpContext httpContext)
+        public TalkSummary(Talk talk, string url, string thumbnail)
         {
             this.talk = talk;
-            Url = httpContext.GetTalkUrl(conference, talk);
-
-            Thumbnail = httpContext.GetThumbnailUrl(conference, talk);
+			Url = url;
+			Thumbnail = thumbnail;
         }
 
         public string Url { get; }
         public string Thumbnail { get; }
         public string ZonedTimeStamp => talk.DateOfTalkString;
-        
         public string TalkName => talk.TalkName;
         public string Description => talk.Description;
         public string Speaker => talk.Speaker;

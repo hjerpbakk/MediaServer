@@ -5,6 +5,7 @@ namespace MediaServer.Services.Cache
 {
     public static class Keys
     {
+		// TODO: Move all memory caches to cache results of controller actions, not results of business services
 		static Keys() {
 			Options = new MemoryCacheEntryOptions()
                 .SetAbsoluteExpiration(TimeSpan.FromDays(730))
