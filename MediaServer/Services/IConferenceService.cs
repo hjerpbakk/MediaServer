@@ -9,5 +9,6 @@ namespace MediaServer.Services
     {
 		Task<IEnumerable<TalkSummary>> GetLatestTalks(HttpContext httpContext);
 		Task<IEnumerable<TalkSummary>> GetTalksForConference(Conference conference, HttpContext httpContext);
+		Task<IEnumerable<TalkSummary>> GetTalksBySpeaker(string speakerName, HttpContext httpContext);
     }
 }

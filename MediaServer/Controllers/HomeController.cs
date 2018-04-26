@@ -19,9 +19,9 @@ namespace MediaServer.Controllers
 			this.conferenceService = conferenceService;
         }
 
-		[ResponseCache(NoStore = true)]
+		[ResponseCache(NoStore = true)]      
         public async Task<IActionResult> Index() {
-			SetHomeNavigation();
+			SetCurrentNavigationToHome();
    
 			ViewData["Talks"] = await conferenceService.GetLatestTalks(HttpContext);
 

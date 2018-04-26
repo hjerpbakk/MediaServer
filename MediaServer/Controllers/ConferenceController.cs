@@ -32,8 +32,8 @@ namespace MediaServer.Controllers
 			this.thumbnailService = thumbnailService;
 		}
               
-		[HttpGet("/[controller]/{conferenceId}")]
 		[ResponseCache(NoStore = true)]
+		[HttpGet("/[controller]/{conferenceId}")]      
 		public async Task<IActionResult> GetConferenceView(string conferenceId)
 		{
             // TODO: Make O: link clickable

@@ -26,6 +26,7 @@ namespace MediaServer.Services
             memoryCache.Remove(conference.Id);
             memoryCache.Remove(GetConferenceTalkKey(conference.Id));
             memoryCache.Remove(LatestTalksKey);
+			memoryCache.Remove(Keys.GetSpeakerKey(talk.Speaker));
 
 			// TODO: After deletion is supported in thumbnailservice, move this there
 			memoryCache.Remove(Keys.GetThumbnailKey(talk.TalkName));
@@ -69,6 +70,7 @@ namespace MediaServer.Services
             memoryCache.Remove(conference.Id);
             memoryCache.Remove(GetConferenceTalkKey(conference.Id));
             memoryCache.Remove(LatestTalksKey);
+			memoryCache.Remove(Keys.GetSpeakerKey(talk.Speaker));
             
             await talkService.SaveTalkFromConference(conference, talk);
 			memoryCache.Set(talk.TalkName, talk, Keys.Options);

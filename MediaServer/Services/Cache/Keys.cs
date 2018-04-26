@@ -6,6 +6,8 @@ namespace MediaServer.Services.Cache
 {
     public static class Keys
     {
+		public const string TalkPrefix = "dips.talk.";
+
 		const string HashExtension = ".txt";
 
 		// TODO: Move all memory caches to cache results of controller actions, not results of business services
@@ -19,5 +21,6 @@ namespace MediaServer.Services.Cache
 
 		public static string GetThumbnailKey(string talkName) => talkName + "thumb";
 		public static string GetThumnnailHashName(Talk talk) => talk.TalkName + HashExtension;
+		public static string GetSpeakerKey(string speakerName) => speakerName + "speaker";
     }
 }

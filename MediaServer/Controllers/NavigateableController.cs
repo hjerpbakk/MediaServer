@@ -22,27 +22,31 @@ namespace MediaServer.Controllers {
 
 		public IReadOnlyList<Navigation> Navigations { get; }
                
-		protected void SetHomeNavigation() {
-			var conference = Conference.CreateLatestTalks();
-			ViewData["Title"] = conference.Name;
-			SetNavigation(conference);
+		protected void SetCurrentNavigationToHome() {
+			var conference = Conference.CreateLatestTalks();         
+			SetTitle(conference.Name);
+			SetCurrentMenuItem(conference);
+			SetAvailableMenuItems();
 		}
 
 		protected void SetCurrentNavigation(Conference conference, string title) {
-			ViewData["Title"] = title;
-			SetNavigation(conference);
+			SetTitle(title);
+			SetCurrentMenuItem(conference);
+			SetAvailableMenuItems();
 		}
 
-		protected bool ConferenceExists(string conferenceId) 
-		    => conferences.ContainsKey(conferenceId);
-        
-		protected Conference GetConferenceFromId(string conferenceId)
-			=> conferences[conferenceId];
-
-		void SetNavigation(Conference conference) {
-			ViewData["MenuTitle"] = conference.Name;
-            ViewData["Slug"] = conference.Id;
-			ViewData["Navigations"] = Navigations;         
+		protected void SetCurrentNavigation(string title) {
+			SetTitle(title);
+			ClearCurrentMenuItem();
+			SetAvailableMenuItems();
 		}
+
+		protected bool ConferenceExists(string conferenceId) => conferences.ContainsKey(conferenceId);
+		protected Conference GetConferenceFromId(string conferenceId) => conferences[conferenceId];
+
+		void SetCurrentMenuItem(Conference conference) => ViewData["Slug"] = conference.Id;
+		void ClearCurrentMenuItem() => ViewData["Slug"] = string.Empty;
+		void SetAvailableMenuItems() => ViewData["Navigations"] = Navigations;
+		void SetTitle(string title) => ViewData["Title"] = title;
 	}
 }

@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
+    <MvcRazorCompileOnPublish>true</MvcRazorCompileOnPublish>
     <ApplicationInsightsResourceId>/subscriptions/9f8196d5-f5eb-4d8e-8e3f-be1f906f3e35/resourcegroups/RSG_Slack/providers/microsoft.insights/components/dipstube-insights</ApplicationInsightsResourceId>
     <ApplicationInsightsAnnotationResourceId>/subscriptions/9f8196d5-f5eb-4d8e-8e3f-be1f906f3e35/resourcegroups/RSG_Slack/providers/microsoft.insights/components/dipstube-insights</ApplicationInsightsAnnotationResourceId>
   </PropertyGroup>
