@@ -87,7 +87,6 @@ namespace MediaServer.Services
 		}
 
 		public async Task SaveTalkFromConference(Conference conference, Talk talk) {
-			// TODO: If Thumbnail is changed, save with new name to bypass cache...
 			var containerForConference = await SaveTalk(conference, talk);
 			await SaveThumbnail(containerForConference, talk);
 		}

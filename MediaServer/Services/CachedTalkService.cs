@@ -31,6 +31,8 @@ namespace MediaServer.Services
             memoryCache.Remove(conference.Id);
             memoryCache.Remove(GetConferenceTalkKey(conference.Id));
             memoryCache.Remove(LatestTalksKey);
+			memoryCache.Remove(GetThumbnailKey(talk.TalkName));
+
             await talkService.DeleteTalkFromConference(conference, talk);
         }
 
@@ -81,6 +83,8 @@ namespace MediaServer.Services
             memoryCache.Remove(conference.Id);
             memoryCache.Remove(GetConferenceTalkKey(conference.Id));
             memoryCache.Remove(LatestTalksKey);
+			memoryCache.Remove(GetThumbnailKey(talk.TalkName));
+
             await talkService.SaveTalkFromConference(conference, talk);
             memoryCache.Set(talk.TalkName, talk, cacheEntryOptions);
         }
