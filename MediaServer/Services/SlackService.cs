@@ -20,7 +20,7 @@ namespace MediaServer.Services
 			this.config = config;
         }
 
-		public async Task PostTalkToChannel(Conference conference, Talk talk, string talkUrl)
+		public async Task PostTalkToChannel(Conference conference, Talk talk, string talkUrl, string thumbnailUrl)
 		{
 			var connection = await connector.Connect(config.SlackToken);
             if (connection == null)
@@ -28,21 +28,20 @@ namespace MediaServer.Services
 				// TODO: Try again etc
 				return;
 			}
-
-            var channelId = config.UseTestSlackChannel ? TestSlackChannel : conference.SlackChannelId;
+            
+			var channelId = config.UseTestSlackChannel ? TestSlackChannel : conference.SlackChannelId;
             var channel = new SlackChatHub { Id = channelId };
-            var message = new BotMessage
-            {
-				// TODO: Ta med Thumbnail når vi har støtte for det
-                ChatHub = channel,
-                Attachments = new[] {
-                    new SlackAttachment {
-                        Title = talk.TalkName,
+			var message = new BotMessage
+			{
+				ChatHub = channel,
+				Attachments = new[] {
+					new SlackAttachment {
+						Title = talk.TalkName,
 						TitleLink = talkUrl,
 						Text = talk.Description,
-						Fallback = talk.Description,                 
-						ColorHex = "#36a64f",
-						AuthorName = talk.Speaker
+						Fallback = talk.Description,
+						AuthorName = talk.Speaker,
+						ImageUrl = thumbnailUrl
                     }
                 }
             };

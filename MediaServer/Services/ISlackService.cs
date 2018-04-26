@@ -6,6 +6,6 @@ namespace MediaServer.Services
 {
     public interface ISlackService
     {
-		Task PostTalkToChannel(Conference conference, Talk talk, string talkUrl);
+		Task PostTalkToChannel(Conference conference, Talk talk, string talkUrl, string thumbnailUrl);
     }
 }

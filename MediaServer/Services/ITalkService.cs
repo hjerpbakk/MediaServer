@@ -9,7 +9,7 @@ namespace MediaServer.Services
 		// TODO: Move to IConferenceService
 		Task<IEnumerable<Talk>> GetTalksFromConference(Conference conference);
         Task<Talk> GetTalkByName(Conference conference, string name);
-        Task SaveTalkFromConference(Conference conference, Talk talk);
+		Task SaveTalkFromConference(Conference conference, Talk talk);
         Task DeleteTalkFromConference(Conference conference, Talk talk);
 		// TODO: Move to IConferenceService
 		Task<IReadOnlyList<string>> GetTalkNamesFromConference(Conference conference);

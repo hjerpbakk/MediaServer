@@ -87,8 +87,17 @@ namespace MediaServer.Services
 		}
 
 		public async Task SaveTalkFromConference(Conference conference, Talk talk) {
-			await SaveTalk(conference, talk);
-			await thumbnailService.SaveThumbnail(conference, talk);
+			var containerForConference = cloudBlobClient.GetContainerForConference(conference);
+            await containerForConference.CreateIfNotExistsAsync();
+
+            var serializedTalk = JsonConvert.SerializeObject(talk);
+
+            var talkReferenceName = GetBlobNameFromTalkName(talk.TalkName);
+            var talkReference = containerForConference.GetBlockBlobReference(talkReferenceName);
+            await talkReference.UploadTextAsync(serializedTalk);
+                        
+            talkReference.Properties.ContentType = "application/json";
+            await talkReference.SetPropertiesAsync();             
 		}
 
         public async Task DeleteTalkFromConference(Conference conference, Talk talk) {
@@ -121,24 +130,10 @@ namespace MediaServer.Services
             return usedVideos;
 		}
 		            
+		// TODO: Move to Keys and rename properly
 		string GetBlobNameFromTalkName(string talkName)
 		    => TalkPrefix + talkName + DbFileExtension;
-
-		async Task SaveTalk(Conference conference, Talk talk)
-        {
-			var containerForConference = cloudBlobClient.GetContainerForConference(conference);
-            await containerForConference.CreateIfNotExistsAsync();
-
-            var serializedTalk = JsonConvert.SerializeObject(talk);
-
-            var talkReferenceName = GetBlobNameFromTalkName(talk.TalkName);
-            var talkReference = containerForConference.GetBlockBlobReference(talkReferenceName);
-            await talkReference.UploadTextAsync(serializedTalk);
-                        
-			talkReference.Properties.ContentType = "application/json";
-			await talkReference.SetPropertiesAsync();        
-        }
-
+      
         public async Task<IEnumerable<LatestTalk>> GetLatestTalks(IEnumerable<Conference> conferences) {			
             var talks = new List<LatestTalk>();
             foreach (var conference in conferences) {

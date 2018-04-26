@@ -177,12 +177,14 @@ namespace MediaServer.Controllers
             // TODO: Client verification also and proper replace here
             talk.TalkName = talk.TalkName.Replace("?", "").Replace(":", "");
 			await talkService.SaveTalkFromConference(conference, talk);
+			await thumbnailService.SaveThumbnail(conference, talk);
             
 			var talkUrl = HttpContext.GetTalkUrl(conference, talk);
 
             if (oldName == null)
             {
-                await slackService.PostTalkToChannel(conference, talk, talkUrl);
+				var thumbnailUrl = await thumbnailService.GetThumbnailUrl(conference, talk, HttpContext);
+				await slackService.PostTalkToChannel(conference, talk, talkUrl, thumbnailUrl);
             }
 
             var escapedTalkName = Uri.EscapeUriString(talk.TalkName);
