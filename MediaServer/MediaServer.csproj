@@ -19,24 +19,4 @@
   <ItemGroup>
     <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="2.0.0" />
   </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Views\Conference\" />
-    <Folder Include="Configuration\" />
-    <Folder Include="Services\" />
-    <Folder Include="wwwroot\Conference\" />
-    <Folder Include="Extensions\" />
-    <Folder Include="ViewModels\" />
-    <Folder Include="Services\Cache\" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Remove="wwwroot\Thumbs\1.png" />
-    <Content Remove="wwwroot\VERSION.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <WCFMetadata Include="Connected Services" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="wwwroot\VERSION.txt" />
-  </ItemGroup>
 </Project>

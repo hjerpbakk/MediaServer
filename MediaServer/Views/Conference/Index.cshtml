@@ -1,36 +1,16 @@
-﻿@using System.Collections.Generic;
-<div class="col-lg-12">
+﻿<div class="col-lg-12">
     <div class="d-flex justify-content-between">
-      <div>
-         <h1 class="mt-4">@ViewData["Title"]</h1>
-      </div>
-      <div>
-        <!--TODO: Move to code...-->
-        <form action="/@this.ViewContext.RouteData.Values["controller"].ToString()/@ViewData["Slug"]/Save" style="display: inline;">
-            <button type="submit" class="btn btn-primary mt-4 align-text-top">+</button>
-        </form>
-      </div>
+        <div>
+            <h1 class="mt-4">@ViewData["Title"]</h1>
+        </div>
+        <div>
+            <!--TODO: Move to code...-->
+            <form action="/@this.ViewContext.RouteData.Values["controller"].ToString()/@ViewData["Slug"]/Save" style="display: inline;">
+                <button type="submit" class="btn btn-primary mt-4 align-text-top">+</button>
+            </form>
+        </div>
     </div>
-
-    <div class="row mt-2">
-        @{var talks = (IEnumerable<TalkSummary>)ViewData["Talks"];}
-        @foreach(var talk in talks) {
-            <div class="col-lg-4 col-md-6 mb-4">
-                <div class="card h-100">
-                    <a href="@talk.Url">
-                        <img class="card-img-top b-lazy" src="/Transparent.gif" data-src="@talk.Thumbnail" alt="Talk thumbnail">
-                    </a>
-                    <div class="card-body">
-                        <h4 class="card-title">
-                            <a href="@talk.Url">@talk.TalkName</a>
-                        </h4>
-                        <h6 class="text-muted">@talk.Speaker, @talk.ZonedTimeStamp</h6>
-                        <p class="card-text">@talk.Description</p>
-                    </div>
-                </div>
-            </div>
-        }
-    </div>
+    @await Html.PartialAsync("TalkGrid.cshtml")
     <div class="row">
         <h5 class="text-muted mb-3">@ViewData["VideoPath"]</h5>
     </div>
