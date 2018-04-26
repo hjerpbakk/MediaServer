@@ -12,11 +12,13 @@ namespace MediaServer.Services
     {
 		readonly IEnumerable<Conference> conferences;
 		readonly ITalkService talkService;
+		readonly IThumbnailService thumbnailService;
 
-		public ConferenceService(IConferenceConfig conferenceConfig, ITalkService talkService)
+		public ConferenceService(IConferenceConfig conferenceConfig, ITalkService talkService, IThumbnailService thumbnailService)
         {
 			conferences = conferenceConfig.Conferences.Values;
 			this.talkService = talkService;
+			this.thumbnailService = thumbnailService;
 			// TODO: Create cache facade, remember invalidation
         }
 
@@ -24,7 +26,7 @@ namespace MediaServer.Services
 		{
             // TODO: Move implementation of this part of talkservice here
 			var talks = await talkService.GetLatestTalks(conferences);
-			var orderedSummaries = talks.Select(t => CreateTalkSummary(t.Conference, t.Talk, httpContext));
+			var orderedSummaries = await Task.WhenAll(talks.Select(t => CreateTalkSummary(t.Conference, t.Talk, httpContext)));
 			return orderedSummaries;
 		}
 
@@ -32,13 +34,13 @@ namespace MediaServer.Services
 		{
 			// TODO: Move implementation of this part of talkservice here
 			var talks = await talkService.GetTalksFromConference(conference);
-			var orderedSummaries = talks.Select(talk => CreateTalkSummary(conference, talk, httpContext));
+			var orderedSummaries = await Task.WhenAll(talks.Select(talk => CreateTalkSummary(conference, talk, httpContext)));
 			return orderedSummaries;
 		}
 
-		TalkSummary CreateTalkSummary(Conference conference, Talk talk, HttpContext httpContext) {
+		async Task<TalkSummary> CreateTalkSummary(Conference conference, Talk talk, HttpContext httpContext) {
 			var url = httpContext.GetTalkUrl(conference, talk);
-			var thumbnail = httpContext.GetThumbnailUrl(conference, talk);
+			var thumbnail = await thumbnailService.GetThumbnailUrl(conference, talk, httpContext);
 			return new TalkSummary(talk, url, thumbnail);
 		}
 	}

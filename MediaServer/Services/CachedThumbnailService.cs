@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using MediaServer.Models;
 using MediaServer.Services.Cache;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Memory;
 
 namespace MediaServer.Services
@@ -29,10 +30,23 @@ namespace MediaServer.Services
             return image;
 		}
 
-		public async Task SaveThumbnail(Conference conference, Talk talk)
+        public async Task SaveThumbnail(Conference conference, Talk talk)
 		{
             memoryCache.Remove(Keys.GetThumbnailKey(talk.TalkName));
+			memoryCache.Remove(Keys.GetThumnnailHashName(talk));
 			await thumbnailService.SaveThumbnail(conference, talk);
 		}
+
+		public async Task<string> GetThumbnailUrl(Conference conference, Talk talk, HttpContext httpContext)
+        {
+			var key = Keys.GetThumnnailHashName(talk);
+			if (!memoryCache.TryGetValue(key, out string url))
+            {
+				url = await thumbnailService.GetThumbnailUrl(conference, talk, httpContext);
+				memoryCache.Set(key, url, Keys.Options);
+            }
+
+			return url;
+        }      
 	}
 }

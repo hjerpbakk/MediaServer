@@ -8,6 +8,7 @@ using MediaServer.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.ResponseCaching;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
@@ -63,6 +64,7 @@ namespace MediaServer
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
+			// TODO: Page for version, configuration and runtime environment
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -76,6 +78,7 @@ namespace MediaServer
             const int OneYear = 31536000;
             var MaxAgeStaticFiles = "public,max-age=" + OneYear;
             var OneYearTimeSpan = TimeSpan.FromSeconds(OneYear);
+			var varyByAllQueryKeys = new[] { "*" };
             app.UseResponseCaching();
             app.Use(async (context, next) =>
             {
@@ -85,6 +88,10 @@ namespace MediaServer
                     MaxAge = OneYearTimeSpan
                 };
                 context.Response.Headers[HeaderNames.Vary] = new string[] { "Accept-Encoding" };
+				var responseCachingFeature = context.Features.Get<IResponseCachingFeature>();
+				if (responseCachingFeature != null) {
+					responseCachingFeature.VaryByQueryKeys = varyByAllQueryKeys;
+                }
 
                 await next();
             });

@@ -36,7 +36,6 @@ namespace MediaServer.Controllers
 		[ResponseCache(NoStore = true)]
 		public async Task<IActionResult> GetConferenceView(string conferenceId)
 		{
-            // TODO: Move O: link to bottom
             // TODO: Make O: link clickable
             // TODO: Button for add is blue on click
             // TODO: Button for add is ugly
@@ -119,7 +118,7 @@ namespace MediaServer.Controllers
 
 			SetCurrentNavigation(conference, $"Edit {talk.TalkName}");
 
-            talk.Thumbnail = HttpContext.GetThumbnailUrl(conference, talk);
+			talk.Thumbnail = await thumbnailService.GetThumbnailUrl(conference, talk, HttpContext);
             var controllerName = ControllerContext.RouteData.Values["controller"].ToString();
             var availableVideos = new List<Video>() { new Video(talk.VideoName) };
 			var videosFromConference = await contentService.GetVideosFromConference(controllerName, conference);
