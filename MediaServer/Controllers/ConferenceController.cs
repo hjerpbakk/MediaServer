@@ -27,8 +27,9 @@ namespace MediaServer.Controllers
 			this.contentService = contentService;
 			this.slackService = slackService;        
 		}
-
+              
 		[HttpGet("/[controller]/{conferenceId}")]
+		[ResponseCache(NoStore = true)]
 		public async Task<IActionResult> GetConferenceView(string conferenceId)
 		{
             // TODO: Move O: link to bottom
@@ -98,6 +99,7 @@ namespace MediaServer.Controllers
         }
 
         [HttpGet("/[controller]/{conferenceId}/{talkName}/Edit")]
+		[ResponseCache(NoStore = true)]
 		public async Task<IActionResult> GetEditView(string conferenceId, string talkName)
 		{
             // TODO: SpeakerDeck dissapears if not from PDF
@@ -130,6 +132,7 @@ namespace MediaServer.Controllers
 		}
 
 		[HttpGet("/[controller]/{conferenceId}/Save")]
+		[ResponseCache(NoStore = true)]
 		public async Task<IActionResult> GetSaveView(string conferenceId)
 		{
             // TODO: Support choosing speaker name from Slack...
@@ -155,6 +158,7 @@ namespace MediaServer.Controllers
 		}
 
 		[HttpPost("/[controller]/{conferenceId}/Save")]
+		[ResponseCache(NoStore = true)]
         public async Task<IActionResult> SaveTalk(string conferenceId, [FromQuery] string oldName, [Bind("VideoName, Description, Speaker, SpeakerDeck, ThumbnailImageFile, TalkName, DateOfTalkString")] Talk talk)
 		{
             // TODO: Get thumbnail from speaker notes or video if not set

@@ -195,7 +195,7 @@ namespace MediaServer.Services
             }
         }
 
-        public async Task<IEnumerable<LatestTalk>> GetLatestTalks(IEnumerable<Conference> conferences) {
+        public async Task<IEnumerable<LatestTalk>> GetLatestTalks(IEnumerable<Conference> conferences) {			
             var talks = new List<LatestTalk>();
             foreach (var conference in conferences) {
                 var containerForConference = GetContainerFromConference(conference);

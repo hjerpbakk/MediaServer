@@ -66,8 +66,7 @@ namespace MediaServer
 				// TODO: Fix this
                 app.UseExceptionHandler("/Home/Error");
             }
-
-            // TODO: How to evict from cache after change? Ref. the memorycache
+                     
             const int OneYear = 31536000;
             var MaxAgeStaticFiles = "public,max-age=" + OneYear;
             var OneYearTimeSpan = TimeSpan.FromSeconds(OneYear);

@@ -18,6 +18,7 @@ namespace MediaServer.Controllers
             this.talkService = talkService;
         }
 
+		[ResponseCache(NoStore = true)]
         public async Task<IActionResult> Index() {
 			SetHomeNavigation();
 
