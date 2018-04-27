@@ -49,7 +49,7 @@ namespace MediaServer.Services.Cache
         }
 
 		public void ClearCachesForTalk(Talk talk) {
-			memoryCache.Remove(LatestTalksKey);
+			memoryCache.Remove(GetViewKey(LatestTalksKey));
 			memoryCache.Remove(GetViewKey(talk.Speaker));
 		}
   

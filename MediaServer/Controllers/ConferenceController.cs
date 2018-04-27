@@ -36,6 +36,7 @@ namespace MediaServer.Controllers
 		[HttpGet("/[controller]/{conferenceId}")]      
 		public async Task<IActionResult> GetConferenceView(string conferenceId)
 		{
+			// TODO: Make conference header clickable and open Slack channel
             // TODO: Make O: link clickable
             // TODO: Button for add is blue on click
             // TODO: Button for add is ugly
