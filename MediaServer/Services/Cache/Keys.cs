@@ -20,7 +20,6 @@ namespace MediaServer.Services.Cache
 		public static MemoryCacheEntryOptions Options { get; }
 
 		public static string GetThumbnailKey(string talkName) => talkName + "thumb";
-		public static string GetThumnnailHashName(Talk talk) => talk.TalkName + HashExtension;
-		public static string GetSpeakerKey(string speakerName) => speakerName + "speaker";
+		public static string GetThumnnailHashName(Talk talk) => talk.TalkName + HashExtension;      
     }
 }

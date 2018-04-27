@@ -9,15 +9,15 @@ namespace MediaServer.Services
 {
     public class OldCachedTalkService : IOldTalkService
     {
-        const string LatestTalksKey = "lastettalks";
-
         readonly OldTalkService talkService;
         readonly IMemoryCache memoryCache;
+		readonly TalkCache talkCache;
         
-        public OldCachedTalkService(OldTalkService talkService, IMemoryCache memoryCache)
+		public OldCachedTalkService(OldTalkService talkService, IMemoryCache memoryCache, TalkCache talkCache)
         {
             this.talkService = talkService;
             this.memoryCache = memoryCache;
+			this.talkCache = talkCache;
         }
 
         public async Task DeleteTalkFromConference(Conference conference, Talk talk)
@@ -25,8 +25,7 @@ namespace MediaServer.Services
             memoryCache.Remove(talk.TalkName);
             memoryCache.Remove(conference.Id);
             memoryCache.Remove(GetConferenceTalkKey(conference.Id));
-            memoryCache.Remove(LatestTalksKey);
-			memoryCache.Remove(Keys.GetSpeakerKey(talk.Speaker));
+			talkCache.ClearCachesForTalk(talk);      
 
 			// TODO: After deletion is supported in thumbnailservice, move this there
 			memoryCache.Remove(Keys.GetThumbnailKey(talk.TalkName));
@@ -69,20 +68,14 @@ namespace MediaServer.Services
         {
             memoryCache.Remove(conference.Id);
             memoryCache.Remove(GetConferenceTalkKey(conference.Id));
-            memoryCache.Remove(LatestTalksKey);
-			memoryCache.Remove(Keys.GetSpeakerKey(talk.Speaker));
+			talkCache.ClearCachesForTalk(talk);      
             
             await talkService.SaveTalkFromConference(conference, talk);
 			memoryCache.Set(talk.TalkName, talk, Keys.Options);
         }
 
         public async Task<IEnumerable<LatestTalk>> GetLatestTalks(IEnumerable<Conference> conferences) {
-            if (!memoryCache.TryGetValue(LatestTalksKey, out IEnumerable<LatestTalk> latestTalks)) {
-                latestTalks = await talkService.GetLatestTalks(conferences);
-				memoryCache.Set(LatestTalksKey, latestTalks, Keys.Options);
-            }
-
-            return latestTalks;
+			return await talkService.GetLatestTalks(conferences);
         }
 
         string GetConferenceTalkKey(string conferenceId) => conferenceId + "talk";

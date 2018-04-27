@@ -10,13 +10,13 @@ namespace MediaServer.Controllers
 	public class SpeakerController : NavigateableController
 	{
 		readonly IConferenceService conferenceService;
-		readonly IMemoryCache memoryCache;
+		readonly TalkCache talkCache;
 
-		public SpeakerController(IConferenceConfig conferenceConfig, IConferenceService conferenceService, IMemoryCache memoryCache)
+		public SpeakerController(IConferenceConfig conferenceConfig, IConferenceService conferenceService, TalkCache talkCache)
 			: base(conferenceConfig)
 		{
 			this.conferenceService = conferenceService;
-			this.memoryCache = memoryCache;
+			this.talkCache = talkCache;
 		}
 
 		// TODO: Add a top speaker list
@@ -24,16 +24,17 @@ namespace MediaServer.Controllers
 		[HttpGet("/[controller]/{speakerName}")]
 		public async Task<IActionResult> Index(string speakerName)
 		{
-			var key = Keys.GetSpeakerKey(speakerName);
-			if (!memoryCache.TryGetValue(key, out ViewResult view))
-			{
-				SetCurrentNavigation(speakerName);
-				ViewData["Talks"] = await conferenceService.GetTalksBySpeaker(speakerName, HttpContext);
-				view = View("Views/Home/Index.cshtml");
-				memoryCache.Set(key, view, Keys.Options);
-			}
-
+			var view = await talkCache.GetOrSetView(
+				speakerName, 
+				() => GetViewForSpeaker(speakerName));         
 			return view;
 		}
-    }
+
+		async Task<ViewResult> GetViewForSpeaker(string speakerName)
+		{
+			SetCurrentNavigation(speakerName);
+			ViewData["Talks"] = await conferenceService.GetTalksBySpeaker(speakerName, HttpContext);         
+			return View("Views/Home/Index.cshtml");
+		}
+	}
 }

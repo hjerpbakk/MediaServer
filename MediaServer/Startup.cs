@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using MediaServer.Configuration;
 using MediaServer.Services;
+using MediaServer.Services.Cache;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -44,6 +45,8 @@ namespace MediaServer
             services.AddSingleton<IConferenceConfig>(config);
             services.AddSingleton<IBlogStorageConfig>(config);
 			services.AddSingleton<ISlackConfig>(config);
+            
+			services.AddSingleton<TalkCache>();
 
 			services.AddSingleton<ISlackConnector, SlackConnector.SlackConnector>();
 
