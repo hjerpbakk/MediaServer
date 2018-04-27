@@ -39,56 +39,20 @@ namespace MediaServer.Controllers
 		[HttpGet("/[controller]/{conferenceId}")]      
 		public async Task<IActionResult> GetConferenceView(string conferenceId)
 		{
-			// TODO: Make conference header clickable and open Slack channel
-			// TODO: Make O: link clickable
-			// TODO: Button for add is blue on click
-			// TODO: Button for add is ugly
-			// TODO: Phone home so we can see most popular conference         
-			if (!ConferenceExists(conferenceId))
-			{
-				return NotFound();
-			}
-
 			var view = await talkCache.GetOrSetView(
 				conferenceId,
 				() => GetAllTalksFromConferenceView(conferenceId));
             return view;         
 		}
 
-
-
-		[HttpGet("/[controller]/{conferenceId}/{talkName}")]
+		[ResponseCache(NoStore = true)]
+        [HttpGet("/[controller]/{conferenceId}/{talkName}")]
 		public async Task<IActionResult> GetTalkView(string conferenceId, string talkName)
 		{
-            // TODO: Phone home so we can see most popular talk
-            // TODO: Show image of speaker from Slack
-			if (!ConferenceExists(conferenceId))
-            {
-                return NotFound();
-            }
-
-            var conference = GetConferenceFromId(conferenceId);
-
-
-			var talk = await talkService.GetTalkByName(conference, talkName);
-			if (talk == null) {
-				// TODO: Lag en fin 404
-                return NotFound();
-            }
-
-			SetCurrentNavigation(conference, talk.TalkName);
-            /// TODO: Support single click pause / resume
-            /// 
-            /// TODO: hotkeys:
-           // -space: play / pause
-           //- f: fullscreen
-           //- opp / ned: volumkontroll
-             //- venstre / høyre: skip back/ frem 5 sec elns
-            /// 
-           var talkVM = new TalkViewModel(talk);
-			ViewData["Talk"] = talkVM;
-
-			return View("Talk");
+			var view = await talkCache.GetOrSetView(
+				TalkCache.GetTalkKey(conferenceId, talkName),
+				() => GetTalkViewFromService(conferenceId, talkName));
+            return view;    
 		}
 
         [HttpGet("/[controller]/{conferenceId}/Thumbnails/{talkName}")]
@@ -194,8 +158,18 @@ namespace MediaServer.Controllers
             return new RedirectResult(escapedTalkName, false, false);
 		}
         
-		async Task<ViewResult> GetAllTalksFromConferenceView(string conferenceId)
+		async Task<IActionResult> GetAllTalksFromConferenceView(string conferenceId)
         {
+			// TODO: Make conference header clickable and open Slack channel
+            // TODO: Make O: link clickable
+            // TODO: Button for add is blue on click
+            // TODO: Button for add is ugly
+            // TODO: Phone home so we can see most popular conference         
+            if (!ConferenceExists(conferenceId))
+            {
+                return NotFound();
+            }
+
             var conference = GetConferenceFromId(conferenceId);
             SetCurrentNavigation(conference, conference.Name);
 
@@ -204,6 +178,38 @@ namespace MediaServer.Controllers
             ViewData["Talks"] = await conferenceService.GetTalksForConference(conference, HttpContext);
 
             return View("Index");
+        }
+
+		async Task<IActionResult> GetTalkViewFromService(string conferenceId, string talkName)
+        {
+			// TODO: Phone home so we can see most popular talk
+            // TODO: Show image of speaker from Slack
+            if (!ConferenceExists(conferenceId))
+            {
+                return NotFound();
+            }
+
+            var conference = GetConferenceFromId(conferenceId);
+            var talk = await talkService.GetTalkByName(conference, talkName);
+            if (talk == null)
+            {
+                // TODO: Lag en fin 404
+                return NotFound();
+            }
+
+            SetCurrentNavigation(conference, talk.TalkName);
+            /// TODO: Support single click pause / resume
+            /// 
+            /// TODO: hotkeys:
+            // -space: play / pause
+            //- f: fullscreen
+            //- opp / ned: volumkontroll
+            //- venstre / høyre: skip back/ frem 5 sec elns
+            /// 
+            var talkVM = new TalkViewModel(talk);
+            ViewData["Talk"] = talkVM;
+
+            return View("Talk");
         }
     }
 }

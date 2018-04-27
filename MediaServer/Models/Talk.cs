@@ -13,6 +13,7 @@ namespace MediaServer.Models
 
 		// TODO: Legg til sammendragsfelt i markdown, ref https://dipsasa.slack.com/archives/D1TCWMBRT/p1524836698000185
 
+		// TODO: We send conference together with this. Change?
 		[JsonIgnore]
 		public string ConferenceId { get; set; }
         public string VideoName { get; set; }

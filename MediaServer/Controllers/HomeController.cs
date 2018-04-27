@@ -31,7 +31,7 @@ namespace MediaServer.Controllers
 		public IActionResult Error() =>
             View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
 
-		async Task<ViewResult> GetView() {
+		async Task<IActionResult> GetView() {
 			SetCurrentNavigationToHome();         
             ViewData["Talks"] = await conferenceService.GetLatestTalks(HttpContext);         
             // TODO: Show conference link on card

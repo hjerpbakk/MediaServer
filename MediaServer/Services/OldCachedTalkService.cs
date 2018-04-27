@@ -22,8 +22,6 @@ namespace MediaServer.Services
 
         public async Task DeleteTalkFromConference(Conference conference, Talk talk)
         {
-            memoryCache.Remove(talk.TalkName);
-            memoryCache.Remove(conference.Id);
             talkCache.ClearCachesForTalk(talk);      
 
 			// TODO: After deletion is supported in thumbnailservice, move this there
@@ -34,12 +32,10 @@ namespace MediaServer.Services
 
         public async Task<Talk> GetTalkByName(Conference conference, string name)
         {
-            if (!memoryCache.TryGetValue(name, out Talk talk)) {
-                talk = await talkService.GetTalkByName(conference, name);
-                memoryCache.Set(name, talk, Keys.Options);
-            }
-
-            return talk;
+			// TODO: This should be cached in the new service too...
+			return await talkCache.GetOrSetTalk(
+				TalkCache.GetTalkKey(conference.Id, name),
+				() => talkService.GetTalkByName(conference, name));
         }
 
         public async Task<IReadOnlyList<string>> GetTalkNamesFromConference(Conference conference)
@@ -59,7 +55,6 @@ namespace MediaServer.Services
 
         public async Task SaveTalkFromConference(Conference conference, Talk talk)
         {
-            memoryCache.Remove(conference.Id);
             talkCache.ClearCachesForTalk(talk);      
             
             await talkService.SaveTalkFromConference(conference, talk);

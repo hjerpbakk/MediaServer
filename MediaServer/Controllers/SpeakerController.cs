@@ -30,7 +30,7 @@ namespace MediaServer.Controllers
 			return view;
 		}
 
-		async Task<ViewResult> GetViewForSpeaker(string speakerName)
+		async Task<IActionResult> GetViewForSpeaker(string speakerName)
 		{
 			SetCurrentNavigation(speakerName);
 			ViewData["Talks"] = await conferenceService.GetTalksBySpeaker(speakerName, HttpContext);         
