@@ -17,7 +17,7 @@ using Newtonsoft.Json.Linq;
 
 namespace MediaServer.Services
 {
-	public class TalkService : ITalkService
+	public class OldTalkService : IOldTalkService
     {
 		const string DbFileExtension = ".json";
         
@@ -27,12 +27,12 @@ namespace MediaServer.Services
 		readonly CloudBlobClient cloudBlobClient;
 		readonly IThumbnailService thumbnailService;
 
-		static TalkService() {
+		static OldTalkService() {
 			dbFileExtension = DbFileExtension.ToCharArray();
 			dbTalkPrefix = Keys.TalkPrefix.ToCharArray();
 		}
 
-		public TalkService(IBlogStorageConfig blobStorageConfig, IThumbnailService thumbnailService)
+		public OldTalkService(IBlogStorageConfig blobStorageConfig, IThumbnailService thumbnailService)
 		{
 			var storageAccount = CloudStorageAccount.Parse(blobStorageConfig.BlobStorageConnectionString);         
             cloudBlobClient = storageAccount.CreateCloudBlobClient();

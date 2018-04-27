@@ -18,10 +18,10 @@ namespace MediaServer.Services
     {
 		readonly IEnumerable<Conference> conferences;
 		readonly CloudBlobClient cloudBlobClient;
-		readonly ITalkService talkService;
+		readonly IOldTalkService talkService;
 		readonly IThumbnailService thumbnailService;
 
-		public ConferenceService(IConferenceConfig conferenceConfig, IBlogStorageConfig blobStorageConfig, ITalkService talkService, IThumbnailService thumbnailService)
+		public ConferenceService(IConferenceConfig conferenceConfig, IBlogStorageConfig blobStorageConfig, IOldTalkService talkService, IThumbnailService thumbnailService)
         {
 			conferences = conferenceConfig.Conferences.Values;
 			var storageAccount = CloudStorageAccount.Parse(blobStorageConfig.BlobStorageConnectionString);

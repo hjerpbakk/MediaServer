@@ -49,8 +49,8 @@ namespace MediaServer
 
             services.AddSingleton<IFileProvider>(new PhysicalFileProvider(Directory.GetCurrentDirectory()));
 
-            services.AddSingleton<TalkService>();
-            services.AddSingleton<ITalkService, CachedTalkService>();
+            services.AddSingleton<OldTalkService>();
+            services.AddSingleton<IOldTalkService, OldCachedTalkService>();
 
             services.AddSingleton<ThumbnailService>();
 			services.AddSingleton<IThumbnailService, CachedThumbnailService>();

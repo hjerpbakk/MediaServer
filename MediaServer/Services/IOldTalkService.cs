@@ -4,7 +4,7 @@ using MediaServer.Models;
 
 namespace MediaServer.Services
 {
-    public interface ITalkService
+    public interface IOldTalkService
     {
 		// TODO: Move to IConferenceService
 		Task<IEnumerable<Talk>> GetTalksFromConference(Conference conference);

@@ -19,6 +19,7 @@ namespace MediaServer.Controllers
 		public VersionController(IFileProvider fileProvider)
 		    => this.fileProvider = fileProvider;      
 
+		[ResponseCache(NoStore = true)]
 		[HttpGet]
 		public async Task<string> Get() {
 			var file = fileProvider.GetFileInfo("wwwroot/VERSION.txt");

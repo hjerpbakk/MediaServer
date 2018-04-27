@@ -15,13 +15,13 @@ namespace MediaServer.Controllers
 {
 	public class ConferenceController : NavigateableController
 	{
-		readonly ITalkService talkService;
+		readonly IOldTalkService talkService;
 		readonly IContentService contentService;
 		readonly ISlackService slackService;
 		readonly IConferenceService conferenceService;
 		readonly IThumbnailService thumbnailService;
         
-		public ConferenceController(IConferenceConfig conferenceConfig, ITalkService talkService, IContentService contentService, ISlackService slackService, IConferenceService conferenceService, IThumbnailService thumbnailService)
+		public ConferenceController(IConferenceConfig conferenceConfig, IOldTalkService talkService, IContentService contentService, ISlackService slackService, IConferenceService conferenceService, IThumbnailService thumbnailService)
 			: base(conferenceConfig)
 		{
 			// TODO: Too many services, move around?         

@@ -7,14 +7,14 @@ using Microsoft.Extensions.Caching.Memory;
 
 namespace MediaServer.Services
 {
-    public class CachedTalkService : ITalkService
+    public class OldCachedTalkService : IOldTalkService
     {
         const string LatestTalksKey = "lastettalks";
 
-        readonly TalkService talkService;
+        readonly OldTalkService talkService;
         readonly IMemoryCache memoryCache;
         
-        public CachedTalkService(TalkService talkService, IMemoryCache memoryCache)
+        public OldCachedTalkService(OldTalkService talkService, IMemoryCache memoryCache)
         {
             this.talkService = talkService;
             this.memoryCache = memoryCache;
