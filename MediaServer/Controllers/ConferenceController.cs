@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
 using MediaServer.ViewModels;
+using MediaServer.Services.Cache;
 
 namespace MediaServer.Controllers
 {
@@ -20,8 +21,9 @@ namespace MediaServer.Controllers
 		readonly ISlackService slackService;
 		readonly IConferenceService conferenceService;
 		readonly IThumbnailService thumbnailService;
+		readonly TalkCache talkCache;
         
-		public ConferenceController(IConferenceConfig conferenceConfig, IOldTalkService talkService, IContentService contentService, ISlackService slackService, IConferenceService conferenceService, IThumbnailService thumbnailService)
+		public ConferenceController(IConferenceConfig conferenceConfig, IOldTalkService talkService, IContentService contentService, ISlackService slackService, IConferenceService conferenceService, IThumbnailService thumbnailService, TalkCache talkCache)
 			: base(conferenceConfig)
 		{
 			// TODO: Too many services, move around?         
@@ -30,6 +32,7 @@ namespace MediaServer.Controllers
 			this.slackService = slackService;
 			this.conferenceService = conferenceService;
 			this.thumbnailService = thumbnailService;
+			this.talkCache = talkCache;
 		}
               
 		[ResponseCache(NoStore = true)]
@@ -37,24 +40,22 @@ namespace MediaServer.Controllers
 		public async Task<IActionResult> GetConferenceView(string conferenceId)
 		{
 			// TODO: Make conference header clickable and open Slack channel
-            // TODO: Make O: link clickable
-            // TODO: Button for add is blue on click
-            // TODO: Button for add is ugly
-            // TODO: Phone home so we can see most popular conference         
+			// TODO: Make O: link clickable
+			// TODO: Button for add is blue on click
+			// TODO: Button for add is ugly
+			// TODO: Phone home so we can see most popular conference         
 			if (!ConferenceExists(conferenceId))
 			{
 				return NotFound();
 			}
 
-			var conference = GetConferenceFromId(conferenceId);
-			SetCurrentNavigation(conference, conference.Name);
-
-            // TODO: Create a conference viewmodel and use model binding
-            ViewData["VideoPath"] = conference.VideoPath;
-            ViewData["Talks"] = await conferenceService.GetTalksForConference(conference, HttpContext);
-
-			return View("Index");
+			var view = await talkCache.GetOrSetView(
+				conferenceId,
+				() => GetAllTalksFromConferenceView(conferenceId));
+            return view;         
 		}
+
+
 
 		[HttpGet("/[controller]/{conferenceId}/{talkName}")]
 		public async Task<IActionResult> GetTalkView(string conferenceId, string talkName)
@@ -193,5 +194,16 @@ namespace MediaServer.Controllers
             return new RedirectResult(escapedTalkName, false, false);
 		}
         
+		async Task<ViewResult> GetAllTalksFromConferenceView(string conferenceId)
+        {
+            var conference = GetConferenceFromId(conferenceId);
+            SetCurrentNavigation(conference, conference.Name);
+
+            // TODO: Create a conference viewmodel and use model binding
+            ViewData["VideoPath"] = conference.VideoPath;
+            ViewData["Talks"] = await conferenceService.GetTalksForConference(conference, HttpContext);
+
+            return View("Index");
+        }
     }
 }

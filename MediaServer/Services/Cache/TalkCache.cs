@@ -13,7 +13,7 @@ namespace MediaServer.Services.Cache
 		readonly IMemoryCache memoryCache;      
         readonly MemoryCacheEntryOptions options;
 
-		public TalkCache(IMemoryCache memoryCache)
+        public TalkCache(IMemoryCache memoryCache)
         {
 			this.memoryCache = memoryCache;
 			options = new MemoryCacheEntryOptions()
@@ -23,11 +23,10 @@ namespace MediaServer.Services.Cache
         
 		// TODO: remove if not needed
 		public ViewResult GetOrSetView(string key, Func<ViewResult> create) {
-			var viewKey = GetViewKey(key);
-			if (!memoryCache.TryGetValue(viewKey, out ViewResult view))
+			if (!memoryCache.TryGetValue(key, out ViewResult view))
 			{
 				view = create();
-				memoryCache.Set(viewKey, view, options);
+				memoryCache.Set(key, view, options);
 			}
 
 			return view;
@@ -38,21 +37,19 @@ namespace MediaServer.Services.Cache
         
 		public async Task<ViewResult> GetOrSetView(string key, Func<Task<ViewResult>> create)
         {
-            var viewKey = GetViewKey(key);
-			if (!memoryCache.TryGetValue(viewKey, out ViewResult view))
+			if (!memoryCache.TryGetValue(key, out ViewResult view))
             {
 				view = await create();
-                memoryCache.Set(viewKey, view, options);
+				memoryCache.Set(key, view, options);
             }
 
             return view;
         }
 
 		public void ClearCachesForTalk(Talk talk) {
-			memoryCache.Remove(GetViewKey(LatestTalksKey));
-			memoryCache.Remove(GetViewKey(talk.Speaker));
+			memoryCache.Remove(LatestTalksKey);
+			memoryCache.Remove(talk.Speaker);
+			memoryCache.Remove(talk.ConferenceId);
 		}
-  
-		string GetViewKey(string key) => key + "view";
     }
 }

@@ -11,6 +11,10 @@ namespace MediaServer.Models
             DateOfTalk = DateTime.UtcNow;
         }
 
+		// TODO: Legg til sammendragsfelt i markdown, ref https://dipsasa.slack.com/archives/D1TCWMBRT/p1524836698000185
+
+		[JsonIgnore]
+		public string ConferenceId { get; set; }
         public string VideoName { get; set; }
         public string TalkName { get; set; }
         public string Description { get; set; }

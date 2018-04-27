@@ -24,8 +24,7 @@ namespace MediaServer.Services
         {
             memoryCache.Remove(talk.TalkName);
             memoryCache.Remove(conference.Id);
-            memoryCache.Remove(GetConferenceTalkKey(conference.Id));
-			talkCache.ClearCachesForTalk(talk);      
+            talkCache.ClearCachesForTalk(talk);      
 
 			// TODO: After deletion is supported in thumbnailservice, move this there
 			memoryCache.Remove(Keys.GetThumbnailKey(talk.TalkName));
@@ -55,20 +54,13 @@ namespace MediaServer.Services
 
 		public async Task<IEnumerable<Talk>> GetTalksFromConference(Conference conference)
         {
-            var key = GetConferenceTalkKey(conference.Id);
-			if(!memoryCache.TryGetValue(key, out IEnumerable<Talk> talks)) {
-                talks = await talkService.GetTalksFromConference(conference);
-				memoryCache.Set(key, talks, Keys.Options);
-            }
-
-            return talks;
+            return await talkService.GetTalksFromConference(conference);
         }
 
         public async Task SaveTalkFromConference(Conference conference, Talk talk)
         {
             memoryCache.Remove(conference.Id);
-            memoryCache.Remove(GetConferenceTalkKey(conference.Id));
-			talkCache.ClearCachesForTalk(talk);      
+            talkCache.ClearCachesForTalk(talk);      
             
             await talkService.SaveTalkFromConference(conference, talk);
 			memoryCache.Set(talk.TalkName, talk, Keys.Options);
@@ -77,7 +69,5 @@ namespace MediaServer.Services
         public async Task<IEnumerable<LatestTalk>> GetLatestTalks(IEnumerable<Conference> conferences) {
 			return await talkService.GetLatestTalks(conferences);
         }
-
-        string GetConferenceTalkKey(string conferenceId) => conferenceId + "talk";
     }
 }

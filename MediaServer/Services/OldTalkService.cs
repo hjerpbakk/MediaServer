@@ -59,6 +59,7 @@ namespace MediaServer.Services
                     await blob.DownloadToStreamAsync(memoryStream);
 					var talkContent = Encoding.UTF8.GetString(memoryStream.ToArray());
                     var talk = JsonConvert.DeserializeObject<Talk>(talkContent);
+					talk.ConferenceId = conference.Id;
 					talks.Add(talk);
                 }
             }         
@@ -81,6 +82,7 @@ namespace MediaServer.Services
                 await blob.DownloadToStreamAsync(memoryStream);
 				var talkContent = Encoding.UTF8.GetString(memoryStream.ToArray());
 				var talk = JsonConvert.DeserializeObject<Talk>(talkContent);
+				talk.ConferenceId = conference.Id;
                 return talk;
             }
 		}
@@ -148,6 +150,7 @@ namespace MediaServer.Services
                         await blob.DownloadToStreamAsync(memoryStream);
                         var talkContent = Encoding.UTF8.GetString(memoryStream.ToArray());
                         var talk = JsonConvert.DeserializeObject<Talk>(talkContent);
+						talk.ConferenceId = conference.Id;
                         var latestTalk = new LatestTalk(conference, talk, blob.Properties.LastModified.Value);
                         talks.Add(latestTalk);
                     }
