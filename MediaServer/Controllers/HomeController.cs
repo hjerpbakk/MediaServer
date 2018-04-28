@@ -14,17 +14,17 @@ namespace MediaServer.Controllers
 	public class HomeController : NavigateableController
     {
 		readonly IConferenceService conferenceService;
-		readonly TalkCache talkCache;
+		readonly MediaCache cache;
         
-		public HomeController(IConferenceConfig conferenceConfig, IConferenceService conferenceService, TalkCache talkCache) 
+		public HomeController(IConferenceConfig conferenceConfig, IConferenceService conferenceService, MediaCache talkCache) 
 			: base(conferenceConfig) {
 			this.conferenceService = conferenceService;
-			this.talkCache = talkCache;
+			this.cache = talkCache;
         }
         
 		[ResponseCache(NoStore = true)]      
         public async Task<IActionResult> Index() {
-			var view = await talkCache.GetOrSetView(GetView);
+			var view = await cache.GetOrSet(MediaCache.LatestTalksKey, GetView);
             return view;
         }
 

@@ -7,6 +7,7 @@ using MediaServer.Configuration;
 using MediaServer.Extensions;
 using MediaServer.Models;
 using MediaServer.Services.Cache;
+using MediaServer.Services.Persistence;
 using Microsoft.AspNetCore.Http;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
@@ -54,7 +55,7 @@ namespace MediaServer.Services
                 await containerForConference.CreateIfNotExistsAsync();
                 // TODO: Support more than 200 items....
                 var token = new BlobContinuationToken();
-				var blobs = await containerForConference.ListBlobsSegmentedAsync(Keys.TalkPrefix, token);
+				var blobs = await containerForConference.ListBlobsSegmentedAsync(BlobStoragePersistence.TalkPrefix, token);
                 foreach (var blob in blobs.Results.Cast<CloudBlockBlob>())
                 {
                     using (var memoryStream = new MemoryStream())

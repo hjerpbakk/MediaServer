@@ -21,9 +21,9 @@ namespace MediaServer.Controllers
 		readonly ISlackService slackService;
 		readonly IConferenceService conferenceService;
 		readonly IThumbnailService thumbnailService;
-		readonly TalkCache talkCache;
+		readonly MediaCache cache;
         
-		public ConferenceController(IConferenceConfig conferenceConfig, IOldTalkService talkService, IContentService contentService, ISlackService slackService, IConferenceService conferenceService, IThumbnailService thumbnailService, TalkCache talkCache)
+		public ConferenceController(IConferenceConfig conferenceConfig, IOldTalkService talkService, IContentService contentService, ISlackService slackService, IConferenceService conferenceService, IThumbnailService thumbnailService, MediaCache cache)
 			: base(conferenceConfig)
 		{
 			// TODO: Too many services, move around?         
@@ -32,38 +32,30 @@ namespace MediaServer.Controllers
 			this.slackService = slackService;
 			this.conferenceService = conferenceService;
 			this.thumbnailService = thumbnailService;
-			this.talkCache = talkCache;
+			this.cache = cache;
 		}
               
 		[ResponseCache(NoStore = true)]
-		[HttpGet("/[controller]/{conferenceId}")]      
+		[HttpGet("/Conference/{conferenceId}")]      
 		public async Task<IActionResult> GetConferenceView(string conferenceId)
 		{
-			var view = await talkCache.GetOrSetView(
+			var view = await cache.GetOrSet(
 				conferenceId,
 				() => GetAllTalksFromConferenceView(conferenceId));
             return view;         
 		}
 
 		[ResponseCache(NoStore = true)]
-        [HttpGet("/[controller]/{conferenceId}/{talkName}")]
+		[HttpGet("/Conference/{conferenceId}/{talkName}")]
 		public async Task<IActionResult> GetTalkView(string conferenceId, string talkName)
 		{
-			var view = await talkCache.GetOrSetView(
-				TalkCache.GetTalkKey(conferenceId, talkName),
+			var view = await cache.GetOrSet(
+				MediaCache.GetTalkKey(conferenceId, talkName),
 				() => GetTalkViewFromService(conferenceId, talkName));
             return view;    
 		}
-
-        [HttpGet("/[controller]/{conferenceId}/Thumbnails/{talkName}")]
-        public async Task<IActionResult> GetTalkThumbnail(string conferenceId, string talkName)
-        {
-            var conference = GetConferenceFromId(conferenceId);
-			var thumbnail = await thumbnailService.GetTalkThumbnail(conference, talkName);
-            return File(thumbnail.ImageData, thumbnail.ContentType);
-        }
-
-        [HttpGet("/[controller]/{conferenceId}/{talkName}/Edit")]
+        
+		[HttpGet("/Conference/{conferenceId}/{talkName}/Edit")]
 		[ResponseCache(NoStore = true)]
 		public async Task<IActionResult> GetEditView(string conferenceId, string talkName)
 		{
@@ -96,7 +88,7 @@ namespace MediaServer.Controllers
 			return View("Save", talk);
 		}
 
-		[HttpGet("/[controller]/{conferenceId}/Save")]
+		[HttpGet("/Conference/{conferenceId}/Save")]
 		[ResponseCache(NoStore = true)]
 		public async Task<IActionResult> GetSaveView(string conferenceId)
 		{
@@ -122,7 +114,7 @@ namespace MediaServer.Controllers
             return View("Save", new Talk { Thumbnail = "/Placeholder.png" });
 		}
 
-		[HttpPost("/[controller]/{conferenceId}/Save")]
+		[HttpPost("/Conference/{conferenceId}/Save")]
 		[ResponseCache(NoStore = true)]
         public async Task<IActionResult> SaveTalk(string conferenceId, [FromQuery] string oldName, [Bind("VideoName, Description, Speaker, SpeakerDeck, ThumbnailImageFile, TalkName, DateOfTalkString")] Talk talk)
 		{

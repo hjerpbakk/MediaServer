@@ -11,9 +11,9 @@ namespace MediaServer.Services
     {
         readonly OldTalkService talkService;
         readonly IMemoryCache memoryCache;
-		readonly TalkCache talkCache;
+		readonly MediaCache talkCache;
         
-		public OldCachedTalkService(OldTalkService talkService, IMemoryCache memoryCache, TalkCache talkCache)
+		public OldCachedTalkService(OldTalkService talkService, IMemoryCache memoryCache, MediaCache talkCache)
         {
             this.talkService = talkService;
             this.memoryCache = memoryCache;
@@ -22,19 +22,19 @@ namespace MediaServer.Services
 
         public async Task DeleteTalkFromConference(Conference conference, Talk talk)
         {
-            talkCache.ClearCachesForTalk(talk);      
+            talkCache.ClearForTalk(talk);
 
 			// TODO: After deletion is supported in thumbnailservice, move this there
-			memoryCache.Remove(Keys.GetThumbnailKey(talk.TalkName));
-
+			talkCache.ClearForThumbnail(talk);
+            
             await talkService.DeleteTalkFromConference(conference, talk);
         }
 
         public async Task<Talk> GetTalkByName(Conference conference, string name)
         {
 			// TODO: This should be cached in the new service too...
-			return await talkCache.GetOrSetTalk(
-				TalkCache.GetTalkKey(conference.Id, name),
+			return await talkCache.GetOrSet(
+				MediaCache.GetTalkKey(conference.Id, name),
 				() => talkService.GetTalkByName(conference, name));
         }
 
@@ -42,7 +42,7 @@ namespace MediaServer.Services
         {
             if (!memoryCache.TryGetValue(conference.Id, out IReadOnlyList<string> talks)) {
                 talks = await talkService.GetTalkNamesFromConference(conference);
-				memoryCache.Set(conference.Id, talks, Keys.Options);
+				memoryCache.Set(conference.Id, talks, talkCache.options);
             }
 
             return talks;
@@ -55,10 +55,10 @@ namespace MediaServer.Services
 
         public async Task SaveTalkFromConference(Conference conference, Talk talk)
         {
-            talkCache.ClearCachesForTalk(talk);      
+            talkCache.ClearForTalk(talk);      
             
             await talkService.SaveTalkFromConference(conference, talk);
-			memoryCache.Set(talk.TalkName, talk, Keys.Options);
+			memoryCache.Set(talk.TalkName, talk, talkCache.options);
         }
 
         public async Task<IEnumerable<LatestTalk>> GetLatestTalks(IEnumerable<Conference> conferences) {

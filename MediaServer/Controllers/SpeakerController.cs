@@ -10,9 +10,9 @@ namespace MediaServer.Controllers
 	public class SpeakerController : NavigateableController
 	{
 		readonly IConferenceService conferenceService;
-		readonly TalkCache talkCache;
+		readonly MediaCache talkCache;
 
-		public SpeakerController(IConferenceConfig conferenceConfig, IConferenceService conferenceService, TalkCache talkCache)
+		public SpeakerController(IConferenceConfig conferenceConfig, IConferenceService conferenceService, MediaCache talkCache)
 			: base(conferenceConfig)
 		{
 			this.conferenceService = conferenceService;
@@ -24,7 +24,7 @@ namespace MediaServer.Controllers
 		[HttpGet("/[controller]/{speakerName}")]
 		public async Task<IActionResult> Index(string speakerName)
 		{
-			var view = await talkCache.GetOrSetView(
+			var view = await talkCache.GetOrSet(
 				speakerName, 
 				() => GetViewForSpeaker(speakerName));         
 			return view;

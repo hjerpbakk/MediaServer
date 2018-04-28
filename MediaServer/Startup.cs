@@ -46,7 +46,7 @@ namespace MediaServer
             services.AddSingleton<IBlogStorageConfig>(config);
 			services.AddSingleton<ISlackConfig>(config);
             
-			services.AddSingleton<TalkCache>();
+			services.AddSingleton<MediaCache>();
 
 			services.AddSingleton<ISlackConnector, SlackConnector.SlackConnector>();
 
@@ -54,9 +54,8 @@ namespace MediaServer
 
             services.AddSingleton<OldTalkService>();
             services.AddSingleton<IOldTalkService, OldCachedTalkService>();
-
-            services.AddSingleton<ThumbnailService>();
-			services.AddSingleton<IThumbnailService, CachedThumbnailService>();
+            
+			services.AddSingleton<IThumbnailService, ThumbnailService>();
 
 			services.AddSingleton<IConferenceService, ConferenceService>();
             

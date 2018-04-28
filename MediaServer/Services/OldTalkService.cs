@@ -8,6 +8,7 @@ using MediaServer.Configuration;
 using MediaServer.Extensions;
 using MediaServer.Models;
 using MediaServer.Services.Cache;
+using MediaServer.Services.Persistence;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.WindowsAzure.Storage;
@@ -29,7 +30,7 @@ namespace MediaServer.Services
 
 		static OldTalkService() {
 			dbFileExtension = DbFileExtension.ToCharArray();
-			dbTalkPrefix = Keys.TalkPrefix.ToCharArray();
+			dbTalkPrefix = BlobStoragePersistence.TalkPrefix.ToCharArray();
 		}
 
 		public OldTalkService(IBlogStorageConfig blobStorageConfig, IThumbnailService thumbnailService)
@@ -49,7 +50,7 @@ namespace MediaServer.Services
 
 			// TODO: Support more than 200 items
             var token = new BlobContinuationToken();
-			var blobs = await containerForConference.ListBlobsSegmentedAsync(Keys.TalkPrefix, token);
+			var blobs = await containerForConference.ListBlobsSegmentedAsync(BlobStoragePersistence.TalkPrefix, token);
 
             var talks = new List<Talk>();
             foreach (var blob in blobs.Results.Cast<CloudBlockBlob>())
@@ -116,7 +117,7 @@ namespace MediaServer.Services
 			// TODO: Support more than 200 items
             var token = new BlobContinuationToken();
 			var containerForConference = cloudBlobClient.GetContainerForConference(conference);
-			var blobs = await containerForConference.ListBlobsSegmentedAsync(Keys.TalkPrefix, token); 
+			var blobs = await containerForConference.ListBlobsSegmentedAsync(BlobStoragePersistence.TalkPrefix, token); 
             var usedVideos = new List<string>();
             foreach (var blob in blobs.Results.Cast<CloudBlockBlob>()) {
                 using (var memoryStream = new MemoryStream()) {
@@ -133,7 +134,7 @@ namespace MediaServer.Services
 		            
 		// TODO: Move to Keys and rename properly
 		string GetBlobNameFromTalkName(string talkName)
-		=> Keys.TalkPrefix + talkName + DbFileExtension;
+		=> BlobStoragePersistence.TalkPrefix + talkName + DbFileExtension;
       
 		// TODO: Create generic get talk with optional predicate...
 		// TODO: cache every talk
@@ -144,7 +145,7 @@ namespace MediaServer.Services
                 await containerForConference.CreateIfNotExistsAsync();
                 // TODO: Support more than 200 items....
                 var token = new BlobContinuationToken();
-				var blobs = await containerForConference.ListBlobsSegmentedAsync(Keys.TalkPrefix, token); 
+				var blobs = await containerForConference.ListBlobsSegmentedAsync(BlobStoragePersistence.TalkPrefix, token); 
                 foreach (var blob in blobs.Results.Cast<CloudBlockBlob>()) {
                     using (var memoryStream = new MemoryStream()) {
                         await blob.DownloadToStreamAsync(memoryStream);
