@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using MediaServer.Configuration;
 using MediaServer.Services;
 using MediaServer.Services.Cache;
+using Microsoft.ApplicationInsights.Extensibility.Implementation;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -51,9 +52,8 @@ namespace MediaServer
 			services.AddSingleton<ISlackConnector, SlackConnector.SlackConnector>();
 
             services.AddSingleton<IFileProvider>(new PhysicalFileProvider(Directory.GetCurrentDirectory()));
-
-            services.AddSingleton<OldTalkService>();
-            services.AddSingleton<IOldTalkService, OldCachedTalkService>();
+            
+			services.AddSingleton<IOldTalkService, OldTalkService>();
             
 			services.AddSingleton<IThumbnailService, ThumbnailService>();
 
@@ -70,6 +70,7 @@ namespace MediaServer
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+				TelemetryDebugWriter.IsTracingDisabled = true;
             }
             else
             {

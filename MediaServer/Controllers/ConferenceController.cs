@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
 using MediaServer.ViewModels;
 using MediaServer.Services.Cache;
+using System.IO;
 
 namespace MediaServer.Controllers
 {
@@ -50,13 +51,13 @@ namespace MediaServer.Controllers
 		public async Task<IActionResult> GetTalkView(string conferenceId, string talkName)
 		{
 			var view = await cache.GetOrSet(
-				MediaCache.GetTalkKey(conferenceId, talkName),
+				cache.GetTalkViewKey(conferenceId, talkName),
 				() => GetTalkViewFromService(conferenceId, talkName));
             return view;    
 		}
-        
-		[HttpGet("/Conference/{conferenceId}/{talkName}/Edit")]
+              
 		[ResponseCache(NoStore = true)]
+		[HttpGet("/Conference/{conferenceId}/{talkName}/Edit")]
 		public async Task<IActionResult> GetEditView(string conferenceId, string talkName)
 		{
             // TODO: SpeakerDeck dissapears if not from PDF
@@ -87,9 +88,9 @@ namespace MediaServer.Controllers
             ViewData["OldName"] = talk.TalkName;
 			return View("Save", talk);
 		}
-
-		[HttpGet("/Conference/{conferenceId}/Save")]
+              
 		[ResponseCache(NoStore = true)]
+		[HttpGet("/Conference/{conferenceId}/Save")]
 		public async Task<IActionResult> GetSaveView(string conferenceId)
 		{
             // TODO: Support choosing speaker name from Slack...
@@ -113,9 +114,9 @@ namespace MediaServer.Controllers
 			ViewData["OldName"] = null;
             return View("Save", new Talk { Thumbnail = "/Placeholder.png" });
 		}
-
-		[HttpPost("/Conference/{conferenceId}/Save")]
+              
 		[ResponseCache(NoStore = true)]
+		[HttpPost("/Conference/{conferenceId}/Save")]
         public async Task<IActionResult> SaveTalk(string conferenceId, [FromQuery] string oldName, [Bind("VideoName, Description, Speaker, SpeakerDeck, ThumbnailImageFile, TalkName, DateOfTalkString")] Talk talk)
 		{
             // TODO: Get thumbnail from speaker notes or video if not set
@@ -174,6 +175,12 @@ namespace MediaServer.Controllers
 
 		async Task<IActionResult> GetTalkViewFromService(string conferenceId, string talkName)
         {
+			// TODO: Fix this by specify constarint or something in the routing
+			var extension = Path.GetExtension(talkName);         
+			if (extension == Video.SupportedVideoFileType || extension == Talk.DefaultSpeakerDeckFileExtension) {
+				return NotFound();
+			}
+
 			// TODO: Phone home so we can see most popular talk
             // TODO: Show image of speaker from Slack
             if (!ConferenceExists(conferenceId))

@@ -12,9 +12,8 @@ namespace MediaServer.Services.Cache
 		public const string LatestTalksKey = "lastettalks";
 
 		readonly IMemoryCache memoryCache;      
-        
-		// TODO: Set private when no longer used
-		public readonly MemoryCacheEntryOptions options;
+
+		readonly MemoryCacheEntryOptions options;
 
         public MediaCache(IMemoryCache memoryCache)
         {
@@ -28,6 +27,7 @@ namespace MediaServer.Services.Cache
         {
 			if (!memoryCache.TryGetValue(key, out T view))
             {
+				Console.WriteLine($"Cache miss for {key}");
 				view = await create();
 				memoryCache.Set(key, view, options);
             }
@@ -35,11 +35,20 @@ namespace MediaServer.Services.Cache
             return view;
         }
 
-		public void ClearForTalk(Talk talk) {
-			memoryCache.Remove(LatestTalksKey);
-			memoryCache.Remove(talk.Speaker);
-			memoryCache.Remove(talk.ConferenceId);
-			memoryCache.Remove(GetTalkKey(talk.ConferenceId, talk.TalkName));         
+		public void CacheTalk(Talk talk) {
+			var key = ClearCache(talk);
+			memoryCache.Set(key, talk, options);
+		}
+
+		public string ClearCache(Talk talk) {
+			var talkKey = GetTalkKey(talk.ConferenceId, talk.TalkName);
+            memoryCache.Remove(LatestTalksKey);
+            memoryCache.Remove(talk.Speaker);
+            memoryCache.Remove(talk.ConferenceId);
+			memoryCache.Remove(GetTalkViewKey(talk.ConferenceId, talk.TalkName));
+			memoryCache.Remove(GetTalkNamesKey(talk.ConferenceId));
+            memoryCache.Remove(talkKey);
+			return talkKey;
 		}
 
 		public void ClearForThumbnail(Talk talk) {
@@ -47,7 +56,13 @@ namespace MediaServer.Services.Cache
 			memoryCache.Remove(BlobStoragePersistence.GetThumnnailHashName(talk.TalkName));
 		}
 
-		public static string GetTalkKey(string conferenceId, string talkName)
-		    => conferenceId = talkName;
+		public string GetTalkKey(string conferenceId, string talkName)
+		    => talkName + conferenceId;
+
+		public string GetTalkViewKey(string conferenceId, string talkName)
+            => "view" + talkName + conferenceId;
+
+		public string GetTalkNamesKey(string conferenceId)
+		    => "names" + conferenceId;
     }
 }

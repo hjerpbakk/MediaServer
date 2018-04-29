@@ -7,6 +7,8 @@ namespace MediaServer.Models
 {
     public class Talk
     {
+		public const string DefaultSpeakerDeckFileExtension = ".pdf";
+
         public Talk() {
             DateOfTalk = DateTime.UtcNow;
         }
