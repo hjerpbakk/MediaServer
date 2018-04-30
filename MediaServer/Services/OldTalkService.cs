@@ -78,6 +78,7 @@ namespace MediaServer.Services
 			var containerForConference = cloudBlobClient.GetContainerForConference(conference);
             await containerForConference.CreateIfNotExistsAsync();
 
+            talk.ConferenceId = conference.Id;
             var serializedTalk = JsonConvert.SerializeObject(talk);
 
             var talkReferenceName = GetBlobNameFromTalkName(talk.TalkName);
