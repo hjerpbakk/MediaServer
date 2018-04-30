@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 using MediaServer.Configuration;
 using MediaServer.Services;
@@ -46,8 +47,10 @@ namespace MediaServer
             services.AddSingleton<IConferenceConfig>(config);
             services.AddSingleton<IBlogStorageConfig>(config);
 			services.AddSingleton<ISlackConfig>(config);
-            
+
+            services.AddSingleton<HttpClient>();
 			services.AddSingleton<MediaCache>();
+            services.AddSingleton<CachePopulatorClient>();
 
 			services.AddSingleton<ISlackConnector, SlackConnector.SlackConnector>();
 

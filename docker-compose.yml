@@ -1,6 +1,13 @@
 version: '3'
 
 services:
+  cache-populator:
+    image: ${repo_pre}dips/cache-populator${populate_tag}
+    restart: always
+    ports:
+      - 1337
+    depends_on:
+      - media-server
   media-server:
     image:  ${repo_pre}dips/media-server${tag}
     restart: always

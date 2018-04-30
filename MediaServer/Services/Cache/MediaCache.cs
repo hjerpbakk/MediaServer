@@ -14,10 +14,12 @@ namespace MediaServer.Services.Cache
 		readonly IMemoryCache memoryCache;      
 
 		readonly MemoryCacheEntryOptions options;
+        readonly CachePopulatorClient cachePopulatorClient;
 
-        public MediaCache(IMemoryCache memoryCache)
+        public MediaCache(IMemoryCache memoryCache, CachePopulatorClient cachePopulatorClient)
         {
 			this.memoryCache = memoryCache;
+            this.cachePopulatorClient = cachePopulatorClient;
 			options = new MemoryCacheEntryOptions()
                 .SetAbsoluteExpiration(TimeSpan.FromDays(730))
                 .SetSlidingExpiration(TimeSpan.FromDays(365));
@@ -38,6 +40,7 @@ namespace MediaServer.Services.Cache
 		public void CacheTalk(Talk talk) {
 			var key = ClearCache(talk);
 			memoryCache.Set(key, talk, options);
+            cachePopulatorClient.RePopulateCaches(talk);
 		}
 
 		public string ClearCache(Talk talk) {
