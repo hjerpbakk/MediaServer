@@ -129,7 +129,7 @@ namespace MediaServer.Controllers
 
 			if (oldName != null)
 			{
-                var oldTalk = new Talk { TalkName = oldName };
+                var oldTalk = new Talk { ConferenceId = conferenceId, TalkName = oldName, Speaker = talk.Speaker };
 				await talkService.DeleteTalkFromConference(conference, oldTalk);
             }
 
