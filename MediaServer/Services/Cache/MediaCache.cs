@@ -9,7 +9,7 @@ namespace MediaServer.Services.Cache
 {
     public class MediaCache
     {
-		public const string LatestTalksKey = "lastettalks";
+		public const string LatestTalksKey = "latesttalks";
 
 		readonly IMemoryCache memoryCache;      
 
