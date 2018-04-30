@@ -73,7 +73,6 @@ namespace MediaServer
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-				TelemetryDebugWriter.IsTracingDisabled = true;
             }
             else
             {
