@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 using CachePopulator.Model;
@@ -6,25 +7,26 @@ using Polly;
 
 namespace CachePopulator.Services {
     public class FireAndForgetService {
+		// TODO: Add from config...
         const string BaseUrl = "http://media-server:5000";
         const string ConferenceUrl = BaseUrl + "/Conference";
 
         readonly HttpClient httpClient;
+		readonly IList<string> conferenceEndpoints;
 
-        readonly string[] conferenceEndpoints;
-
-        public FireAndForgetService(HttpClient httpClient) {
+        public FireAndForgetService(HttpClient httpClient, IEnumerable<Conference> conferences) {
             this.httpClient = httpClient;
-            // TODO: Add from config...
-            // TODO: Add all speakers to warmup
+
+			conferenceEndpoints = new List<string> { BaseUrl };
+			foreach (var conference in conferences)
+			{
+				conferenceEndpoints.Add($"{ConferenceUrl}/{conference.Id}");
+			}
+
+			conferenceEndpoints.Add($"{BaseUrl}/Speaker/Runar%20Ovesen%20Hjerpbakk");
+
+			// TODO: Add all speakers to warmup
             // TODOD: Add Save view to warmup
-            conferenceEndpoints = new[] {
-                BaseUrl,
-                $"{ConferenceUrl}/DevDays2018",
-                $"{ConferenceUrl}/Interesting",
-                $"{ConferenceUrl}/OptimusInteresting",
-                $"{BaseUrl}/Speaker/Runar%20Ovesen%20Hjerpbakk"
-            };
         }
 
         public async Task TouchEndpoints(TalkMetadata talkMetadata)

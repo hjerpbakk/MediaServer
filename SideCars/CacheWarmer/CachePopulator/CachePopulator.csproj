@@ -9,16 +9,26 @@
     <Folder Include="Services\" />
     <Folder Include="Extensions\" />
     <Folder Include="Model\" />
+    <Folder Include="Configuration\" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.1.0-preview1-final" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
     <PackageReference Include="Polly" Version="5.9.0" />
+    <PackageReference Include="WindowsAzure.Storage" Version="9.1.1" />
   </ItemGroup>
 
   <ItemGroup>
     <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="2.0.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Remove="config.default.json" />
+    <Content Remove="config.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="config.default.json" />
+    <None Include="config.json" />
+  </ItemGroup>
 </Project>

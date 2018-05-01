@@ -1,4 +1,5 @@
 ﻿using System.Net.Http;
+using CachePopulator.Configuration;
 using CachePopulator.Extensions;
 using CachePopulator.Services;
 using Microsoft.AspNetCore.Builder;
@@ -9,8 +10,15 @@ using Microsoft.Extensions.DependencyInjection;
 namespace CachePopulator
 {
     public class Startup {
-        public Startup(IConfiguration configuration) {
-            Configuration = configuration;
+		public Startup(IHostingEnvironment env)
+        {
+            var builder = new ConfigurationBuilder()
+                .SetBasePath(env.ContentRootPath)
+                .AddJsonFile("appsettings.json")
+                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", true)
+                .AddEnvironmentVariables()
+                .AddJsonFile($"config.json", true);
+            Configuration = builder.Build();
         }
 
         public IConfiguration Configuration { get; }
@@ -18,6 +26,11 @@ namespace CachePopulator
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services) {
             services.AddMvc();
+
+			var config = Configuration.Get<AppConfig>();
+			var conferenceMetaDataService = new ConferenceMetaDataService(config);
+			var conferences = conferenceMetaDataService.CreateConferenceConfig().GetAwaiter().GetResult();
+			services.AddSingleton(conferences);
 
             services.AddSingleton<HttpClient>();
             services.AddSingleton<FireAndForgetService>();
