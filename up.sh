@@ -5,6 +5,6 @@ set -e
 
 export repo_pre=vt-optimus-solr02:5000/
 export tag=:$(cat MediaServer/wwwroot/VERSION.txt)
-export populate_tag=:0.0.1
+export populate_tag=:0.0.2
 
 docker-compose up -d
