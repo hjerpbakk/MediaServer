@@ -21,7 +21,7 @@ namespace MediaServer.Clients {
 				                                    talk.Speaker);
                 var metadataAsJson = JsonConvert.SerializeObject(talkMetadata);
                 var content = new StringContent(metadataAsJson, Encoding.UTF8, "application/json");
-				httpClient.PostAsync("http://localhost:1338/Slack", content);
+				httpClient.PostAsync("http://slack-integration:1338/Slack", content);
             }
             catch (Exception ex) {
 				Console.WriteLine($"Slack Integration failed for {talk} {ex}");
