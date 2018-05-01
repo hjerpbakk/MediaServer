@@ -17,13 +17,4 @@
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
     <PackageReference Include="SlackConnector" Version="4.1.52" />
   </ItemGroup>
-
-  <ItemGroup>
-    <Content Remove="config.default.json" />
-    <Content Remove="config.json" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="config.default.json" />
-    <None Include="config.json" />
-  </ItemGroup>
 </Project>
