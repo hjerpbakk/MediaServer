@@ -12,34 +12,38 @@ namespace CachePopulator.Services {
         const string ConferenceUrl = BaseUrl + "/Conference";
 
         readonly HttpClient httpClient;
-		readonly IList<string> conferenceEndpoints;
+		IEnumerable<Conference> conferences;
 
         public FireAndForgetService(HttpClient httpClient, IEnumerable<Conference> conferences) {
             this.httpClient = httpClient;
-
-			conferenceEndpoints = new List<string> { BaseUrl };
-			foreach (var conference in conferences)
-			{
-				conferenceEndpoints.Add($"{ConferenceUrl}/{conference.Id}");
-			}
-
-			conferenceEndpoints.Add($"{BaseUrl}/Speaker/Runar%20Ovesen%20Hjerpbakk");
-
-			// TODO: Add all speakers to warmup
-            // TODOD: Add Save view to warmup
+			this.conferences = conferences;
+            // TODO: Add all speakers to warmup
         }
 
         public async Task TouchEndpoints(TalkMetadata talkMetadata)
         {
-            await TouchEndpointWithRetry(BaseUrl);
-            var conferenceUrl = $"{ConferenceUrl}/{talkMetadata.Conference}";
-            await TouchEndpointWithRetry(conferenceUrl);
-            var speakerUrl = $"{BaseUrl}/Speaker/{talkMetadata.Speaker}";
-            await TouchEndpointWithRetry(speakerUrl);
+			var endpoints = new[] {
+				BaseUrl,
+				$"{ConferenceUrl}/{talkMetadata.Conference}",
+				$"{BaseUrl}/Speaker/{talkMetadata.Speaker}"
+			};
+
+			foreach (var endpoint in endpoints) {
+                await TouchEndpointWithRetry(endpoint);
+            }
         }
 
         public async Task TouchEndpoints() {
-            foreach (var endpoint in conferenceEndpoints) {
+			var endpoints = new List<string> { BaseUrl };
+            foreach (var conference in conferences) {
+				endpoints.Add($"{ConferenceUrl}/{conference.Id}");
+				endpoints.Add($"{ConferenceUrl}/{conference.Id}/Save");
+            }
+
+			endpoints.Add($"{BaseUrl}/Speaker/Runar%20Ovesen%20Hjerpbakk");
+
+
+			foreach (var endpoint in endpoints) {
                 await TouchEndpointWithRetry(endpoint);
             }
         }
