@@ -12,5 +12,5 @@ RUN dotnet publish "./CachePopulator/CachePopulator.csproj" --output "../dist" -
 FROM microsoft/aspnetcore:2.1.0-preview1
 WORKDIR /app
 COPY --from=builder /source/dist .
-EXPOSE 5000
+EXPOSE 1337
 ENTRYPOINT ["dotnet", "CachePopulator.dll"]

@@ -1,8 +1,6 @@
-﻿using System;
-
-namespace MediaServer.Configuration
+﻿namespace SlackIntegration.Configuration
 {
-    public interface ISlackConfig
+	public interface ISlackConfig
     {
         string SlackToken { get; }
         bool UseTestSlackChannel { get; }

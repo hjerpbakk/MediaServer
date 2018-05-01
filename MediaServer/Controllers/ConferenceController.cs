@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Http;
 using MediaServer.ViewModels;
 using MediaServer.Services.Cache;
 using System.IO;
+using MediaServer.Clients;
 
 namespace MediaServer.Controllers
 {
@@ -19,18 +20,18 @@ namespace MediaServer.Controllers
 	{
 		readonly IOldTalkService talkService;
 		readonly IContentService contentService;
-		readonly ISlackService slackService;
+		readonly SlackIntegrationClient slackIntegrationClient;
 		readonly IConferenceService conferenceService;
 		readonly IThumbnailService thumbnailService;
 		readonly MediaCache cache;
         
-		public ConferenceController(ConferenceConfig conferenceConfig, IOldTalkService talkService, IContentService contentService, ISlackService slackService, IConferenceService conferenceService, IThumbnailService thumbnailService, MediaCache cache)
+		public ConferenceController(ConferenceConfig conferenceConfig, IOldTalkService talkService, IContentService contentService, SlackIntegrationClient slackIntegrationClient, IConferenceService conferenceService, IThumbnailService thumbnailService, MediaCache cache)
 			: base(conferenceConfig)
 		{
 			// TODO: Too many services, move around?         
 			this.talkService = talkService;
 			this.contentService = contentService;
-			this.slackService = slackService;
+			this.slackIntegrationClient = slackIntegrationClient;
 			this.conferenceService = conferenceService;
 			this.thumbnailService = thumbnailService;
 			this.cache = cache;
@@ -146,7 +147,7 @@ namespace MediaServer.Controllers
             if (oldName == null)
             {
 				var thumbnailUrl = await thumbnailService.GetThumbnailUrl(conference, talk, HttpContext);
-				await slackService.PostTalkToChannel(conference, talk, talkUrl, thumbnailUrl);
+				slackIntegrationClient.PublishToSlack(talk, talkUrl, thumbnailUrl);
             }
 
             var escapedTalkName = Uri.EscapeUriString(talk.TalkName);

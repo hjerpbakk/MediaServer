@@ -1,6 +1,13 @@
 version: '3'
 
 services:
+  slack-integration:
+    image: ${repo_pre}dips/slack-integration${slack_tag}
+    restart: always
+    ports:
+      - 1338
+    depends_on:
+      - media-server
   cache-populator:
     image: ${repo_pre}dips/cache-populator${populate_tag}
     restart: always

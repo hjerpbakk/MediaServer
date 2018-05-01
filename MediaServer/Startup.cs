@@ -1,13 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net.Http;
-using System.Threading.Tasks;
+using MediaServer.Clients;
 using MediaServer.Configuration;
 using MediaServer.Services;
 using MediaServer.Services.Cache;
-using Microsoft.ApplicationInsights.Extensibility.Implementation;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -16,12 +13,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Net.Http.Headers;
-using Newtonsoft.Json;
-using SlackConnector;
 
 namespace MediaServer
 {
-    public class Startup
+	public class Startup
     {
         public Startup(IHostingEnvironment env)
         {
@@ -48,25 +43,19 @@ namespace MediaServer
             var conferenceConfig = conferenceMetaDataService.CreateConferenceConfig().GetAwaiter().GetResult();
             services.AddSingleton(conferenceConfig);
 
-			services.AddSingleton<IBlogStorageConfig>(config);
-			services.AddSingleton<ISlackConfig>(config);
+			services.AddSingleton<IBlogStorageConfig>(config);         
             
-            services.AddSingleton<HttpClient>();
-			services.AddSingleton<MediaCache>();
-            services.AddSingleton<CachePopulatorClient>();
-
-			services.AddSingleton<ISlackConnector, SlackConnector.SlackConnector>();
+            services.AddSingleton<HttpClient>();         
+			services.AddSingleton<CacheWarmerClient>();
+			services.AddSingleton<SlackIntegrationClient>();
 
             services.AddSingleton<IFileProvider>(new PhysicalFileProvider(Directory.GetCurrentDirectory()));
             
 			services.AddSingleton<IOldTalkService, OldTalkService>();
-            
 			services.AddSingleton<IThumbnailService, ThumbnailService>();
-
-			services.AddSingleton<IConferenceService, ConferenceService>();
-            
-			services.AddSingleton<IContentService, ContentService>();
-			services.AddSingleton<ISlackService, SlackService>();
+            services.AddSingleton<IConferenceService, ConferenceService>();
+            services.AddSingleton<IContentService, ContentService>();    
+			services.AddSingleton<MediaCache>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -111,11 +100,8 @@ namespace MediaServer
             });
 
 			// TODO: Delete and use latest talks in conference controller as deafult
-            app.UseMvc(routes =>
-            {
-                routes.MapRoute(
-                    name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
+            app.UseMvc(routes => {
+                routes.MapRoute("default", "{controller=Home}/{action=Index}/{id?}");
             });
         }
     }

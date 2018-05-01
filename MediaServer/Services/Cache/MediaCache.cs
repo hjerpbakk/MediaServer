@@ -1,25 +1,25 @@
 ﻿using System;
 using System.Threading.Tasks;
+using MediaServer.Clients;
 using MediaServer.Models;
 using MediaServer.Services.Persistence;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 
 namespace MediaServer.Services.Cache
 {
-    public class MediaCache
+	public class MediaCache
     {
 		public const string LatestTalksKey = "latesttalks";
 
 		readonly IMemoryCache memoryCache;      
 
 		readonly MemoryCacheEntryOptions options;
-        readonly CachePopulatorClient cachePopulatorClient;
+		readonly CacheWarmerClient cacheWarmerClient;
 
-        public MediaCache(IMemoryCache memoryCache, CachePopulatorClient cachePopulatorClient)
+		public MediaCache(IMemoryCache memoryCache, CacheWarmerClient cacheWarmerClient)
         {
 			this.memoryCache = memoryCache;
-            this.cachePopulatorClient = cachePopulatorClient;
+			this.cacheWarmerClient = cacheWarmerClient;
 			options = new MemoryCacheEntryOptions()
                 .SetAbsoluteExpiration(TimeSpan.FromDays(730))
                 .SetSlidingExpiration(TimeSpan.FromDays(365));
@@ -40,7 +40,7 @@ namespace MediaServer.Services.Cache
 		public void CacheTalk(Talk talk) {
 			var key = ClearCache(talk);
 			memoryCache.Set(key, talk, options);
-            cachePopulatorClient.RePopulateCaches(talk);
+			cacheWarmerClient.RePopulateCaches(talk);
 		}
 
 		public string ClearCache(Talk talk) {

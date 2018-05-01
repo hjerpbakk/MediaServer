@@ -326,3 +326,4 @@ MediaServer/config.json
 MediaServer/wwwroot/Conference/**
 MediaServer/wwwroot/css/site.min.css
 MediaServer/wwwroot/js/site.min.js
+SideCars/SlackIntegration/SlackIntegration/config.json
