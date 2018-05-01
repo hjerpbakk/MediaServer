@@ -141,13 +141,10 @@ namespace MediaServer.Controllers
             talk.TalkName = talk.TalkName.Replace("?", "").Replace(":", "");
 			await talkService.SaveTalkFromConference(conference, talk);
 			await thumbnailService.SaveThumbnail(conference, talk);
-            
-			var talkUrl = HttpContext.GetTalkUrl(conference, talk);
-
-            if (oldName == null)
-            {
-				var thumbnailUrl = await thumbnailService.GetThumbnailUrl(conference, talk, HttpContext);
-				slackIntegrationClient.PublishToSlack(talk, talkUrl, thumbnailUrl);
+                     
+            if (oldName == null) {
+				var talkUrl = Paths.GetFullPath(HttpContext, Paths.GetTalkUrl(conference, talk));
+				slackIntegrationClient.PublishToSlack(talk, talkUrl);
             }
 
             var escapedTalkName = Uri.EscapeUriString(talk.TalkName);

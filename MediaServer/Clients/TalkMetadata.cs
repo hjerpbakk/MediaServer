@@ -5,14 +5,13 @@ namespace MediaServer.Clients
 	public class TalkMetadata
     {
         [JsonConstructor]
-		public TalkMetadata(string conferenceId, string talkName, string url, string description, string speaker, string thumbnailUrl)
+		public TalkMetadata(string conferenceId, string talkName, string url, string description, string speaker)
         {
             ConferenceId = conferenceId;
             TalkName = talkName;
             Url = url;
             Description = description;
-            Speaker = speaker;
-            ThumbnailUrl = thumbnailUrl;
+			Speaker = speaker;
         }
 
         public string ConferenceId { get; }
@@ -20,6 +19,5 @@ namespace MediaServer.Clients
         public string Url { get; }
         public string Description { get; }
         public string Speaker { get; }
-        public string ThumbnailUrl { get; }
     }
 }

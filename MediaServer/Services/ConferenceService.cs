@@ -79,7 +79,7 @@ namespace MediaServer.Services
 		}
 
 		async Task<TalkSummary> CreateTalkSummary(Conference conference, Talk talk, HttpContext httpContext) {
-			var url = httpContext.GetTalkUrl(conference, talk);
+			var url = Paths.GetTalkUrl(conference, talk);
 			var thumbnail = await thumbnailService.GetThumbnailUrl(conference, talk, httpContext);
 			return new TalkSummary(talk, url, thumbnail);
 		}

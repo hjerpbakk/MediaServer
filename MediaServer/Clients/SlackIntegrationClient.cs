@@ -12,17 +12,16 @@ namespace MediaServer.Clients {
             this.httpClient = httpClient;
         }
 
-		public void PublishToSlack(Talk talk, string talkUrl, string thumbnailUrl) {
+		public void PublishToSlack(Talk talk, string talkUrl) {
             try {
 				var talkMetadata = new TalkMetadata(talk.ConferenceId, 
 				                                    talk.TalkName, 
 				                                    talkUrl, 
 				                                    talk.Description, 
-				                                    talk.Speaker, 
-				                                    thumbnailUrl);
+				                                    talk.Speaker);
                 var metadataAsJson = JsonConvert.SerializeObject(talkMetadata);
                 var content = new StringContent(metadataAsJson, Encoding.UTF8, "application/json");
-				httpClient.PostAsync("http://slack-integration:1338/Slack", content);
+				httpClient.PostAsync("http://localhost:1338/Slack", content);
             }
             catch (Exception ex) {
 				Console.WriteLine($"Slack Integration failed for {talk} {ex}");

@@ -106,7 +106,7 @@ namespace MediaServer.Services
 
 		async Task<string> CreateThumbnailUrl(Conference conference, Talk talk, HttpContext httpContext)
         {
-            var baseThumbnailUrl = httpContext.GetThumbnailUrl(conference, talk);
+			var baseThumbnailUrl = Paths.GetThumbnailUrl(conference, talk);
             var hash = await GetSavedHashOfThumbnail(conference, talk);
             if (hash == string.Empty)
             {
