@@ -14,7 +14,7 @@ namespace MediaServer.Controllers
 		readonly IThumbnailService thumbnailService;
 		readonly MediaCache cache;
 
-		public ThumbnailController(IConferenceConfig conferenceConfig, IThumbnailService thumbnailService, MediaCache cache)
+		public ThumbnailController(ConferenceConfig conferenceConfig, IThumbnailService thumbnailService, MediaCache cache)
 			: base(conferenceConfig)
         {
 			this.thumbnailService = thumbnailService;

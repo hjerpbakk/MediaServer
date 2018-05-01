@@ -10,7 +10,7 @@ namespace MediaServer.Controllers {
 		protected readonly IDictionary<string, Conference> conferences;
         
 		// TODO: Inject or something #singleton         
-		protected NavigateableController(IConferenceConfig conferenceConfig) {
+		protected NavigateableController(ConferenceConfig conferenceConfig) {
 			conferences = conferenceConfig.Conferences;
 			var navigations = new List<Navigation>(conferences.Count + 1) {
 				new Navigation(Conference.CreateLatestTalks(), "Home")

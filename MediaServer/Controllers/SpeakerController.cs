@@ -12,7 +12,7 @@ namespace MediaServer.Controllers
 		readonly IConferenceService conferenceService;
 		readonly MediaCache talkCache;
 
-		public SpeakerController(IConferenceConfig conferenceConfig, IConferenceService conferenceService, MediaCache talkCache)
+		public SpeakerController(ConferenceConfig conferenceConfig, IConferenceService conferenceService, MediaCache talkCache)
 			: base(conferenceConfig)
 		{
 			this.conferenceService = conferenceService;

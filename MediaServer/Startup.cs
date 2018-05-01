@@ -44,10 +44,13 @@ namespace MediaServer
             services.AddMvc();
 
             var config = Configuration.Get<AppConfig>();         
-            services.AddSingleton<IConferenceConfig>(config);
-            services.AddSingleton<IBlogStorageConfig>(config);
-			services.AddSingleton<ISlackConfig>(config);
+			var conferenceMetaDataService = new ConferenceMetaDataService(config);
+            var conferenceConfig = conferenceMetaDataService.CreateConferenceConfig().GetAwaiter().GetResult();
+            services.AddSingleton(conferenceConfig);
 
+			services.AddSingleton<IBlogStorageConfig>(config);
+			services.AddSingleton<ISlackConfig>(config);
+            
             services.AddSingleton<HttpClient>();
 			services.AddSingleton<MediaCache>();
             services.AddSingleton<CachePopulatorClient>();

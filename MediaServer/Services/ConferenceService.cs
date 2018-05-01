@@ -22,7 +22,7 @@ namespace MediaServer.Services
 		readonly IOldTalkService talkService;
 		readonly IThumbnailService thumbnailService;
 
-		public ConferenceService(IConferenceConfig conferenceConfig, IBlogStorageConfig blobStorageConfig, IOldTalkService talkService, IThumbnailService thumbnailService)
+		public ConferenceService(ConferenceConfig conferenceConfig, IBlogStorageConfig blobStorageConfig, IOldTalkService talkService, IThumbnailService thumbnailService)
         {
 			conferences = conferenceConfig.Conferences.Values;
 			var storageAccount = CloudStorageAccount.Parse(blobStorageConfig.BlobStorageConnectionString);

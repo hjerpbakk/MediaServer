@@ -16,7 +16,7 @@ namespace MediaServer.Controllers
 		readonly IConferenceService conferenceService;
 		readonly MediaCache cache;
         
-		public HomeController(IConferenceConfig conferenceConfig, IConferenceService conferenceService, MediaCache talkCache) 
+		public HomeController(ConferenceConfig conferenceConfig, IConferenceService conferenceService, MediaCache talkCache) 
 			: base(conferenceConfig) {
 			this.conferenceService = conferenceService;
 			this.cache = talkCache;

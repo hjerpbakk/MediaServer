@@ -24,7 +24,7 @@ namespace MediaServer.Controllers
 		readonly IThumbnailService thumbnailService;
 		readonly MediaCache cache;
         
-		public ConferenceController(IConferenceConfig conferenceConfig, IOldTalkService talkService, IContentService contentService, ISlackService slackService, IConferenceService conferenceService, IThumbnailService thumbnailService, MediaCache cache)
+		public ConferenceController(ConferenceConfig conferenceConfig, IOldTalkService talkService, IContentService contentService, ISlackService slackService, IConferenceService conferenceService, IThumbnailService thumbnailService, MediaCache cache)
 			: base(conferenceConfig)
 		{
 			// TODO: Too many services, move around?         
