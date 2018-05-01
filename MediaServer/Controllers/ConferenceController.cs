@@ -34,6 +34,8 @@ namespace MediaServer.Controllers
 			this.conferenceService = conferenceService;
 			this.thumbnailService = thumbnailService;
 			this.cache = cache;
+
+			// TODO: Need speaker abstraction
 		}
               
 		[ResponseCache(NoStore = true)]
