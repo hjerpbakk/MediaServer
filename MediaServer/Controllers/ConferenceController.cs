@@ -43,7 +43,6 @@ namespace MediaServer.Controllers
 		[HttpGet("/Conference/{conferenceId}")]      
 		public async Task<IActionResult> GetConferenceView(string conferenceId)
 		{
-			// TODO: Sti til mappe har feil margin i viewet
 			var view = await cache.GetOrSet(
 				conferenceId,
 				() => GetAllTalksFromConferenceView(conferenceId));
