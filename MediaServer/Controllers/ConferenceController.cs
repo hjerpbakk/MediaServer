@@ -153,7 +153,6 @@ namespace MediaServer.Controllers
         
 		async Task<IActionResult> GetAllTalksFromConferenceView(string conferenceId)
         {
-			// TODO: Make conference header clickable and open Slack channel
             // TODO: Make O: link clickable
             // TODO: Button for add is blue on click
             // TODO: Button for add is ugly
@@ -169,6 +168,7 @@ namespace MediaServer.Controllers
             // TODO: Create a conference viewmodel and use model binding
             ViewData["VideoPath"] = conference.VideoPath;
             ViewData["Talks"] = await conferenceService.GetTalksForConference(conference, HttpContext);
+			ViewData["SlackUrl"] = $"slack://channel?team=T0ACXDN4C&id={conference.SlackChannelId}";
 
             return View("Index");
         }

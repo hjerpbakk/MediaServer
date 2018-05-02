@@ -58,3 +58,7 @@ a:hover, a:focus {
 li.nav-item.active {
     text-decoration: underline;
 }
+
+h1 a, h1 a:hover, h1 a:focus {
+    color: black !important
+}

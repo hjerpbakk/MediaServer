@@ -3,13 +3,6 @@ using Newtonsoft.Json;
 
 namespace MediaServer.Models {
 	public struct Conference : IEquatable<Conference> {
-		//public Conference()
-		//{
-			// TODO: Write bug report to MS with simplest reprod, then blog about it when fixed
-            // Also wrong about struct and parameterless constructor
-			// Tags: configurationbuilder AddJsonFile jsonconstructor
-		//}
-
 		public Conference(string id, string name) {
 			Id = id;
 			Name = name;
