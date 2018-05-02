@@ -168,6 +168,7 @@ namespace MediaServer.Controllers
             // TODO: Create a conference viewmodel and use model binding
             ViewData["VideoPath"] = conference.VideoPath;
             ViewData["Talks"] = await conferenceService.GetTalksForConference(conference, HttpContext);
+			// TODO: Take teamId from config
 			ViewData["SlackUrl"] = $"slack://channel?team=T0ACXDN4C&id={conference.SlackChannelId}";
 
             return View("Index");
