@@ -5,6 +5,7 @@ using MediaServer.Clients;
 using MediaServer.Configuration;
 using MediaServer.Services;
 using MediaServer.Services.Cache;
+using MediaServer.Services.Persistence;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -50,10 +51,11 @@ namespace MediaServer
 			services.AddSingleton<SlackIntegrationClient>();
 
             services.AddSingleton<IFileProvider>(new PhysicalFileProvider(Directory.GetCurrentDirectory()));
+			services.AddSingleton<BlobStoragePersistence>();
             
 			services.AddSingleton<IOldTalkService, OldTalkService>();
-			services.AddSingleton<IThumbnailService, ThumbnailService>();
-            services.AddSingleton<IConferenceService, ConferenceService>();
+			services.AddSingleton<ThumbnailService>();
+            services.AddSingleton<ConferenceService>();
             services.AddSingleton<IContentService, ContentService>();    
 			services.AddSingleton<MediaCache>();
         }

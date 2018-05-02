@@ -26,7 +26,7 @@ namespace MediaServer.Services
 		readonly static char[] dbTalkPrefix;
 
 		readonly CloudBlobClient cloudBlobClient;
-		readonly IThumbnailService thumbnailService;
+		readonly ThumbnailService thumbnailService;
 		readonly MediaCache cache;
 
 		static OldTalkService() {
@@ -34,7 +34,7 @@ namespace MediaServer.Services
 			dbTalkPrefix = BlobStoragePersistence.TalkPrefix.ToCharArray();
 		}
 
-		public OldTalkService(IBlogStorageConfig blobStorageConfig, IThumbnailService thumbnailService, MediaCache cache)
+		public OldTalkService(IBlogStorageConfig blobStorageConfig, ThumbnailService thumbnailService, MediaCache cache)
 		{
 			var storageAccount = CloudStorageAccount.Parse(blobStorageConfig.BlobStorageConnectionString);         
             cloudBlobClient = storageAccount.CreateCloudBlobClient();

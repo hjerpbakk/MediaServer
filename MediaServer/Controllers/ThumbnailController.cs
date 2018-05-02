@@ -11,10 +11,10 @@ namespace MediaServer.Controllers
 {
 	public class ThumbnailController : NavigateableController
     {
-		readonly IThumbnailService thumbnailService;
+		readonly ThumbnailService thumbnailService;
 		readonly MediaCache cache;
 
-		public ThumbnailController(ConferenceConfig conferenceConfig, IThumbnailService thumbnailService, MediaCache cache)
+		public ThumbnailController(ConferenceConfig conferenceConfig, ThumbnailService thumbnailService, MediaCache cache)
 			: base(conferenceConfig)
         {
 			this.thumbnailService = thumbnailService;

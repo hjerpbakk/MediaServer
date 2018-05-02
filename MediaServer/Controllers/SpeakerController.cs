@@ -3,16 +3,15 @@ using MediaServer.Configuration;
 using MediaServer.Services;
 using MediaServer.Services.Cache;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Caching.Memory;
 
 namespace MediaServer.Controllers
 {
 	public class SpeakerController : NavigateableController
 	{
-		readonly IConferenceService conferenceService;
+		readonly ConferenceService conferenceService;
 		readonly MediaCache talkCache;
 
-		public SpeakerController(ConferenceConfig conferenceConfig, IConferenceService conferenceService, MediaCache talkCache)
+		public SpeakerController(ConferenceConfig conferenceConfig, ConferenceService conferenceService, MediaCache talkCache)
 			: base(conferenceConfig)
 		{
 			this.conferenceService = conferenceService;
@@ -33,7 +32,7 @@ namespace MediaServer.Controllers
 		async Task<IActionResult> GetViewForSpeaker(string speakerName)
 		{
 			SetCurrentNavigation(speakerName);
-			ViewData["Talks"] = await conferenceService.GetTalksBySpeaker(speakerName, HttpContext);         
+			ViewData["Talks"] = await conferenceService.GetTalksBySpeaker(speakerName);         
 			return View("Views/Home/Index.cshtml");
 		}
 	}

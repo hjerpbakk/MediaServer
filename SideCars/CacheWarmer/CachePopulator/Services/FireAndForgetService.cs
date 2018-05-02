@@ -12,7 +12,7 @@ namespace CachePopulator.Services {
         const string ConferenceUrl = BaseUrl + "/Conference";
 
         readonly HttpClient httpClient;
-		IEnumerable<Conference> conferences;
+		readonly IEnumerable<Conference> conferences;
 
         public FireAndForgetService(HttpClient httpClient, IEnumerable<Conference> conferences) {
             this.httpClient = httpClient;
@@ -41,8 +41,7 @@ namespace CachePopulator.Services {
             }
 
 			endpoints.Add($"{BaseUrl}/Speaker/Runar%20Ovesen%20Hjerpbakk");
-
-
+                     
 			foreach (var endpoint in endpoints) {
                 await TouchEndpointWithRetry(endpoint);
             }

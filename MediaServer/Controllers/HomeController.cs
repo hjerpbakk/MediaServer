@@ -13,10 +13,10 @@ namespace MediaServer.Controllers
 {
 	public class HomeController : NavigateableController
     {
-		readonly IConferenceService conferenceService;
+		readonly ConferenceService conferenceService;
 		readonly MediaCache cache;
         
-		public HomeController(ConferenceConfig conferenceConfig, IConferenceService conferenceService, MediaCache talkCache) 
+		public HomeController(ConferenceConfig conferenceConfig, ConferenceService conferenceService, MediaCache talkCache) 
 			: base(conferenceConfig) {
 			this.conferenceService = conferenceService;
 			this.cache = talkCache;
@@ -33,7 +33,7 @@ namespace MediaServer.Controllers
 
 		async Task<IActionResult> GetView() {
 			SetCurrentNavigationToHome();         
-            ViewData["Talks"] = await conferenceService.GetLatestTalks(HttpContext);         
+            ViewData["Talks"] = await conferenceService.GetLatestTalks();         
             // TODO: Show conference link on card
             // TODO: Use model binding
             return View();

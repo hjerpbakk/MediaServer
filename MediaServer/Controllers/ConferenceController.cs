@@ -21,11 +21,11 @@ namespace MediaServer.Controllers
 		readonly IOldTalkService talkService;
 		readonly IContentService contentService;
 		readonly SlackIntegrationClient slackIntegrationClient;
-		readonly IConferenceService conferenceService;
-		readonly IThumbnailService thumbnailService;
+		readonly ConferenceService conferenceService;
+		readonly ThumbnailService thumbnailService;
 		readonly MediaCache cache;
         
-		public ConferenceController(ConferenceConfig conferenceConfig, IOldTalkService talkService, IContentService contentService, SlackIntegrationClient slackIntegrationClient, IConferenceService conferenceService, IThumbnailService thumbnailService, MediaCache cache)
+		public ConferenceController(ConferenceConfig conferenceConfig, IOldTalkService talkService, IContentService contentService, SlackIntegrationClient slackIntegrationClient, ConferenceService conferenceService, ThumbnailService thumbnailService, MediaCache cache)
 			: base(conferenceConfig)
 		{
 			// TODO: Too many services, move around?         
@@ -80,7 +80,7 @@ namespace MediaServer.Controllers
 
 			SetCurrentNavigation(conference, $"Edit {talk.TalkName}");
 
-			talk.Thumbnail = await thumbnailService.GetThumbnailUrl(conference, talk, HttpContext);
+			talk.Thumbnail = await thumbnailService.GetThumbnailUrl(conference, talk);
             var controllerName = ControllerContext.RouteData.Values["controller"].ToString();
             var availableVideos = new List<Video>() { new Video(talk.VideoName) };
 			var videosFromConference = await contentService.GetVideosFromConference(controllerName, conference);
@@ -122,7 +122,7 @@ namespace MediaServer.Controllers
 		[HttpPost("/Conference/{conferenceId}/Save")]
         public async Task<IActionResult> SaveTalk(string conferenceId, [FromQuery] string oldName, [Bind("VideoName, Description, Speaker, SpeakerDeck, ThumbnailImageFile, TalkName, DateOfTalkString")] Talk talk)
 		{
-            // TODO: Get thumbnail from speaker notes or video if not set
+			// TODO: Get thumbnail from speaker notes or video if not set
 			if (!ConferenceExists(conferenceId))
             {
                 return NotFound();
@@ -140,7 +140,7 @@ namespace MediaServer.Controllers
 			// TODO: Talks with # in filename or name doesn't work now
             talk.TalkName = talk.TalkName.Replace("?", "").Replace(":", "");
 			await talkService.SaveTalkFromConference(conference, talk);
-			await thumbnailService.SaveThumbnail(conference, talk);
+			await thumbnailService.SaveThumbnail(conference, talk, oldName);
                      
             if (oldName == null) {
 				var talkUrl = Paths.GetFullPath(HttpContext, Paths.GetTalkUrl(conference, talk));

@@ -15,14 +15,14 @@ using Newtonsoft.Json;
 
 namespace MediaServer.Services
 {
-	public class ConferenceService : IConferenceService
+	public class ConferenceService
     {
 		readonly IEnumerable<Conference> conferences;
 		readonly CloudBlobClient cloudBlobClient;
 		readonly IOldTalkService talkService;
-		readonly IThumbnailService thumbnailService;
+		readonly ThumbnailService thumbnailService;
 
-		public ConferenceService(ConferenceConfig conferenceConfig, IBlogStorageConfig blobStorageConfig, IOldTalkService talkService, IThumbnailService thumbnailService)
+		public ConferenceService(ConferenceConfig conferenceConfig, IBlogStorageConfig blobStorageConfig, IOldTalkService talkService, ThumbnailService thumbnailService)
         {
 			conferences = conferenceConfig.Conferences.Values;
 			var storageAccount = CloudStorageAccount.Parse(blobStorageConfig.BlobStorageConnectionString);
@@ -31,11 +31,11 @@ namespace MediaServer.Services
 			this.thumbnailService = thumbnailService;
         }
 
-		public async Task<IEnumerable<TalkSummary>> GetLatestTalks(HttpContext httpContext)
+		public async Task<IEnumerable<TalkSummary>> GetLatestTalks()
 		{
             // TODO: Move implementation of this part of talkservice here
 			var talks = await talkService.GetLatestTalks(conferences);
-			var orderedSummaries = await Task.WhenAll(talks.Select(t => CreateTalkSummary(t.Conference, t.Talk, httpContext)));
+			var orderedSummaries = await Task.WhenAll(talks.Select(t => CreateTalkSummary(t.Conference, t.Talk)));
 			return orderedSummaries;
 		}
 
@@ -43,11 +43,11 @@ namespace MediaServer.Services
 		{
 			// TODO: Move implementation of this part of talkservice here
 			var talks = await talkService.GetTalksFromConference(conference);
-			var orderedSummaries = await Task.WhenAll(talks.Select(talk => CreateTalkSummary(conference, talk, httpContext)));
+			var orderedSummaries = await Task.WhenAll(talks.Select(talk => CreateTalkSummary(conference, talk)));
 			return orderedSummaries;
 		}
 
-		public async Task<IEnumerable<TalkSummary>> GetTalksBySpeaker(string speakerName, HttpContext httpContext) {
+		public async Task<IEnumerable<TalkSummary>> GetTalksBySpeaker(string speakerName) {
 			var talks = new List<LatestTalk>();
             foreach (var conference in conferences)
             {
@@ -74,13 +74,13 @@ namespace MediaServer.Services
 
 			var orderedSummaries = await Task.WhenAll(talks
 				.OrderByDescending(t => t.Talk.DateOfTalk)
-                .Select(t => CreateTalkSummary(t.Conference, t.Talk, httpContext)));
+                .Select(t => CreateTalkSummary(t.Conference, t.Talk)));
 			return orderedSummaries;
 		}
 
-		async Task<TalkSummary> CreateTalkSummary(Conference conference, Talk talk, HttpContext httpContext) {
+		async Task<TalkSummary> CreateTalkSummary(Conference conference, Talk talk) {
 			var url = Paths.GetTalkUrl(conference, talk);
-			var thumbnail = await thumbnailService.GetThumbnailUrl(conference, talk, httpContext);
+			var thumbnail = await thumbnailService.GetThumbnailUrl(conference, talk);
 			return new TalkSummary(talk, url, thumbnail);
 		}
 	}

@@ -14,20 +14,22 @@ using Microsoft.WindowsAzure.Storage.Blob;
 
 namespace MediaServer.Services
 {
-	public class ThumbnailService : IThumbnailService
+	public class ThumbnailService
     {
         const string HashContentType = "text/plain";
 
 		readonly CloudBlobClient cloudBlobClient;
 		readonly IFileProvider fileProvider;
 		readonly MediaCache cache;
+		readonly BlobStoragePersistence blobStoragePersistence;
 
-		public ThumbnailService(IBlogStorageConfig blobStorageConfig, IFileProvider fileProvider, MediaCache cache)
+		public ThumbnailService(IBlogStorageConfig blobStorageConfig, IFileProvider fileProvider, MediaCache cache, BlobStoragePersistence blobStoragePersistence)
         {
 			var storageAccount = CloudStorageAccount.Parse(blobStorageConfig.BlobStorageConnectionString);
             cloudBlobClient = storageAccount.CreateCloudBlobClient();
 			this.fileProvider = fileProvider;
 			this.cache = cache;
+			this.blobStoragePersistence = blobStoragePersistence;
         }
 
 		public async Task<Image> GetTalkThumbnail(Conference conference, string name)
@@ -53,14 +55,20 @@ namespace MediaServer.Services
             }
 		}
 
-		public async Task SaveThumbnail(Conference conference, Talk talk)
+		public async Task SaveThumbnail(Conference conference, Talk talk, string oldNameOfTalk = null)
 		{
-			if (talk.ThumbnailImageFile == null)
-            {
-                return;
-            }
-
 			cache.ClearForThumbnail(talk);
+            if (talk.ThumbnailImageFile == null) {
+				if (oldNameOfTalk != null) {
+					await blobStoragePersistence.RenameBlob(conference, oldNameOfTalk, talk.TalkName);
+					await blobStoragePersistence.RenameBlob(conference, 
+					                                        BlobStoragePersistence.GetThumnnailHashName(oldNameOfTalk), 
+					                                        BlobStoragePersistence.GetThumnnailHashName(talk.TalkName));
+                }            
+
+				return;
+            }
+                    
             // TODO: Protect against other filetypes and set a max size. Can maxsize be checked i JS too?
             // https://blogs.msdn.microsoft.com/dotnet/2017/01/19/net-core-image-processing/
             var imageFile = talk.ThumbnailImageFile;
@@ -72,39 +80,31 @@ namespace MediaServer.Services
 					imageData = ms.ToArray();
                 }
             }
-
-			var hash = GetHashOfImage(imageData);
+            
 			var containerForConference = cloudBlobClient.GetContainerForConference(conference);
-            var thumbnailReference = containerForConference.GetBlockBlobReference(talk.TalkName);        
-            var exists = await thumbnailReference.ExistsAsync();
-			if (exists && thumbnailReference.Properties.Length == imageData.Length)
-            {
-				var previousHash = await GetSavedHashOfThumbnail(conference, talk);
-				if (hash == previousHash) {
-					return;	
-				}
-            }
 
+            var thumbnailReference = containerForConference.GetBlockBlobReference(talk.TalkName);  
 			await thumbnailReference.UploadFromByteArrayAsync(imageData, 0, imageData.Length);
             thumbnailReference.Properties.ContentType = imageFile.ContentType;
             await thumbnailReference.SetPropertiesAsync();
-
+                     
 			var hashName = BlobStoragePersistence.GetThumnnailHashName(talk.TalkName);
-			var hashRefrence = containerForConference.GetBlockBlobReference(hashName);
-			await hashRefrence.UploadTextAsync(hash);
-			hashRefrence.Properties.ContentType = HashContentType;
-			await hashRefrence.SetPropertiesAsync();
+            var hashReference = containerForConference.GetBlockBlobReference(hashName);
+			var hash = GetHashOfImage(imageData);
+			await hashReference.UploadTextAsync(hash);
+			hashReference.Properties.ContentType = HashContentType;
+			await hashReference.SetPropertiesAsync();
 		}
 
-		public async Task<string> GetThumbnailUrl(Conference conference, Talk talk, HttpContext httpContext)
+		public async Task<string> GetThumbnailUrl(Conference conference, Talk talk)
 		{
 			var thumbnailUrl = await cache.GetOrSet(
 				BlobStoragePersistence.GetThumnnailHashName(talk.TalkName), 
-				() => CreateThumbnailUrl(conference, talk, httpContext));
+				() => CreateThumbnailUrl(conference, talk));
 			return thumbnailUrl;
 		}
 
-		async Task<string> CreateThumbnailUrl(Conference conference, Talk talk, HttpContext httpContext)
+		async Task<string> CreateThumbnailUrl(Conference conference, Talk talk)
         {
 			var baseThumbnailUrl = Paths.GetThumbnailUrl(conference, talk);
             var hash = await GetSavedHashOfThumbnail(conference, talk);
