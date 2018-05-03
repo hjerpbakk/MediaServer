@@ -54,6 +54,7 @@ namespace SlackIntegration.Services {
 				return new User[0];
             }
 
+			// TODO: Bug in SlackIntegration -> SlackBot has no bot flag set
 			var users = (await connection.GetUsers())
 				.Where(u => !u.Deleted && !u.IsBot && !u.IsGuest)
 				.Select(u => new User(u))

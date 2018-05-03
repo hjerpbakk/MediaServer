@@ -43,6 +43,7 @@ namespace MediaServer.Controllers
 		[HttpGet("/Conference/{conferenceId}")]      
 		public async Task<IActionResult> GetConferenceView(string conferenceId)
 		{
+			// TODO: User visible view count...
 			var view = await cache.GetOrSet(
 				conferenceId,
 				() => GetAllTalksFromConferenceView(conferenceId));
