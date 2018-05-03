@@ -153,10 +153,8 @@ namespace MediaServer.Controllers
         
 		async Task<IActionResult> GetAllTalksFromConferenceView(string conferenceId)
         {
-            // TODO: Make O: link clickable
             // TODO: Button for add is blue on click
             // TODO: Button for add is ugly
-            // TODO: Phone home so we can see most popular conference         
             if (!ConferenceExists(conferenceId))
             {
                 return NotFound();
@@ -181,8 +179,7 @@ namespace MediaServer.Controllers
 			if (extension == Video.SupportedVideoFileType || extension == Talk.DefaultSpeakerDeckFileExtension) {
 				return NotFound();
 			}
-
-			// TODO: Phone home so we can see most popular talk
+                     
             // TODO: Show image of speaker from Slack
             if (!ConferenceExists(conferenceId))
             {
