@@ -23,5 +23,9 @@ namespace SlackIntegration.Controllers {
 			await slackService.PostTalkToChannel(conference, talk);
             return Ok();
         }
+
+		[HttpGet]
+		public async Task<User[]> ListUsers() 
+            => await slackService.ListUsers();      
     }
 }

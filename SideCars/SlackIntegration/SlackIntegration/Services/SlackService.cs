@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
 using SlackConnector;
 using SlackConnector.Models;
 using SlackIntegration.Configuration;
@@ -44,5 +45,22 @@ namespace SlackIntegration.Services {
 
             await connection.Close();
         }
+
+		public async Task<User[]> ListUsers() {
+			var connection = await connector.Connect(config.SlackToken);
+            if (connection == null)
+            {
+                // TODO: Try again etc
+				return new User[0];
+            }
+
+			var users = (await connection.GetUsers())
+				.Where(u => !u.Deleted && !u.IsBot && !u.IsGuest)
+				.Select(u => new User(u))
+				.ToArray();
+
+			await connection.Close();
+			return users;
+		}
     }
 }
