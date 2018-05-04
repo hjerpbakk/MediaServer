@@ -56,7 +56,7 @@ namespace MediaServer
 			var users = new Users(slackUsers);
 			services.AddSingleton(httpClient);
 			services.AddSingleton(users); 
-			services.AddSingleton(slackIntegrationClient);
+			services.AddSingleton<ISlackClient>(slackIntegrationClient);
 			services.AddSingleton<CacheWarmerClient>();
 
             services.AddSingleton<IFileProvider>(new PhysicalFileProvider(Directory.GetCurrentDirectory()));

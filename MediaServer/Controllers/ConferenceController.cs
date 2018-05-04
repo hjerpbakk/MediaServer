@@ -20,19 +20,19 @@ namespace MediaServer.Controllers
 	{
 		readonly IOldTalkService talkService;
 		readonly IContentService contentService;
-		readonly SlackIntegrationClient slackIntegrationClient;
+		readonly ISlackClient slackClient;
 		readonly ConferenceService conferenceService;
 		readonly ThumbnailService thumbnailService;
 		readonly MediaCache cache;
 		readonly Users users;
         
-		public ConferenceController(ConferenceConfig conferenceConfig, IOldTalkService talkService, IContentService contentService, SlackIntegrationClient slackIntegrationClient, ConferenceService conferenceService, ThumbnailService thumbnailService, MediaCache cache, Users users)
+		public ConferenceController(ConferenceConfig conferenceConfig, IOldTalkService talkService, IContentService contentService, ISlackClient slackClient, ConferenceService conferenceService, ThumbnailService thumbnailService, MediaCache cache, Users users)
 			: base(conferenceConfig)
 		{
 			// TODO: Too many services, move around?         
 			this.talkService = talkService;
 			this.contentService = contentService;
-			this.slackIntegrationClient = slackIntegrationClient;
+			this.slackClient = slackClient;
 			this.conferenceService = conferenceService;
 			this.thumbnailService = thumbnailService;
 			this.cache = cache;
@@ -146,7 +146,7 @@ namespace MediaServer.Controllers
                      
             if (oldName == null) {
 				var talkUrl = Paths.GetFullPath(HttpContext, Paths.GetTalkUrl(conference, talk));
-				slackIntegrationClient.PublishToSlack(talk, talkUrl);
+				slackClient.PublishToSlack(talk, talkUrl);
             }
 
             var escapedTalkName = Uri.EscapeUriString(talk.TalkName);
@@ -168,7 +168,7 @@ namespace MediaServer.Controllers
             // TODO: Create a conference viewmodel and use model binding
             ViewData["VideoPath"] = conference.VideoPath;
             ViewData["Talks"] = await conferenceService.GetTalksForConference(conference, HttpContext);
-			ViewData["SlackUrl"] = slackIntegrationClient.GetChannelLink(conferenceId, conference.SlackChannelId);
+			ViewData["SlackUrl"] = slackClient.GetChannelLink(conferenceId, conference.SlackChannelId);
 
             return View("Index");
         }
