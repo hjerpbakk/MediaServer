@@ -65,7 +65,7 @@ namespace MediaServer
 			services.AddSingleton<IOldTalkService, OldTalkService>();
 			services.AddSingleton<ThumbnailService>();
             services.AddSingleton<ConferenceService>();
-            services.AddSingleton<IContentService, ContentService>();    
+            services.AddSingleton<ContentService>();    
 			services.AddSingleton<MediaCache>();
         }
 

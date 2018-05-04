@@ -19,14 +19,14 @@ namespace MediaServer.Controllers
 	public class ConferenceController : NavigateableController
 	{
 		readonly IOldTalkService talkService;
-		readonly IContentService contentService;
+		readonly ContentService contentService;
 		readonly ISlackClient slackClient;
 		readonly ConferenceService conferenceService;
 		readonly ThumbnailService thumbnailService;
 		readonly MediaCache cache;
 		readonly Users users;
         
-		public ConferenceController(ConferenceConfig conferenceConfig, IOldTalkService talkService, IContentService contentService, ISlackClient slackClient, ConferenceService conferenceService, ThumbnailService thumbnailService, MediaCache cache, Users users)
+		public ConferenceController(ConferenceConfig conferenceConfig, IOldTalkService talkService, ContentService contentService, ISlackClient slackClient, ConferenceService conferenceService, ThumbnailService thumbnailService, MediaCache cache, Users users)
 			: base(conferenceConfig)
 		{
 			// TODO: Too many services, move around?         
@@ -138,8 +138,8 @@ namespace MediaServer.Controllers
 				await talkService.DeleteTalkFromConference(conference, oldTalk);
             }
 
-            // TODO: Client verification also and proper replace here
-			// TODO: Talks with # in filename or name doesn't work now
+            // TODO: Client verification also
+			// TODO: proper replace here
 			talk.TalkName = talk.TalkName.Replace("?", "").Replace(":", " - ").Replace("/", "-").Replace("\"", "-").Replace("#", "");
 			await talkService.SaveTalkFromConference(conference, talk);
 			await thumbnailService.SaveThumbnail(conference, talk, oldName);

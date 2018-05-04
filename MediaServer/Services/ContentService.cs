@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace MediaServer.Services
 {
-    public class ContentService : IContentService
+    public class ContentService
     {
         readonly string hostingPath;
         readonly IOldTalkService talkService;
@@ -18,11 +18,13 @@ namespace MediaServer.Services
             this.talkService = talkService;
         }
 
+        // TODO: Add method to verify that slides exist on disk. Prepopulate in JS
+
         public async Task<Video[]> GetVideosFromConference(string conferenceBasePath, Conference conference) {
             var path = Path.Combine(hostingPath, conferenceBasePath, conference.Id);
             var directory = new DirectoryInfo(path);
             if (!directory.Exists) {
-                // TODO: Logg her at oppsett er feil
+                Console.WriteLine($"Could not find directory for {conference.Id}. Server setup is wrong.");
                 return new Video[0];
             }
 
