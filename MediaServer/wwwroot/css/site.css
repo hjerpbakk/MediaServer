@@ -25,16 +25,17 @@
     border-color: #C62221
 }
 
-.btn-primary:hover, .btn-primary:focus, .btn-primary:active {
+.btn-primary:hover, .btn-primary:focus, .btn-primary:active, .btn-primary:not(:disabled):not(.disabled):active {
+    color: #fff;
     background-color: #941918;
-    border-color: #941918
+    border-color: #941918;
 }
 
 a {
     color: #C62221
 }
 
-a:hover, a:focus {
+a:hover, a:focus, a:active {
     color: #941918
 }
 

@@ -155,7 +155,6 @@ namespace MediaServer.Controllers
         
 		async Task<IActionResult> GetAllTalksFromConferenceView(string conferenceId)
         {
-            // TODO: Button for add is blue on click
             // TODO: Button for add is ugly
             if (!ConferenceExists(conferenceId))
             {
