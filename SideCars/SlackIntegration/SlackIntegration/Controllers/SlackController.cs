@@ -25,7 +25,9 @@ namespace SlackIntegration.Controllers {
         }
 
 		[HttpGet]
-		public async Task<User[]> ListUsers() 
-            => await slackService.ListUsers();      
+		public async Task<User[]> ListUsers() => await slackService.ListUsers();
+
+		[HttpGet("Links")]
+		public SlackLink GetMetaData() => slackService.GetMetaData();      
     }
 }

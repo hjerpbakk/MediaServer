@@ -63,5 +63,11 @@ namespace SlackIntegration.Services {
 			await connection.Close();
 			return users;
 		}
+
+		public SlackLink GetMetaData() {
+            var channelBaseLink = $"slack://channel?team={config.SlackTeamId}&id=";
+			var dmBaseLink = $"slack://user?team={config.SlackTeamId}&id=";
+			return new SlackLink(channelBaseLink, dmBaseLink);
+		}
     }
 }

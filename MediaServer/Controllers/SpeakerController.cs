@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using MediaServer.Clients;
 using MediaServer.Configuration;
 using MediaServer.Models;
 using MediaServer.Services;
@@ -12,13 +13,15 @@ namespace MediaServer.Controllers
 		readonly ConferenceService conferenceService;
 		readonly MediaCache talkCache;
 		readonly Users users;
+		readonly SlackIntegrationClient slackIntegrationClient;
 
-		public SpeakerController(ConferenceConfig conferenceConfig, ConferenceService conferenceService, MediaCache talkCache, Users users)
+		public SpeakerController(ConferenceConfig conferenceConfig, ConferenceService conferenceService, MediaCache talkCache, Users users, SlackIntegrationClient slackIntegrationClient)
 			: base(conferenceConfig)
 		{
 			this.conferenceService = conferenceService;
 			this.talkCache = talkCache;
 			this.users = users;
+			this.slackIntegrationClient = slackIntegrationClient;
 		}
 
 		// TODO: Add a top speaker list
@@ -36,7 +39,9 @@ namespace MediaServer.Controllers
 		{
 			SetCurrentNavigation(speakerName);
 			ViewData["Talks"] = await conferenceService.GetTalksBySpeaker(speakerName);
-			ViewData["User"] = users.GetUser(speakerName);
+			var user = users.GetUser(speakerName);
+			ViewData["User"] = user;
+			ViewData["SlackUrl"] = slackIntegrationClient.GetDmLink(user.Name, user.SlackId);
 			return View("Views/Home/Index.cshtml");
 		}
 	}

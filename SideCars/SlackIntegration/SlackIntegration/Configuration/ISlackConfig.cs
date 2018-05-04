@@ -3,6 +3,7 @@
 	public interface ISlackConfig
     {
         string SlackToken { get; }
-        bool UseTestSlackChannel { get; }
+		string SlackTeamId { get; }
+		bool UseTestSlackChannel { get; }     
     }
 }

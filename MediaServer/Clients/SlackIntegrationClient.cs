@@ -9,6 +9,9 @@ namespace MediaServer.Clients {
 	public class SlackIntegrationClient {
         readonly HttpClient httpClient;
 
+		SlackLink slackLink;
+
+		// TODO: create two different interfaces. Getusers and populat metadata only needed at startup
 		public SlackIntegrationClient(HttpClient httpClient) {
             this.httpClient = httpClient;
         }
@@ -42,5 +45,23 @@ namespace MediaServer.Clients {
 				return new User[0];
             }
 		}
+
+		public async Task PopulateMetaData() {
+			try
+            {
+                var response = await httpClient.GetStringAsync("http://slack-integration:1338/Slack/Links");
+				slackLink = JsonConvert.DeserializeObject<SlackLink>(response);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Could not get links from Slack {ex}");
+            }
+		}
+
+		public string GetChannelLink(string conferenceName, string slackId) 
+		    => slackLink == null || slackId == null ? $"./{conferenceName}" : slackLink.ChannelLink + slackId;
+
+		public string GetDmLink(string speakerName, string slackId) 
+		    => slackLink == null || slackId == null ? $"./{speakerName}" : slackLink.DmLink + slackId;
     }
 }

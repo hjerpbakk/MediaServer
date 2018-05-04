@@ -168,8 +168,7 @@ namespace MediaServer.Controllers
             // TODO: Create a conference viewmodel and use model binding
             ViewData["VideoPath"] = conference.VideoPath;
             ViewData["Talks"] = await conferenceService.GetTalksForConference(conference, HttpContext);
-			// TODO: Take teamId from config
-			ViewData["SlackUrl"] = $"slack://channel?team=T0ACXDN4C&id={conference.SlackChannelId}";
+			ViewData["SlackUrl"] = slackIntegrationClient.GetChannelLink(conferenceId, conference.SlackChannelId);
 
             return View("Index");
         }
@@ -205,7 +204,7 @@ namespace MediaServer.Controllers
 			//- opp / ned: volumkontroll
 			//- venstre / høyre: skip back/ frem 5 sec elns
 			/// 
-			var user = users.GetUser(talk.Speaker);
+			var user = users.GetUser(talk.Speaker);         
 			var talkVM = new TalkViewModel(talk, user);
             ViewData["Talk"] = talkVM;
 

@@ -51,6 +51,7 @@ namespace MediaServer
 
 			var httpClient = new HttpClient();
 			var slackIntegrationClient = new SlackIntegrationClient(httpClient);
+			slackIntegrationClient.PopulateMetaData().GetAwaiter().GetResult();
 			var slackUsers = slackIntegrationClient.GetUsers().GetAwaiter().GetResult();
 			var users = new Users(slackUsers);
 			services.AddSingleton(httpClient);

@@ -1,4 +1,5 @@
 ﻿{
   "BlobStorageConnectionString": "[BlobStorageConnectionString]",
-  "SlackToken": "[SlackToken]"
+  "SlackToken": "[SlackToken]",
+  "SlackTeamId": "[SlackTeamId]"
 }
