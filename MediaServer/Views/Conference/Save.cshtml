@@ -44,8 +44,7 @@
         </div>
         <script type="text/javascript">
         // TODO: Move script
-            // Disable save button while saving
-        // TODO: Works? And Vanilla JS
+        // TODO: Disable save button while saving
         document.querySelector("#saveForm").addEventListener("submit", function(e) {
             var saveButton = document.getElementById("saveButton");
             var loadingText = '<i class="fa fa-circle-o-notch fa-spin"></i>';
@@ -138,27 +137,7 @@
             var talk = video.slice(0, -4);
             talkName.value = talk;
             speakerDeckName = talk + ".pdf";
-            var speakerDeckUrl = "/@this.ViewContext.RouteData.Values["controller"].ToString()/@ViewData["ConferenceId"]/" + speakerDeckName;
-
-            var request;
-            if (window.XMLHttpRequest)
-                request = new XMLHttpRequest();
-            else
-                request = new ActiveXObject("Microsoft.XMLHTTP");
-
-            request.open('GET', speakerDeckUrl, true);
-            request.onreadystatechange = checkReadyState;
-            // TODO: Do I need send here?
-            request.send();
-            function checkReadyState() {
-                if (request.readyState === 4) {
-                    if (request.status == 200) {
-                        speakerDeck.value = speakerDeckName;
-                    } else {
-                        speakerDeck.value = "";
-                    }
-                }
-            }
+            speakerDeck.value = speakerDeckName;
         }
         </script>
     </form>

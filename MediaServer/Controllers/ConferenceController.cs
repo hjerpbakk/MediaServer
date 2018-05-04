@@ -85,7 +85,7 @@ namespace MediaServer.Controllers
 			talk.Thumbnail = await thumbnailService.GetThumbnailUrl(conference, talk);
             var controllerName = ControllerContext.RouteData.Values["controller"].ToString();
             var availableVideos = new List<Video>() { new Video(talk.VideoName) };
-			var videosFromConference = await contentService.GetVideosFromConference(controllerName, conference);
+			var videosFromConference = await contentService.GetVideosFromConference(conference);
 			availableVideos.AddRange(videosFromConference);
             ViewBag.VideoList = new SelectList(availableVideos, "Name", "Name", talk.VideoName);
                      
@@ -112,7 +112,7 @@ namespace MediaServer.Controllers
 
 			// TODO: Find all usage and remove...
             var controllerName = ControllerContext.RouteData.Values["controller"].ToString();
-			var availableVideos = await contentService.GetVideosFromConference(controllerName, conference);
+			var availableVideos = await contentService.GetVideosFromConference(conference);
 			ViewBag.VideoList = new SelectList(availableVideos, "Name", "Name");
             
 			ViewData["IsSave"] = true;         
@@ -141,6 +141,7 @@ namespace MediaServer.Controllers
             // TODO: Client verification also
 			// TODO: proper replace here
 			talk.TalkName = talk.TalkName.Replace("?", "").Replace(":", " - ").Replace("/", "-").Replace("\"", "-").Replace("#", "");
+			contentService.VerifySlides(talk);
 			await talkService.SaveTalkFromConference(conference, talk);
 			await thumbnailService.SaveThumbnail(conference, talk, oldName);
                      

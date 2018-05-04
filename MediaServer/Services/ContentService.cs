@@ -17,11 +17,9 @@ namespace MediaServer.Services
             hostingPath = hostingEnvironment.WebRootPath;
             this.talkService = talkService;
         }
-
-        // TODO: Add method to verify that slides exist on disk. Prepopulate in JS
-
-        public async Task<Video[]> GetVideosFromConference(string conferenceBasePath, Conference conference) {
-            var path = Path.Combine(hostingPath, conferenceBasePath, conference.Id);
+        
+        public async Task<Video[]> GetVideosFromConference(Conference conference) {
+			var path = Path.Combine(hostingPath, "Conference", conference.Id);
             var directory = new DirectoryInfo(path);
             if (!directory.Exists) {
                 Console.WriteLine($"Could not find directory for {conference.Id}. Server setup is wrong.");
@@ -36,5 +34,18 @@ namespace MediaServer.Services
 
             return availableVideos.ToArray();
         }
+
+		public void VerifySlides(Talk talk) {
+			if (talk.SpeakerDeck.StartsWith("http", StringComparison.Ordinal)) {
+				return;        
+			}
+
+			var pathToSpeakerDeck = Path.Combine(hostingPath, "Conference", talk.ConferenceId, talk.SpeakerDeck);
+			if (File.Exists(pathToSpeakerDeck)) {
+				return;            
+			}
+
+			talk.SpeakerDeck = null;
+		}
     }
 }
