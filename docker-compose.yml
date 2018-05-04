@@ -1,13 +1,6 @@
 version: '3'
 
 services:
-  slack-integration:
-    image: ${repo_pre}dips/slack-integration${slack_tag}
-    restart: always
-    ports:
-      - 1338
-    depends_on:
-      - media-server
   cache-populator:
     image: ${repo_pre}dips/cache-populator${populate_tag}
     restart: always
@@ -20,8 +13,16 @@ services:
     restart: always
     ports:
       - 80:5000
+    depends_on:
+      - slack-integration
     volumes:
       - "./DevDays2018:/app/wwwroot/Conference/DevDays2018"
       - "./Interesting:/app/wwwroot/Conference/Interesting"
       - "./OptimusInteresting:/app/wwwroot/Conference/OptimusInteresting"
       - "./Utviklerforum:/app/wwwroot/Conference/Utviklerforum"
+  slack-integration:
+    image: ${repo_pre}dips/slack-integration${slack_tag}
+    restart: always
+    ports:
+      - 1338
+    

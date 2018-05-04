@@ -17,12 +17,14 @@ namespace SlackIntegration.Models
 			}
 
 			Name = name;
-			ProfileImage = slackUser.Image;
+			ProfileImageUrl = slackUser.Image;
 			SlackId = slackUser.Id;
+			Description = slackUser.WhatIDo;
         }
 
 		public string Name { get; }
-		public string ProfileImage { get; }
-		public string SlackId;
+		public string ProfileImageUrl { get; }
+		public string SlackId { get; }
+		public string Description { get; }
     }
 }

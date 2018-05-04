@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net.Http;
 using System.Text;
+using System.Threading.Tasks;
 using MediaServer.Models;
 using Newtonsoft.Json;
 
@@ -27,5 +28,19 @@ namespace MediaServer.Clients {
 				Console.WriteLine($"Slack Integration failed for {talk} {ex}");
             }
         }
+
+		public async Task<User[]> GetUsers() {
+			try
+            {
+                var response = await httpClient.GetStringAsync("http://slack-integration:1338/Slack");
+				var users = JsonConvert.DeserializeObject<User[]>(response);
+				return users;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Could not get users from Slack {ex}");
+				return new User[0];
+            }
+		}
     }
 }

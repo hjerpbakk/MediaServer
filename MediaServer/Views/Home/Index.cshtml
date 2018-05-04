@@ -2,6 +2,16 @@
     <div class="d-flex">
         <h1 class="mt-4">@ViewData["Title"]</h1>
     </div>
+    @if (ViewData.ContainsKey("User"))
+    {
+        var user = (User)ViewData["User"];
+        <div class="media">
+            <img class="mr-3 img-thumbnail b-lazy" width="100" height="100" src="/Transparent.gif" data-src="@user.ProfileImageUrl" alt="@user.Name" title="@user.Name">
+            <div class="media-body">
+                <p class="font-weight-normal">@user.Description</p>
+            </div>
+        </div>
+    }
     @await Html.PartialAsync("/Views/Conference/TalkGrid.cshtml")
 </div>
 

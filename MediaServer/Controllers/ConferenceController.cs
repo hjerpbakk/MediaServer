@@ -24,8 +24,9 @@ namespace MediaServer.Controllers
 		readonly ConferenceService conferenceService;
 		readonly ThumbnailService thumbnailService;
 		readonly MediaCache cache;
+		readonly Users users;
         
-		public ConferenceController(ConferenceConfig conferenceConfig, IOldTalkService talkService, IContentService contentService, SlackIntegrationClient slackIntegrationClient, ConferenceService conferenceService, ThumbnailService thumbnailService, MediaCache cache)
+		public ConferenceController(ConferenceConfig conferenceConfig, IOldTalkService talkService, IContentService contentService, SlackIntegrationClient slackIntegrationClient, ConferenceService conferenceService, ThumbnailService thumbnailService, MediaCache cache, Users users)
 			: base(conferenceConfig)
 		{
 			// TODO: Too many services, move around?         
@@ -35,7 +36,7 @@ namespace MediaServer.Controllers
 			this.conferenceService = conferenceService;
 			this.thumbnailService = thumbnailService;
 			this.cache = cache;
-
+			this.users = users;
 			// TODO: Need speaker abstraction
 		}
               
@@ -196,15 +197,16 @@ namespace MediaServer.Controllers
             }
 
             SetCurrentNavigation(conference, talk.TalkName);
-            /// TODO: Support single click pause / resume
-            /// 
-            /// TODO: hotkeys:
-            // -space: play / pause
-            //- f: fullscreen
-            //- opp / ned: volumkontroll
-            //- venstre / høyre: skip back/ frem 5 sec elns
-            /// 
-            var talkVM = new TalkViewModel(talk);
+			/// TODO: Support single click pause / resume
+			/// 
+			/// TODO: hotkeys:
+			// -space: play / pause
+			//- f: fullscreen
+			//- opp / ned: volumkontroll
+			//- venstre / høyre: skip back/ frem 5 sec elns
+			/// 
+			var user = users.GetUser(talk.Speaker);
+			var talkVM = new TalkViewModel(talk, user);
             ViewData["Talk"] = talkVM;
 
             return View("Talk");

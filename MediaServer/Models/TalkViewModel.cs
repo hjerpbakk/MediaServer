@@ -1,16 +1,16 @@
 ﻿using System;
-using MediaServer.Extensions;
 
 namespace MediaServer.Models
 {
     public class TalkViewModel
     {
         readonly Talk talk;
-
-        public TalkViewModel(Talk talk)
+        
+        public TalkViewModel(Talk talk, User user)
         {
             this.talk = talk;
             UriEncodedVideoName = Uri.EscapeUriString(talk.VideoName);
+			ProfileImageUrl = user.ProfileImageUrl;
 
             if (talk.SpeakerDeck == null) {
                 return;
@@ -26,6 +26,7 @@ namespace MediaServer.Models
         public string ZonedTimeStamp => talk.DateOfTalkString; 
         public string UriEncodedVideoName { get; }
         public string SpeakerDeck { get; }
+		public string ProfileImageUrl { get; }
 
         public string TalkName => talk.TalkName;
         public string VideoName => talk.VideoName;

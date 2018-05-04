@@ -3,6 +3,7 @@ using System.IO;
 using System.Net.Http;
 using MediaServer.Clients;
 using MediaServer.Configuration;
+using MediaServer.Models;
 using MediaServer.Services;
 using MediaServer.Services.Cache;
 using MediaServer.Services.Persistence;
@@ -47,10 +48,15 @@ namespace MediaServer
             services.AddSingleton(conferenceConfig);
 
 			services.AddSingleton<IBlogStorageConfig>(config);         
-            
-            services.AddSingleton<HttpClient>();         
+
+			var httpClient = new HttpClient();
+			var slackIntegrationClient = new SlackIntegrationClient(httpClient);
+			var slackUsers = slackIntegrationClient.GetUsers().GetAwaiter().GetResult();
+			var users = new Users(slackUsers);
+			services.AddSingleton(httpClient);
+			services.AddSingleton(users); 
+			services.AddSingleton(slackIntegrationClient);
 			services.AddSingleton<CacheWarmerClient>();
-			services.AddSingleton<SlackIntegrationClient>();
 
             services.AddSingleton<IFileProvider>(new PhysicalFileProvider(Directory.GetCurrentDirectory()));
 			services.AddSingleton<BlobStoragePersistence>();

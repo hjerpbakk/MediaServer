@@ -10,11 +10,14 @@
             </form>
         </div>
     </div>
-    <h4 class="text-muted mt-2">@talk.Speaker, @talk.ZonedTimeStamp</h4>
-    <p class="font-weight-normal">@talk.Description</p>
-  
+    <div class="media">
+        <img class="mr-3 img-thumbnail b-lazy" width="100" height="100" src="/Transparent.gif" data-src="@talk.ProfileImageUrl" alt="@talk.Speaker" title="@talk.Speaker">
+        <div class="media-body">
+            <h4 class="text-muted mt-2"><a class="text-muted" href="/Speaker/@talk.Speaker">@talk.Speaker</a>, @talk.ZonedTimeStamp</h4>
+            <p class="font-weight-normal">@talk.Description</p>
+        </div>
+    </div>
     <video class="w-100" controls><source src="@talk.UriEncodedVideoName" type="video/mp4"></source></video>
-
     <div class="row no-gutters">
         <div class="col">
             <!-- TODO: If speaker deck is not found, don't show button -->

@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using MediaServer.Configuration;
+using MediaServer.Models;
 using MediaServer.Services;
 using MediaServer.Services.Cache;
 using Microsoft.AspNetCore.Mvc;
@@ -10,12 +11,14 @@ namespace MediaServer.Controllers
 	{
 		readonly ConferenceService conferenceService;
 		readonly MediaCache talkCache;
+		readonly Users users;
 
-		public SpeakerController(ConferenceConfig conferenceConfig, ConferenceService conferenceService, MediaCache talkCache)
+		public SpeakerController(ConferenceConfig conferenceConfig, ConferenceService conferenceService, MediaCache talkCache, Users users)
 			: base(conferenceConfig)
 		{
 			this.conferenceService = conferenceService;
 			this.talkCache = talkCache;
+			this.users = users;
 		}
 
 		// TODO: Add a top speaker list
@@ -32,7 +35,8 @@ namespace MediaServer.Controllers
 		async Task<IActionResult> GetViewForSpeaker(string speakerName)
 		{
 			SetCurrentNavigation(speakerName);
-			ViewData["Talks"] = await conferenceService.GetTalksBySpeaker(speakerName);         
+			ViewData["Talks"] = await conferenceService.GetTalksBySpeaker(speakerName);
+			ViewData["User"] = users.GetUser(speakerName);
 			return View("Views/Home/Index.cshtml");
 		}
 	}
