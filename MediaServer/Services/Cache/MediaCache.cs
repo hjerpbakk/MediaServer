@@ -21,8 +21,7 @@ namespace MediaServer.Services.Cache
 			this.memoryCache = memoryCache;
 			this.cacheWarmerClient = cacheWarmerClient;
 			options = new MemoryCacheEntryOptions()
-                .SetAbsoluteExpiration(TimeSpan.FromDays(730))
-                .SetSlidingExpiration(TimeSpan.FromDays(365));
+                .SetPriority(CacheItemPriority.NeverRemove);
         }
                 
 		public async Task<T> GetOrSet<T>(string key, Func<Task<T>> create)
