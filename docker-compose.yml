@@ -4,7 +4,7 @@ services:
   cache-populator:
     image: ${repo_pre}dips/cache-populator${populate_tag}
     restart: always
-    ports:
+    expose:
       - 1337
     depends_on:
       - media-server
@@ -23,6 +23,6 @@ services:
   slack-integration:
     image: ${repo_pre}dips/slack-integration${slack_tag}
     restart: always
-    ports:
+    expose:
       - 1338
     
