@@ -1,7 +1,8 @@
 ﻿using System.Net.Http;
+using CachePopulator.Clients;
 using CachePopulator.Configuration;
-using CachePopulator.Extensions;
 using CachePopulator.Services;
+using CachePopulator.InitialWarmup;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -24,20 +25,26 @@ namespace CachePopulator
         public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
-        public void ConfigureServices(IServiceCollection services) {
-            services.AddMvc();
+        public void ConfigureServices(IServiceCollection services)
+		{
+			services.AddMvc();
 
-			var config = Configuration.Get<AppConfig>();
-			var conferenceMetaDataService = new ConferenceMetaDataService(config);
-			var conferences = conferenceMetaDataService.CreateConferenceConfig().GetAwaiter().GetResult();
-			services.AddSingleton(conferences);
+			var httpClient = new HttpClient();
+			services.AddSingleton(httpClient);
+			var careFreeHttpClient = new CareFreeHttpClient(httpClient);
+			services.AddSingleton(careFreeHttpClient);
 
-            services.AddSingleton<HttpClient>();
-            services.AddSingleton<FireAndForgetService>();
-        }
+			// TODO: From config. And theres more in blob storage services.
+			var baseUrl = "http://media-server:5000";
+			var mediaServerConfig = new MediaServerConfig(baseUrl, baseUrl + "/Conference", baseUrl + "/Speaker");
+			services.AddSingleton<MediaServerConfig>();
+			WarmUpCache(careFreeHttpClient, mediaServerConfig);
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env) {
+			services.AddSingleton<ContinuousWarmupService>();
+		}
+        
+		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+		public void Configure(IApplicationBuilder app, IHostingEnvironment env) {
             if (env.IsDevelopment()) {
                 app.UseDeveloperExceptionPage();
             }
@@ -45,8 +52,17 @@ namespace CachePopulator
             app.UseMvc(routes => {
                 routes.MapRoute("default", "{controller=Home}/{action=Index}/{id?}");
             });
+        }
 
-            app.WarmupCache();
+		void WarmUpCache(CareFreeHttpClient careFreeHttpClient, MediaServerConfig mediaServerConfig)
+        {
+            var config = Configuration.Get<AppConfig>();
+            var conferenceMetaDataService = new ConferenceMetaDataService(config);
+            var conferences = conferenceMetaDataService.CreateConferenceConfig().GetAwaiter().GetResult();
+            var speakerMetadataService = new SpeakerMetadataService(config, conferences);
+            var speakers = speakerMetadataService.GetAllSpeakers().GetAwaiter().GetResult();
+			var initialWarmupService = new InitialWarmupService(mediaServerConfig, careFreeHttpClient, conferences, speakers);
+            initialWarmupService.TouchEndpoints().GetAwaiter().GetResult();
         }
     }
 }

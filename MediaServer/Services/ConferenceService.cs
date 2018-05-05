@@ -47,6 +47,7 @@ namespace MediaServer.Services
 			return orderedSummaries;
 		}
 
+		// TODO: Use generic get talk method with caching
 		public async Task<IEnumerable<TalkSummary>> GetTalksBySpeaker(string speakerName) {
 			var talks = new List<LatestTalk>();
             foreach (var conference in conferences)

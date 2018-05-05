@@ -18,7 +18,7 @@ namespace MediaServer.Services {
             cloudBlobClient = storageAccount.CreateCloudBlobClient();
         }
 
-		public async Task<ConferenceConfig> CreateConferenceConfig() {
+		public async Task<ConferenceConfig> GetConferenceConfig() {
 			var containerForConference = cloudBlobClient.GetContainerReference("conferences");;
             await containerForConference.CreateIfNotExistsAsync();
 			var conferences = new List<Conference>();

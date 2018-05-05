@@ -10,7 +10,7 @@ using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
 using Newtonsoft.Json;
 
-namespace CachePopulator.Services
+namespace CachePopulator.InitialWarmup
 {
 	public class ConferenceMetaDataService
     {

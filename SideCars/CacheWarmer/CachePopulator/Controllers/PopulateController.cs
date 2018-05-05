@@ -5,15 +5,15 @@ using Microsoft.AspNetCore.Mvc;
 namespace CachePopulator.Controllers {
     [Route("[controller]")]
     public class PopulateController : Controller {
-        readonly FireAndForgetService fireAndForgetService;
+		readonly ContinuousWarmupService continuousWarmupService;
 
-        public PopulateController(FireAndForgetService fireAndForgetService) {
-            this.fireAndForgetService = fireAndForgetService;
+		public PopulateController(ContinuousWarmupService continuousWarmupService) {
+			this.continuousWarmupService = continuousWarmupService;
         }
 
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] Model.TalkMetadata talkMetadata) {
-            await fireAndForgetService.TouchEndpoints(talkMetadata);
+			await continuousWarmupService.TouchEndpoints(talkMetadata);
             return Ok();
         }
     }

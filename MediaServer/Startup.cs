@@ -44,7 +44,7 @@ namespace MediaServer
 
             var config = Configuration.Get<AppConfig>();         
 			var conferenceMetaDataService = new ConferenceMetaDataService(config);
-            var conferenceConfig = conferenceMetaDataService.CreateConferenceConfig().GetAwaiter().GetResult();
+            var conferenceConfig = conferenceMetaDataService.GetConferenceConfig().GetAwaiter().GetResult();
             services.AddSingleton(conferenceConfig);
 
 			services.AddSingleton<IBlogStorageConfig>(config);         
