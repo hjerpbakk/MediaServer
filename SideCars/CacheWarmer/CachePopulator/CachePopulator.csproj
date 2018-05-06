@@ -11,6 +11,7 @@
     <Folder Include="Configuration\" />
     <Folder Include="Clients\" />
     <Folder Include="InitialWarmup\" />
+    <Folder Include="Extensions\" />
   </ItemGroup>
 
   <ItemGroup>

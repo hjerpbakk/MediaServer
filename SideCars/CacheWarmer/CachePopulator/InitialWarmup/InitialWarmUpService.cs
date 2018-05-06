@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using CachePopulator.Clients;
 using CachePopulator.Configuration;
+using CachePopulator.Extensions;
 using CachePopulator.Model;
 
 namespace CachePopulator.InitialWarmup
@@ -37,7 +38,11 @@ namespace CachePopulator.InitialWarmup
 			}
 
 			var tasks = endpoints.Select(careFreeHttpClient.TouchEndpointWithRetry).ToArray();
-			await Task.WhenAll(tasks);
+			var partitions = tasks.Partition(10);
+			foreach (var partition in partitions)
+            {
+				await Task.WhenAll(partition);
+            }
         }
     }
 }

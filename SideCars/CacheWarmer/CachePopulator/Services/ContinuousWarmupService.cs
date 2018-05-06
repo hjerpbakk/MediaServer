@@ -24,7 +24,7 @@ namespace CachePopulator.Services
                 $"{mediaServerConfig.ConferenceUrl}/{talkMetadata.Conference}",
                 $"{mediaServerConfig.SpeakerUrl}/{talkMetadata.Speaker}"
             };
-
+                     
 			var tasks = endpoints.Select(careFreeHttpClient.TouchEndpointWithRetry).ToArray();
             await Task.WhenAll(tasks);
         }
