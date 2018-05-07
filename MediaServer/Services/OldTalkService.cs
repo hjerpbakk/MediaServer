@@ -20,26 +20,18 @@ namespace MediaServer.Services
 {
 	public class OldTalkService : IOldTalkService
     {
-		const string DbFileExtension = ".json";
-        
-        readonly static char[] dbFileExtension;
-		readonly static char[] dbTalkPrefix;
-
 		readonly CloudBlobClient cloudBlobClient;
 		readonly ThumbnailService thumbnailService;
 		readonly MediaCache cache;
-
-		static OldTalkService() {
-			dbFileExtension = DbFileExtension.ToCharArray();
-			dbTalkPrefix = BlobStoragePersistence.TalkPrefix.ToCharArray();
-		}
-
-		public OldTalkService(IBlogStorageConfig blobStorageConfig, ThumbnailService thumbnailService, MediaCache cache)
+		readonly BlobStoragePersistence blobStoragePersistence;
+      
+		public OldTalkService(IBlogStorageConfig blobStorageConfig, ThumbnailService thumbnailService, MediaCache cache, BlobStoragePersistence blobStoragePersistence)
 		{
 			var storageAccount = CloudStorageAccount.Parse(blobStorageConfig.BlobStorageConnectionString);         
             cloudBlobClient = storageAccount.CreateCloudBlobClient();
 			this.thumbnailService = thumbnailService;
 			this.cache = cache;
+			this.blobStoragePersistence = blobStoragePersistence;
 		}
 
         // TODO: 404 på dette: Hvordan og hvorfor? dips.talk.Kyrre%20-%20Integrasjon%20mellom%20programpakker%20-%206.%20april%202018%2009.47.33.pdf.json
@@ -74,32 +66,16 @@ namespace MediaServer.Services
 			return talk;
 		}
 
-        public async Task SaveTalkFromConference(Conference conference, Talk talk) {
-			var containerForConference = cloudBlobClient.GetContainerForConference(conference);
-            await containerForConference.CreateIfNotExistsAsync();
-
+        public async Task SaveTalkFromConference(Conference conference, Talk talk) {         
             talk.ConferenceId = conference.Id;
-            var serializedTalk = JsonConvert.SerializeObject(talk);
-
-            var talkReferenceName = GetBlobNameFromTalkName(talk.TalkName);
-            var talkReference = containerForConference.GetBlockBlobReference(talkReferenceName);
-            await talkReference.UploadTextAsync(serializedTalk);
-                        
-            talkReference.Properties.ContentType = "application/json";
-            await talkReference.SetPropertiesAsync(); 
-
+			await blobStoragePersistence.SaveTalkFromConference(conference, talk);
 			cache.CacheTalk(talk);            
 		}
 
         public async Task DeleteTalkFromConference(Conference conference, Talk talk) {
 			cache.ClearCache(talk);
-			var containerForConference = cloudBlobClient.GetContainerForConference(conference);         
-            // TODO: Delete thumnail too
-            var talkReferenceName = GetBlobNameFromTalkName(talk.TalkName);
-			var talkReference = containerForConference.GetBlockBlobReference(talkReferenceName);
-            if (await talkReference.ExistsAsync()) {
-                await talkReference.DeleteAsync();
-            }
+			cache.ClearForThumbnail(talk);
+			await blobStoragePersistence.DeleteTalk(conference, talk);         
 		}
 
         public async Task<IReadOnlyList<string>> GetTalkNamesFromConference(Conference conference)
@@ -182,7 +158,7 @@ namespace MediaServer.Services
         }
 
 		string GetBlobNameFromTalkName(string talkName)
-            => BlobStoragePersistence.TalkPrefix + talkName + DbFileExtension;
+		=> BlobStoragePersistence.TalkPrefix + talkName + BlobStoragePersistence.DbFileExtension;
 
 		// TODO: save char array or do differently
 		string GetTalkNameFromBlobName(string blobName)
