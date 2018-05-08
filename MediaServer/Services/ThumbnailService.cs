@@ -96,18 +96,18 @@ namespace MediaServer.Services
 			await hashReference.SetPropertiesAsync();
 		}
 
-		public async Task<string> GetThumbnailUrl(Conference conference, Talk talk)
+		public async Task<string> GetThumbnailUrl(Talk talk)
 		{
 			var thumbnailUrl = await cache.GetOrSet(
 				BlobStoragePersistence.GetThumnnailHashName(talk.TalkName), 
-				() => CreateThumbnailUrl(conference, talk));
+				() => CreateThumbnailUrl(talk));
 			return thumbnailUrl;
 		}
 
-		async Task<string> CreateThumbnailUrl(Conference conference, Talk talk)
+		async Task<string> CreateThumbnailUrl(Talk talk)
         {
-			var baseThumbnailUrl = Paths.GetThumbnailUrl(conference, talk);
-            var hash = await GetSavedHashOfThumbnail(conference, talk);
+			var baseThumbnailUrl = Paths.GetThumbnailUrl(talk);
+            var hash = await GetSavedHashOfThumbnail(talk);
             if (hash == string.Empty)
             {
                 return baseThumbnailUrl;
@@ -117,9 +117,9 @@ namespace MediaServer.Services
             return thumbNailUrl;
         }
 
-		async Task<string> GetSavedHashOfThumbnail(Conference conference, Talk talk) {
+		async Task<string> GetSavedHashOfThumbnail(Talk talk) {
 			var hashName = BlobStoragePersistence.GetThumnnailHashName(talk.TalkName);
-			var containerForConference = cloudBlobClient.GetContainerForConference(conference);
+			var containerForConference = cloudBlobClient.GetContainerForTalk(talk);
 			var hashRefrence = containerForConference.GetBlockBlobReference(hashName);
 			var exists = await hashRefrence.ExistsAsync();
 			if (exists)

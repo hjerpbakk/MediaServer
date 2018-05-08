@@ -10,9 +10,9 @@ namespace MediaServer.Services
     public class ContentService
     {
         readonly string hostingPath;
-        readonly IOldTalkService talkService;
+        readonly OldTalkService talkService;
 
-        public ContentService(IHostingEnvironment hostingEnvironment, IOldTalkService talkService)
+        public ContentService(IHostingEnvironment hostingEnvironment, OldTalkService talkService)
         {
             hostingPath = hostingEnvironment.WebRootPath;
             this.talkService = talkService;

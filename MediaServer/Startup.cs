@@ -63,7 +63,7 @@ namespace MediaServer
             services.AddSingleton<IFileProvider>(new PhysicalFileProvider(Directory.GetCurrentDirectory()));
 			services.AddSingleton<BlobStoragePersistence>();
             
-			services.AddSingleton<IOldTalkService, OldTalkService>();
+			services.AddSingleton<OldTalkService>();
 			services.AddSingleton<ThumbnailService>();
             services.AddSingleton<ConferenceService>();
             services.AddSingleton<ContentService>();    

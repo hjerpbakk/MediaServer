@@ -19,10 +19,10 @@ namespace MediaServer.Services
     {
 		readonly IEnumerable<Conference> conferences;
 		readonly CloudBlobClient cloudBlobClient;
-		readonly IOldTalkService talkService;
+		readonly OldTalkService talkService;
 		readonly ThumbnailService thumbnailService;
-
-		public ConferenceService(ConferenceConfig conferenceConfig, IBlogStorageConfig blobStorageConfig, IOldTalkService talkService, ThumbnailService thumbnailService)
+        
+		public ConferenceService(ConferenceConfig conferenceConfig, IBlogStorageConfig blobStorageConfig, OldTalkService talkService, ThumbnailService thumbnailService)
         {
 			conferences = conferenceConfig.Conferences.Values;
 			var storageAccount = CloudStorageAccount.Parse(blobStorageConfig.BlobStorageConnectionString);
@@ -35,21 +35,21 @@ namespace MediaServer.Services
 		{
             // TODO: Move implementation of this part of talkservice here
 			var talks = await talkService.GetLatestTalks(conferences);
-			var orderedSummaries = await Task.WhenAll(talks.Select(t => CreateTalkSummary(t.Conference, t.Talk)));
+			var orderedSummaries = await Task.WhenAll(talks.Select(CreateTalkSummary));
 			return orderedSummaries;
 		}
-
-		public async Task<IEnumerable<TalkSummary>> GetTalksForConference(Conference conference, HttpContext httpContext)
+                                                      
+		public async Task<IEnumerable<TalkSummary>> GetTalksForConference(Conference conference)
 		{
 			// TODO: Move implementation of this part of talkservice here
 			var talks = await talkService.GetTalksFromConference(conference);
-			var orderedSummaries = await Task.WhenAll(talks.Select(talk => CreateTalkSummary(conference, talk)));
+			var orderedSummaries = await Task.WhenAll(talks.Select(CreateTalkSummary));
 			return orderedSummaries;
 		}
 
 		// TODO: Use generic get talk method with caching
 		public async Task<IEnumerable<TalkSummary>> GetTalksBySpeaker(string speakerName) {
-			var talks = new List<LatestTalk>();
+			var talks = new List<Talk>();
             foreach (var conference in conferences)
             {
                 var containerForConference = cloudBlobClient.GetContainerForConference(conference);
@@ -66,22 +66,21 @@ namespace MediaServer.Services
                         var talk = JsonConvert.DeserializeObject<Talk>(talkContent);
 						talk.ConferenceId = conference.Id;
 						if (talk.Speaker == speakerName) {
-							var latestTalk = new LatestTalk(conference, talk);
-                            talks.Add(latestTalk);
+                            talks.Add(talk);
 						}                  
                     }
                 }
             }
 
 			var orderedSummaries = await Task.WhenAll(talks
-				.OrderByDescending(t => t.Talk.DateOfTalk)
-                .Select(t => CreateTalkSummary(t.Conference, t.Talk)));
+				.OrderByDescending(t => t.DateOfTalk)
+                .Select(CreateTalkSummary));
 			return orderedSummaries;
 		}
 
-		async Task<TalkSummary> CreateTalkSummary(Conference conference, Talk talk) {
-			var url = Paths.GetTalkUrl(conference, talk);
-			var thumbnail = await thumbnailService.GetThumbnailUrl(conference, talk);
+		async Task<TalkSummary> CreateTalkSummary(Talk talk) {
+			var url = Paths.GetTalkUrl(talk);
+			var thumbnail = await thumbnailService.GetThumbnailUrl(talk);
 			return new TalkSummary(talk, url, thumbnail);
 		}
 	}

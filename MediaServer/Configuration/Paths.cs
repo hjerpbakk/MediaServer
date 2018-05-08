@@ -7,14 +7,14 @@ namespace MediaServer.Configuration
     {
 		// TODO: Use this everywhere
 		// TODO: Make less brittle
-		public static string GetConferenceUrl(Conference conference)
-            => $"/Conference/{conference.Id}/";
+		public static string GetConferenceUrl(string conferenceId)
+		    => $"/Conference/{conferenceId}/";
 
-        public static string GetThumbnailUrl(Conference conference, Talk talk)
-            => GetConferenceUrl(conference) + "Thumbnails/" + talk.TalkName;
+		public static string GetThumbnailUrl(Talk talk)
+		    => GetConferenceUrl(talk.ConferenceId) + "Thumbnails/" + talk.TalkName;
 
-        public static string GetTalkUrl(Conference conference, Talk talk)
-            => GetConferenceUrl(conference) + talk.TalkName;
+        public static string GetTalkUrl(Talk talk)
+		    => GetConferenceUrl(talk.ConferenceId) + talk.TalkName;
 
 		public static string GetFullPath(HttpContext httpContext, string urlPart)
 		    => $"{httpContext.Request.Scheme}://{httpContext.Request.Host}{urlPart}";

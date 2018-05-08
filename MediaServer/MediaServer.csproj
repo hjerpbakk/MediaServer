@@ -2,7 +2,6 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
-    <MvcRazorCompileOnPublish>true</MvcRazorCompileOnPublish>
     <ApplicationInsightsResourceId>/subscriptions/9f8196d5-f5eb-4d8e-8e3f-be1f906f3e35/resourcegroups/RSG_Slack/providers/microsoft.insights/components/dipstube-insights</ApplicationInsightsResourceId>
     <ApplicationInsightsAnnotationResourceId>/subscriptions/9f8196d5-f5eb-4d8e-8e3f-be1f906f3e35/resourcegroups/RSG_Slack/providers/microsoft.insights/components/dipstube-insights</ApplicationInsightsAnnotationResourceId>
   </PropertyGroup>
@@ -16,9 +15,6 @@
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="2.1.0-rc1-final" />
   </ItemGroup>
 
-  <ItemGroup>
-    <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="2.0.0" />
-  </ItemGroup>
   <ItemGroup>
     <Folder Include="Services\Persistence\" />
     <Folder Include="Clients\" />

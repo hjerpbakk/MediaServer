@@ -10,5 +10,11 @@ namespace MediaServer.Extensions
 			var containerId = conference.Id.ToLower();
 			return cloudBlobClient.GetContainerReference(containerId);
 		}
+
+		public static CloudBlobContainer GetContainerForTalk(this CloudBlobClient cloudBlobClient, Talk talk)
+        {
+			var containerId = talk.ConferenceId.ToLower();
+            return cloudBlobClient.GetContainerReference(containerId);
+        }
     }
 }

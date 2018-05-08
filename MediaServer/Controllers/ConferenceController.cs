@@ -18,7 +18,7 @@ namespace MediaServer.Controllers
 {
 	public class ConferenceController : NavigateableController
 	{
-		readonly IOldTalkService talkService;
+		readonly OldTalkService talkService;
 		readonly ContentService contentService;
 		readonly ISlackClient slackClient;
 		readonly ConferenceService conferenceService;
@@ -26,7 +26,7 @@ namespace MediaServer.Controllers
 		readonly MediaCache cache;
 		readonly Users users;
         
-		public ConferenceController(ConferenceConfig conferenceConfig, IOldTalkService talkService, ContentService contentService, ISlackClient slackClient, ConferenceService conferenceService, ThumbnailService thumbnailService, MediaCache cache, Users users)
+		public ConferenceController(ConferenceConfig conferenceConfig, OldTalkService talkService, ContentService contentService, ISlackClient slackClient, ConferenceService conferenceService, ThumbnailService thumbnailService, MediaCache cache, Users users)
 			: base(conferenceConfig)
 		{
 			// TODO: Too many services, move around?         
@@ -82,7 +82,7 @@ namespace MediaServer.Controllers
 
 			SetCurrentNavigation(conference, $"Edit {talk.TalkName}");
 
-			talk.Thumbnail = await thumbnailService.GetThumbnailUrl(conference, talk);
+			talk.Thumbnail = await thumbnailService.GetThumbnailUrl(talk);
             var controllerName = ControllerContext.RouteData.Values["controller"].ToString();
             var availableVideos = new List<Video>() { new Video(talk.VideoName) };
 			var videosFromConference = await contentService.GetVideosFromConference(conference);
@@ -146,7 +146,7 @@ namespace MediaServer.Controllers
 			await thumbnailService.SaveThumbnail(conference, talk, oldName);
                      
             if (oldName == null) {
-				var talkUrl = Paths.GetFullPath(HttpContext, Paths.GetTalkUrl(conference, talk));
+				var talkUrl = Paths.GetFullPath(HttpContext, Paths.GetTalkUrl(talk));
 				slackClient.PublishToSlack(talk, talkUrl);
             }
 
@@ -166,7 +166,7 @@ namespace MediaServer.Controllers
 
             // TODO: Create a conference viewmodel and use model binding
             ViewData["VideoPath"] = conference.VideoPath;
-            ViewData["Talks"] = await conferenceService.GetTalksForConference(conference, HttpContext);
+            ViewData["Talks"] = await conferenceService.GetTalksForConference(conference);
 			ViewData["SlackUrl"] = slackClient.GetChannelLink(conferenceId, conference.SlackChannelId);
 
             return View("Index");

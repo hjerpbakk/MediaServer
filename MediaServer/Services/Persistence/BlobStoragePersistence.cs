@@ -28,20 +28,20 @@ namespace MediaServer.Services.Persistence {
 			this.cache = cache;
         }
 
-		public async Task<IEnumerable<Talk>> GetTalksFromConferences(params Conference[] conferences) {
+		public async Task<IEnumerable<Talk>> GetTalksFromConferences(IEnumerable<Conference> conferences) {
 			var talks = new List<Talk>();
 			foreach (var conference in conferences) {
 				var containerForConference = await GetContainerForConference(conference);
-
-                // TODO: Support more than 200 items
-                var token = new BlobContinuationToken();
-                var blobs = await containerForConference.ListBlobsSegmentedAsync(TalkPrefix, token);
-                
-                foreach (var cloudBlob in blobs.Results.Cast<CloudBlockBlob>()) {
-                    var talkName = GetTalkNameFromBlobName(cloudBlob.Name);
-					var talk = await GetTalkFromBlob(cloudBlob, talkName, conference.Id);
-                    talks.Add(talk);
-                }      
+                BlobContinuationToken blobContinuationToken = null;
+                do {
+					var results = await containerForConference.ListBlobsSegmentedAsync(TalkPrefix, blobContinuationToken);
+                    blobContinuationToken = results.ContinuationToken;               
+					foreach (var cloudBlob in results.Results.Cast<CloudBlockBlob>()) {
+                        var talkName = GetTalkNameFromBlobName(cloudBlob.Name);
+                        var talk = await GetTalkFromBlob(cloudBlob, talkName, conference.Id);
+                        talks.Add(talk);
+                    }    
+                } while (blobContinuationToken != null);  
 			}
 
 			return talks;   
@@ -140,6 +140,7 @@ namespace MediaServer.Services.Persistence {
                     var talkContent = Encoding.UTF8.GetString(memoryStream.ToArray());
                     var talk = JsonConvert.DeserializeObject<Talk>(talkContent);
 					talk.ConferenceId = conferenceId;
+					talk.TimeStamp = cloudBlob.Properties.LastModified.Value;
                     return talk;
                 }
 			}

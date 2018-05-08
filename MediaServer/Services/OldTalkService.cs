@@ -18,7 +18,7 @@ using Newtonsoft.Json.Linq;
 
 namespace MediaServer.Services
 {
-	public class OldTalkService : IOldTalkService
+	public class OldTalkService
     {
 		readonly CloudBlobClient cloudBlobClient;
 		readonly ThumbnailService thumbnailService;
@@ -33,9 +33,11 @@ namespace MediaServer.Services
 			this.cache = cache;
 			this.blobStoragePersistence = blobStoragePersistence;
 		}
-
+        
+		// TODO: Move to IConferenceService
 		public async Task<IEnumerable<Talk>> GetTalksFromConference(Conference conference) {
-			var talks = await blobStoragePersistence.GetTalksFromConferences(conference);
+			var conferences = new[] { conference };
+			var talks = await blobStoragePersistence.GetTalksFromConferences(conferences);
 			return talks.OrderByDescending(talk => talk.DateOfTalk);
 		}
 
@@ -48,6 +50,7 @@ namespace MediaServer.Services
         public async Task DeleteTalkFromConference(Conference conference, Talk talk)
 		    => await blobStoragePersistence.DeleteTalk(conference, talk);  
 
+		// TODO: Move to IConferenceService
         public async Task<IReadOnlyList<string>> GetTalkNamesFromConference(Conference conference)
 		{
 			var usedVideos = await cache.GetOrSet(
@@ -57,27 +60,10 @@ namespace MediaServer.Services
 		}
       
 		// TODO: Create generic get talk with optional predicate...
-		// TODO: cache every talk
-        public async Task<IEnumerable<LatestTalk>> GetLatestTalks(IEnumerable<Conference> conferences) {			
-            var talks = new List<LatestTalk>();
-            foreach (var conference in conferences) {
-				var containerForConference = cloudBlobClient.GetContainerForConference(conference);
-                await containerForConference.CreateIfNotExistsAsync();
-                // TODO: Support more than 200 items....
-                var token = new BlobContinuationToken();
-				var blobs = await containerForConference.ListBlobsSegmentedAsync(BlobStoragePersistence.TalkPrefix, token); 
-                foreach (var blob in blobs.Results.Cast<CloudBlockBlob>()) {
-                    using (var memoryStream = new MemoryStream()) {
-                        await blob.DownloadToStreamAsync(memoryStream);
-                        var talkContent = Encoding.UTF8.GetString(memoryStream.ToArray());
-                        var talk = JsonConvert.DeserializeObject<Talk>(talkContent);
-						talk.ConferenceId = conference.Id;
-                        var latestTalk = new LatestTalk(conference, talk, blob.Properties.LastModified.Value);
-                        talks.Add(latestTalk);
-                    }
-                }
-            }
 
+		// TODO: Move to IConferenceService
+		public async Task<IEnumerable<Talk>> GetLatestTalks(IEnumerable<Conference> conferences) {			
+			var talks = await blobStoragePersistence.GetTalksFromConferences(conferences);
 			return talks.OrderByDescending(t => t.TimeStamp).Take(9);
         }
 

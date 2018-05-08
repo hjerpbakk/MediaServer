@@ -40,5 +40,8 @@ namespace MediaServer.Models
 
         [JsonIgnore]
         public string Thumbnail { get; set; }
+
+		[JsonIgnore]
+		public DateTimeOffset TimeStamp { get; set; }
     }
 }
