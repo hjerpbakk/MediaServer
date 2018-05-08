@@ -1,14 +1,29 @@
-﻿using MediaServer.Models;
+﻿using System.IO;
+using MediaServer.Models;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 
-namespace MediaServer.Configuration
-{
-	public static class Paths
-    {
+namespace MediaServer.Configuration {
+	public class Paths {
+		const string Conference = "Conference";
+
+		readonly string hostingPath;
+
+		public Paths(IHostingEnvironment hostingEnvironment) {
+			hostingPath = hostingEnvironment.WebRootPath;
+		}
+
+		public string GetConferencePath(string conferenceId) 
+		    => Path.Combine(hostingPath, Conference, conferenceId);
+
+		public string GetSpeakerDeckPath(string conferenceId, string speakerDeckName)
+		    => Path.Combine(hostingPath, Conference, conferenceId, speakerDeckName);
+
+		// TODO: Code special words like Conference only once
 		// TODO: Use this everywhere
 		// TODO: Make less brittle
 		public static string GetConferenceUrl(string conferenceId)
-		    => $"/Conference/{conferenceId}/";
+		    => $"/{Conference}/{conferenceId}/";
 
 		public static string GetThumbnailUrl(Talk talk)
 		    => GetConferenceUrl(talk.ConferenceId) + "Thumbnails/" + talk.TalkName;

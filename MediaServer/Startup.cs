@@ -47,6 +47,7 @@ namespace MediaServer
 			var conferenceConfiguration = new ConferenceConfiguration(config);
 			var conferences = conferenceConfiguration.GetConferences().GetAwaiter().GetResult();
 			services.AddSingleton(conferences);
+			services.AddSingleton<Paths>();
          
 			var httpClient = new HttpClient();
 			var slackIntegrationClient = new SlackIntegrationClient(httpClient);

@@ -2,21 +2,22 @@ using System;
 using System.Linq;
 using System.IO;
 using MediaServer.Models;
-using Microsoft.AspNetCore.Hosting;
 using System.Threading.Tasks;
+using MediaServer.Configuration;
 
-namespace MediaServer.Services {
-    public class ContentService {
-        readonly string hostingPath;
+namespace MediaServer.Services
+{
+	public class ContentService {
 		readonly ConferenceService conferenceService;
+		readonly Paths paths;
 
-		public ContentService(IHostingEnvironment hostingEnvironment, ConferenceService conferenceService) {
-            hostingPath = hostingEnvironment.WebRootPath;
+		public ContentService(Paths paths, ConferenceService conferenceService) {
+			this.paths = paths;
 			this.conferenceService = conferenceService;
         }
         
         public async Task<Video[]> GetVideosFromConference(Conference conference) {
-			var path = Path.Combine(hostingPath, "Conference", conference.Id);
+			var path = paths.GetConferencePath(conference.Id);
             var directory = new DirectoryInfo(path);
             if (!directory.Exists) {
                 Console.WriteLine($"Could not find directory for {conference.Id}. Server setup is wrong.");
@@ -37,7 +38,7 @@ namespace MediaServer.Services {
 				return;        
 			}
 
-			var pathToSpeakerDeck = Path.Combine(hostingPath, "Conference", talk.ConferenceId, talk.SpeakerDeck);
+			var pathToSpeakerDeck = paths.GetSpeakerDeckPath(talk.ConferenceId, talk.SpeakerDeck);
 			if (File.Exists(pathToSpeakerDeck)) {
 				return;            
 			}
