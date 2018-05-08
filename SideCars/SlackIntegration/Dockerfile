@@ -1,4 +1,4 @@
-FROM microsoft/aspnetcore-build:2.1.300-preview1 AS builder
+FROM microsoft/dotnet:2.1-sdk AS builder
 WORKDIR /source
 COPY ./SlackIntegration.sln .
 
@@ -9,7 +9,7 @@ COPY ./SlackIntegration ./SlackIntegration
 
 RUN dotnet publish "./SlackIntegration/SlackIntegration.csproj" --output "../dist" --configuration Release --no-restore
 
-FROM microsoft/aspnetcore:2.1.0-preview1
+FROM microsoft/dotnet:2.1-aspnetcore-runtime
 WORKDIR /app
 COPY --from=builder /source/dist .
 EXPOSE 1338
