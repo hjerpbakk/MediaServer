@@ -44,12 +44,10 @@ namespace MediaServer
 			services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
             var config = Configuration.Get<AppConfig>();         
-			var conferenceMetaDataService = new ConferenceMetaDataService(config);
-            var conferenceConfig = conferenceMetaDataService.GetConferenceConfig().GetAwaiter().GetResult();
-            services.AddSingleton(conferenceConfig);
-
-			services.AddSingleton<IBlogStorageConfig>(config);         
-
+			var conferenceConfiguration = new ConferenceConfiguration(config);
+			var conferences = conferenceConfiguration.GetConferences().GetAwaiter().GetResult();
+			services.AddSingleton(conferences);
+         
 			var httpClient = new HttpClient();
 			var slackIntegrationClient = new SlackIntegrationClient(httpClient);
 			slackIntegrationClient.PopulateMetaData().GetAwaiter().GetResult();
@@ -61,6 +59,7 @@ namespace MediaServer
 			services.AddSingleton<CacheWarmerClient>();
 
             services.AddSingleton<IFileProvider>(new PhysicalFileProvider(Directory.GetCurrentDirectory()));
+			services.AddSingleton<IBlogStorageConfig>(config);
 			services.AddSingleton<BlobStoragePersistence>();
             
 			services.AddSingleton<TalkService>();

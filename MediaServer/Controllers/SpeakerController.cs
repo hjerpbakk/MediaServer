@@ -1,6 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using MediaServer.Clients;
-using MediaServer.Configuration;
 using MediaServer.Models;
 using MediaServer.Services;
 using MediaServer.Services.Cache;
@@ -15,8 +15,8 @@ namespace MediaServer.Controllers
 		readonly Users users;
 		readonly ISlackClient slackClient;
 
-		public SpeakerController(ConferenceConfig conferenceConfig, ConferenceService conferenceService, MediaCache talkCache, Users users, ISlackClient slackClient)
-			: base(conferenceConfig)
+		public SpeakerController(IDictionary<string, Conference> conferences, ConferenceService conferenceService, MediaCache talkCache, Users users, ISlackClient slackClient)
+			: base(conferences)
 		{
 			this.conferenceService = conferenceService;
 			this.talkCache = talkCache;

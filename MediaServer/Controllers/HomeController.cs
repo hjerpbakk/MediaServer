@@ -1,13 +1,10 @@
 ﻿using System.Diagnostics;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using MediaServer.Models;
 using MediaServer.Services;
-using MediaServer.Configuration;
-using MediaServer.ViewModels;
-using Microsoft.Extensions.Caching.Memory;
 using MediaServer.Services.Cache;
+using System.Collections.Generic;
 
 namespace MediaServer.Controllers
 {
@@ -16,8 +13,8 @@ namespace MediaServer.Controllers
 		readonly ConferenceService conferenceService;
 		readonly MediaCache cache;
         
-		public HomeController(ConferenceConfig conferenceConfig, ConferenceService conferenceService, MediaCache talkCache) 
-			: base(conferenceConfig) {
+		public HomeController(IDictionary<string, Conference> conferences, ConferenceService conferenceService, MediaCache talkCache) 
+			: base(conferences) {
 			this.conferenceService = conferenceService;
 			this.cache = talkCache;
         }

@@ -1,11 +1,10 @@
-﻿using System;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using MediaServer.Configuration;
+using MediaServer.Models;
 using MediaServer.Services;
 using MediaServer.Services.Cache;
 using MediaServer.Services.Persistence;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Caching.Memory;
 
 namespace MediaServer.Controllers
 {
@@ -14,8 +13,8 @@ namespace MediaServer.Controllers
 		readonly ThumbnailService thumbnailService;
 		readonly MediaCache cache;
 
-		public ThumbnailController(ConferenceConfig conferenceConfig, ThumbnailService thumbnailService, MediaCache cache)
-			: base(conferenceConfig)
+		public ThumbnailController(IDictionary<string, Conference> conferences, ThumbnailService thumbnailService, MediaCache cache)
+			: base(conferences)
         {
 			this.thumbnailService = thumbnailService;
 			this.cache = cache;

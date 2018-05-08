@@ -4,21 +4,27 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MediaServer.Configuration;
-using MediaServer.Extensions;
 using MediaServer.Models;
 using MediaServer.Services.Cache;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
 using Newtonsoft.Json;
 
-namespace MediaServer.Services.Persistence {
+namespace MediaServer.Services.Persistence
+{
 	public class BlobStoragePersistence {
 		const string TalkPrefix = "dips.talk.";
 		const string DbFileExtension = ".json";      
         const string HashExtension = ".txt";
 
+		static readonly char[] talkPrefix;
+
 		readonly CloudBlobClient cloudBlobClient;
 		readonly MediaCache cache;
+
+		static BlobStoragePersistence() {
+			talkPrefix = TalkPrefix.ToCharArray();
+		}
 
 		public BlobStoragePersistence(IBlogStorageConfig blobStorageConfig, MediaCache cache) {
 			var storageAccount = CloudStorageAccount.Parse(blobStorageConfig.BlobStorageConnectionString);
@@ -45,9 +51,8 @@ namespace MediaServer.Services.Persistence {
                 do {
                     var results = await containerForConference.ListBlobsSegmentedAsync(TalkPrefix, blobContinuationToken);
                     blobContinuationToken = results.ContinuationToken;
-                    foreach (var cloudBlob in results.Results.Cast<CloudBlockBlob>())
-                    {
-                        var talkName = GetTalkNameFromBlobName(cloudBlob.Name);
+                    foreach (var cloudBlob in results.Results.Cast<CloudBlockBlob>()) {
+						var talkName = Path.GetFileNameWithoutExtension(cloudBlob.Name).TrimStart(talkPrefix);
                         var talk = await GetTalkFromBlob(cloudBlob, talkName, conference.Id);
                         talks.Add(talk);
                     }
@@ -56,7 +61,7 @@ namespace MediaServer.Services.Persistence {
                 return talks;
 			}         
         }
-
+        
 		public async Task<Talk> GetTalkByName(Conference conference, string name) {
 			var containerForConference = await GetContainerForConference(conference);
 
@@ -121,12 +126,7 @@ namespace MediaServer.Services.Persistence {
 		public static string GetThumbnailKey(string talkName) => "thumb" + talkName;
 		public static string GetThumnnailHashName(string talkName) => talkName + HashExtension;
 
-		string GetBlobNameFromTalkName(string talkName)
-            => TalkPrefix + talkName + DbFileExtension;
-
-		// TODO: save char array or do differently
-        string GetTalkNameFromBlobName(string blobName)
-            => Path.GetFileNameWithoutExtension(blobName).TrimStart(BlobStoragePersistence.TalkPrefix.ToCharArray());
+		string GetBlobNameFromTalkName(string talkName) => TalkPrefix + talkName + DbFileExtension;
         
 		async Task<CloudBlobContainer> GetContainerForConference(Conference conference) {
             var containerId = conference.Id.ToLower();

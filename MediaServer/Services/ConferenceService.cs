@@ -12,8 +12,8 @@ namespace MediaServer.Services
 		readonly ThumbnailService thumbnailService;
 		readonly BlobStoragePersistence blobStoragePersistence;
         
-		public ConferenceService(ConferenceConfig conferenceConfig, ThumbnailService thumbnailService, BlobStoragePersistence blobStoragePersistence) {
-			conferences = conferenceConfig.Conferences.Values;
+		public ConferenceService(IDictionary<string, Conference> conferences, ThumbnailService thumbnailService, BlobStoragePersistence blobStoragePersistence) {
+			this.conferences = conferences.Values;
 			this.thumbnailService = thumbnailService;
 			this.blobStoragePersistence = blobStoragePersistence;
         }
