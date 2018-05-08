@@ -10,6 +10,7 @@ using MediaServer.Services.Persistence;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.ResponseCaching;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -40,7 +41,7 @@ namespace MediaServer
 			// TODO: Support multiple speakers pr talk, comma separated
             services.AddMemoryCache();
             services.AddResponseCaching();
-            services.AddMvc();
+			services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
             var config = Configuration.Get<AppConfig>();         
 			var conferenceMetaDataService = new ConferenceMetaDataService(config);

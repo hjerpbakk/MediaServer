@@ -7,14 +7,13 @@ namespace MediaServer
     {
         public static void Main(string[] args)
         {
-            BuildWebHost(args).Run();
+			BuildWebHost(args).Build().Run();
         }
 
-        public static IWebHost BuildWebHost(string[] args) =>
-            WebHost.CreateDefaultBuilder(args)
-                .UseApplicationInsights()
-                .UseUrls("http://*:5000")
-                .UseStartup<Startup>()
-                .Build();
+		public static IWebHostBuilder BuildWebHost(string[] args) =>
+			WebHost.CreateDefaultBuilder(args)
+				.UseApplicationInsights()
+				.UseUrls("http://*:5000")
+			    .UseStartup<Startup>();
     }
 }
