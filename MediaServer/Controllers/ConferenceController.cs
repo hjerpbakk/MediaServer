@@ -18,7 +18,7 @@ namespace MediaServer.Controllers
 {
 	public class ConferenceController : NavigateableController
 	{
-		readonly OldTalkService talkService;
+		readonly TalkService talkService;
 		readonly ContentService contentService;
 		readonly ISlackClient slackClient;
 		readonly ConferenceService conferenceService;
@@ -26,7 +26,7 @@ namespace MediaServer.Controllers
 		readonly MediaCache cache;
 		readonly Users users;
         
-		public ConferenceController(ConferenceConfig conferenceConfig, OldTalkService talkService, ContentService contentService, ISlackClient slackClient, ConferenceService conferenceService, ThumbnailService thumbnailService, MediaCache cache, Users users)
+		public ConferenceController(ConferenceConfig conferenceConfig, TalkService talkService, ContentService contentService, ISlackClient slackClient, ConferenceService conferenceService, ThumbnailService thumbnailService, MediaCache cache, Users users)
 			: base(conferenceConfig)
 		{
 			// TODO: Too many services, move around?         

@@ -5,17 +5,14 @@ using MediaServer.Models;
 using Microsoft.AspNetCore.Hosting;
 using System.Threading.Tasks;
 
-namespace MediaServer.Services
-{
-    public class ContentService
-    {
+namespace MediaServer.Services {
+    public class ContentService {
         readonly string hostingPath;
-        readonly OldTalkService talkService;
+		readonly ConferenceService conferenceService;
 
-        public ContentService(IHostingEnvironment hostingEnvironment, OldTalkService talkService)
-        {
+		public ContentService(IHostingEnvironment hostingEnvironment, ConferenceService conferenceService) {
             hostingPath = hostingEnvironment.WebRootPath;
-            this.talkService = talkService;
+			this.conferenceService = conferenceService;
         }
         
         public async Task<Video[]> GetVideosFromConference(Conference conference) {
@@ -26,7 +23,7 @@ namespace MediaServer.Services
                 return new Video[0];
             }
 
-            var talkNames = await talkService.GetTalkNamesFromConference(conference);
+			var talkNames = await conferenceService.GetTalkNamesFromConference(conference);
             var candidateFiles = directory.EnumerateFiles($"*{Video.SupportedVideoFileType}");
             var availableVideos = candidateFiles
                 .Where(f => !talkNames.Contains(f.Name))

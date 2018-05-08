@@ -13,10 +13,8 @@ using Newtonsoft.Json;
 
 namespace MediaServer.Services.Persistence {
 	public class BlobStoragePersistence {
-		// TODO: Should not be public
-		public const string TalkPrefix = "dips.talk.";
-		public const string DbFileExtension = ".json";
-
+		const string TalkPrefix = "dips.talk.";
+		const string DbFileExtension = ".json";      
         const string HashExtension = ".txt";
 
 		readonly CloudBlobClient cloudBlobClient;
