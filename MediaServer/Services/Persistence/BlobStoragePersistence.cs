@@ -1,15 +1,18 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using MediaServer.Configuration;
 using MediaServer.Extensions;
 using MediaServer.Models;
+using MediaServer.Services.Cache;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
 using Newtonsoft.Json;
 
-namespace MediaServer.Services.Persistence
-{
-	public class BlobStoragePersistence
-    {
+namespace MediaServer.Services.Persistence {
+	public class BlobStoragePersistence {
 		// TODO: Should not be public
 		public const string TalkPrefix = "dips.talk.";
 		public const string DbFileExtension = ".json";
@@ -17,15 +20,45 @@ namespace MediaServer.Services.Persistence
         const string HashExtension = ".txt";
 
 		readonly CloudBlobClient cloudBlobClient;
+		readonly MediaCache cache;
 
-		public BlobStoragePersistence(IBlogStorageConfig blobStorageConfig)
-        {
+		public BlobStoragePersistence(IBlogStorageConfig blobStorageConfig, MediaCache cache) {
 			var storageAccount = CloudStorageAccount.Parse(blobStorageConfig.BlobStorageConnectionString);
             cloudBlobClient = storageAccount.CreateCloudBlobClient();
+			this.cache = cache;
         }
 
-		public async Task SaveTalkFromConference(Conference conference, Talk talk)
-		{
+		public async Task<IEnumerable<Talk>> GetTalksFromConferences(params Conference[] conferences) {
+			var talks = new List<Talk>();
+			foreach (var conference in conferences) {
+				var containerForConference = await GetContainerForConference(conference);
+
+                // TODO: Support more than 200 items
+                var token = new BlobContinuationToken();
+                var blobs = await containerForConference.ListBlobsSegmentedAsync(TalkPrefix, token);
+                
+                foreach (var cloudBlob in blobs.Results.Cast<CloudBlockBlob>()) {
+                    var talkName = GetTalkNameFromBlobName(cloudBlob.Name);
+					var talk = await GetTalkFromBlob(cloudBlob, talkName, conference.Id);
+                    talks.Add(talk);
+                }      
+			}
+
+			return talks;   
+		}
+
+		public async Task<Talk> GetTalkByName(Conference conference, string name) {
+			var containerForConference = await GetContainerForConference(conference);
+
+            var talkReferenceName = GetBlobNameFromTalkName(name);
+            var cloudBlob = containerForConference.GetBlobReference(talkReferenceName);
+			var talk = await GetTalkFromBlob(cloudBlob, name, conference.Id);
+
+            return talk;
+        }
+
+		public async Task SaveTalkFromConference(Conference conference, Talk talk) {
+			talk.ConferenceId = conference.Id;
 			var containerForConference = await GetContainerForConference(conference);
             
 			var serializedTalk = JsonConvert.SerializeObject(talk);
@@ -34,24 +67,24 @@ namespace MediaServer.Services.Persistence
             await talkReference.UploadTextAsync(serializedTalk);
                         
             talkReference.Properties.ContentType = "application/json";
-            await talkReference.SetPropertiesAsync(); 
+            await talkReference.SetPropertiesAsync();
+
+			cache.CacheTalk(talk);
 		}
         
 		public async Task RenameBlob(Conference conference, string oldName, string newName) {
 			var containerForConference = await GetContainerForConference(conference);
 			var copyBlob = containerForConference.GetBlockBlobReference(newName);  
-            if (!await copyBlob.ExistsAsync())  
-            {  
+            if (!await copyBlob.ExistsAsync()) {  
 				var blob = containerForConference.GetBlockBlobReference(oldName);             
-                if (await blob.ExistsAsync())  
-                {  
+                if (await blob.ExistsAsync()) {  
                     await copyBlob.StartCopyAsync(blob);  
                     await blob.DeleteIfExistsAsync();  
                 } 
             } 
 		}
 
-		public async Task DeleteTalk(Conference conference, Talk talk) {         
+		public async Task DeleteTalk(Conference conference, Talk talk) {
 			var containerForConference = await GetContainerForConference(conference);         
             var talkReferenceName = GetBlobNameFromTalkName(talk.TalkName);
             var talkReference = containerForConference.GetBlockBlobReference(talkReferenceName);
@@ -69,20 +102,47 @@ namespace MediaServer.Services.Persistence
 			if (await hashReference.ExistsAsync()) {
 				await hashReference.DeleteAsync();
             }
+
+			cache.ClearCache(talk);
+            cache.ClearForThumbnail(talk);
         }
 
+		// TODO: Where to put these really
 		public static string GetThumbnailKey(string talkName) => "thumb" + talkName;
-		public static string GetThumnnailHashName(string talkName) => talkName + HashExtension;    
+		public static string GetThumnnailHashName(string talkName) => talkName + HashExtension;
+
+		string GetBlobNameFromTalkName(string talkName)
+            => TalkPrefix + talkName + DbFileExtension;
+
+		// TODO: save char array or do differently
+        string GetTalkNameFromBlobName(string blobName)
+            => Path.GetFileNameWithoutExtension(blobName).TrimStart(BlobStoragePersistence.TalkPrefix.ToCharArray());
         
-		async Task<CloudBlobContainer> GetContainerForConference(Conference conference)
-        {
+		async Task<CloudBlobContainer> GetContainerForConference(Conference conference) {
             var containerId = conference.Id.ToLower();
 			var containerForConference = cloudBlobClient.GetContainerReference(containerId);
 			await containerForConference.CreateIfNotExistsAsync();
 			return containerForConference;
         }
+        
+        async Task<Talk> GetTalkFromBlob(CloudBlob cloudBlob, string name, string conferenceId) {
+			return await cache.GetOrSet(
+				cache.GetTalkKey(conferenceId, name),
+				() => GetTalk());
+			
+			async Task<Talk> GetTalk() {
+				using (var memoryStream = new MemoryStream()) {
+                    if (!(await cloudBlob.ExistsAsync())) {
+                        return null;
+                    }
 
-		string GetBlobNameFromTalkName(string talkName)
-            => TalkPrefix + talkName + DbFileExtension;
+                    await cloudBlob.DownloadToStreamAsync(memoryStream);
+                    var talkContent = Encoding.UTF8.GetString(memoryStream.ToArray());
+                    var talk = JsonConvert.DeserializeObject<Talk>(talkContent);
+					talk.ConferenceId = conferenceId;
+                    return talk;
+                }
+			}
+        }
     }
 }
