@@ -47,8 +47,8 @@ namespace MediaServer.Services.Cache
             memoryCache.Remove(LatestTalksKey);
             memoryCache.Remove(talk.Speaker);
             memoryCache.Remove(talk.ConferenceId);
-			memoryCache.Remove(GetTalkViewKey(talk.ConferenceId, talk.TalkName));
-			memoryCache.Remove(GetTalkNamesKey(talk.ConferenceId));
+			memoryCache.Remove(GetConferenceTalksKey(talk.ConferenceId));
+			memoryCache.Remove(GetTalkViewKey(talk.ConferenceId, talk.TalkName));         
             memoryCache.Remove(talkKey);
 			return talkKey;
 		}
@@ -64,7 +64,7 @@ namespace MediaServer.Services.Cache
 		public string GetTalkViewKey(string conferenceId, string talkName)
             => "view" + talkName + conferenceId;
 
-		public string GetTalkNamesKey(string conferenceId)
-		    => "names" + conferenceId;
+		public string GetConferenceTalksKey(string conferenceId)
+		    => "conf" + conferenceId;
     }
 }

@@ -31,21 +31,33 @@ namespace MediaServer.Services.Persistence {
 		public async Task<IEnumerable<Talk>> GetTalksFromConferences(IEnumerable<Conference> conferences) {
 			var talks = new List<Talk>();
 			foreach (var conference in conferences) {
-				var containerForConference = await GetContainerForConference(conference);
+				talks.AddRange(await GetTalksFromConference(conference));
+			}
+
+			return talks;
+		}
+
+		public async Task<IEnumerable<Talk>> GetTalksFromConference(Conference conference) {
+			return await cache.GetOrSet(cache.GetConferenceTalksKey(conference.Id), GetTalksFromConference);
+
+			async Task<IEnumerable<Talk>> GetTalksFromConference() {
+				var talks = new List<Talk>();
+                var containerForConference = await GetContainerForConference(conference);
                 BlobContinuationToken blobContinuationToken = null;
                 do {
-					var results = await containerForConference.ListBlobsSegmentedAsync(TalkPrefix, blobContinuationToken);
-                    blobContinuationToken = results.ContinuationToken;               
-					foreach (var cloudBlob in results.Results.Cast<CloudBlockBlob>()) {
+                    var results = await containerForConference.ListBlobsSegmentedAsync(TalkPrefix, blobContinuationToken);
+                    blobContinuationToken = results.ContinuationToken;
+                    foreach (var cloudBlob in results.Results.Cast<CloudBlockBlob>())
+                    {
                         var talkName = GetTalkNameFromBlobName(cloudBlob.Name);
                         var talk = await GetTalkFromBlob(cloudBlob, talkName, conference.Id);
                         talks.Add(talk);
-                    }    
-                } while (blobContinuationToken != null);  
-			}
+                    }
+                } while (blobContinuationToken != null);
 
-			return talks;   
-		}
+                return talks;
+			}         
+        }
 
 		public async Task<Talk> GetTalkByName(Conference conference, string name) {
 			var containerForConference = await GetContainerForConference(conference);
