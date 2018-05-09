@@ -119,6 +119,7 @@ namespace MediaServer
 
 		static void AddSlackIntegrationClient(IServiceCollection services, HttpClient httpClient)
         {
+			Console.WriteLine("Populating metadata from Slack");
             var slackIntegrationClient = new SlackIntegrationClient(httpClient);
             var policyResult = Policy
                         .Handle<Exception>()
@@ -133,6 +134,7 @@ namespace MediaServer
                 Console.WriteLine($"Failed to populate metadata in slackIntegrationClient {policyResult.FinalException}");
             }
 
+			Console.WriteLine("Getting users from Slack");
             var usersResult = Policy
                         .Handle<Exception>()
                         .WaitAndRetryAsync(new[] {
@@ -148,7 +150,7 @@ namespace MediaServer
             }
             else
             {
-                Console.WriteLine($"Failed to populate metadata in slackIntegrationClient {policyResult.FinalException}");
+                Console.WriteLine($"Failed to get users from Slack {policyResult.FinalException}");
                 services.AddSingleton(new Users(new User[0]));
             }
 
