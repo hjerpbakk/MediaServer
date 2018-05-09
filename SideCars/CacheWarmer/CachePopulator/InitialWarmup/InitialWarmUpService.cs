@@ -24,26 +24,35 @@ namespace CachePopulator.InitialWarmup
         }
 
 		public async Task TouchEndpoints()
-        {
-            var endpoints = new List<string> { mediaServerConfig.BaseUrl };
-            foreach (var conference in conferences)
-            {
-                endpoints.Add($"{mediaServerConfig.ConferenceUrl}/{conference.Id}");
-                endpoints.Add($"{mediaServerConfig.ConferenceUrl}/{conference.Id}/Save");
-            }
+		{
+			await careFreeHttpClient.TouchEndpointWithRetry(mediaServerConfig.BaseUrl);
 
-            // TODO: too aggressive, wait for conferences to finish before fetching pr. speaker
-			foreach (var speaker in speakers)
+			var endpoints = new List<string>();
+			foreach (var conference in conferences)
 			{
-				endpoints.Add($"{mediaServerConfig.SpeakerUrl}/{speaker}");            
+				endpoints.Add($"{mediaServerConfig.ConferenceUrl}/{conference.Id}");
+				endpoints.Add($"{mediaServerConfig.ConferenceUrl}/{conference.Id}/Save");
 			}
 
+			await TouchEndpoints(endpoints);
+
+			endpoints.Clear();
+			foreach (var speaker in speakers)
+			{
+				endpoints.Add($"{mediaServerConfig.SpeakerUrl}/{speaker}");
+			}
+
+			await TouchEndpoints(endpoints);
+		}
+
+		async Task TouchEndpoints(List<string> endpoints)
+		{
 			var tasks = endpoints.Select(careFreeHttpClient.TouchEndpointWithRetry).ToArray();
 			var partitions = tasks.Partition(10);
 			foreach (var partition in partitions)
-            {
+			{
 				await Task.WhenAll(partition);
-            }
-        }
-    }
+			}
+		}
+	}
 }

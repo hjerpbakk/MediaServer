@@ -41,7 +41,7 @@ namespace MediaServer.Services
 
 		public async Task<IEnumerable<string>> GetTalkNamesFromConference(Conference conference) {
 			var talks = await conferencePersistence.GetTalksFromConference(conference);
-            return talks.Select(talk => talk.TalkName);
+			return talks.Select(talk => talk.VideoName);
         }
 
 		async Task<IEnumerable<TalkSummary>> CreateTalkSummaries(IEnumerable<Talk> talks) {
