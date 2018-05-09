@@ -32,6 +32,7 @@ namespace CachePopulator.InitialWarmup
                 endpoints.Add($"{mediaServerConfig.ConferenceUrl}/{conference.Id}/Save");
             }
 
+            // TODO: too aggressive, wait for conferences to finish before fetching pr. speaker
 			foreach (var speaker in speakers)
 			{
 				endpoints.Add($"{mediaServerConfig.SpeakerUrl}/{speaker}");            
