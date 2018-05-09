@@ -3,13 +3,13 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using MediaServer.Configuration;
 using MediaServer.Models;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
 using Newtonsoft.Json;
 
-namespace MediaServer.Configuration {
+namespace MediaServer.Configuration
+{
 	public class ConferenceConfiguration {
 		readonly CloudBlobClient cloudBlobClient;
 

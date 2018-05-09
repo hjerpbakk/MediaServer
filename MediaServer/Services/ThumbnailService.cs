@@ -6,21 +6,20 @@ using MediaServer.Services.Cache;
 using MediaServer.Services.Persistence;
 using Microsoft.Extensions.FileProviders;
 
-namespace MediaServer.Services
-{
+namespace MediaServer.Services {
 	public class ThumbnailService {      
 		readonly IFileProvider fileProvider;
 		readonly MediaCache cache;
-		readonly BlobStoragePersistence blobStoragePersistence;
+		readonly ThumbnailPersistence thumbnailPersistence;
 
-		public ThumbnailService(IFileProvider fileProvider, MediaCache cache, BlobStoragePersistence blobStoragePersistence) {
+		public ThumbnailService(IFileProvider fileProvider, MediaCache cache, ThumbnailPersistence thumbnailPersistence) {
 			this.fileProvider = fileProvider;
 			this.cache = cache;
-			this.blobStoragePersistence = blobStoragePersistence;
+			this.thumbnailPersistence = thumbnailPersistence;
         }
 
 		public async Task<Image> GetTalkThumbnail(Conference conference, string talkName) {
-			var (exists, image) = await blobStoragePersistence.GetThumbnail(conference, talkName);
+			var (exists, image) = await thumbnailPersistence.GetThumbnail(conference, talkName);
 			if (exists) {
 				return image;
             }
@@ -38,7 +37,7 @@ namespace MediaServer.Services
 			cache.ClearForThumbnail(talk);
             if (talk.ThumbnailImageFile == null) {
 				if (oldNameOfTalk != null) {
-					await blobStoragePersistence.RenameThumbnail(conference, oldNameOfTalk, talk.TalkName);
+					await thumbnailPersistence.RenameThumbnail(conference, oldNameOfTalk, talk.TalkName);
                 }            
 
 				return;
@@ -56,19 +55,19 @@ namespace MediaServer.Services
                 }
             }
 
-			await blobStoragePersistence.SaveThumbnail(conference, talk.TalkName, imageFile.ContentType, imageData);
+			await thumbnailPersistence.SaveThumbnail(conference, talk.TalkName, imageFile.ContentType, imageData);
 		}
 
 		public async Task<string> GetThumbnailUrl(Talk talk) { 
 			var thumbnailUrl = await cache.GetOrSet(
-				BlobStoragePersistence.GetThumnnailHashName(talk.TalkName), 
+				TalkPersistence.GetThumnnailHashName(talk.TalkName), 
 				() => CreateThumbnailUrl(talk));
 			return thumbnailUrl;
 		}
 
 		async Task<string> CreateThumbnailUrl(Talk talk) {
 			var baseThumbnailUrl = Paths.GetThumbnailUrl(talk);
-			var hash = await blobStoragePersistence.GetSavedHashOfThumbnail(talk);
+			var hash = await thumbnailPersistence.GetSavedHashOfThumbnail(talk);
             if (hash == string.Empty) {
                 return baseThumbnailUrl;
             }

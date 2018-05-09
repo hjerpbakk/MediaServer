@@ -24,7 +24,7 @@ namespace MediaServer.Controllers
         public async Task<IActionResult> GetTalkThumbnail(string conferenceId, string talkName)
 		{
 			var view = await cache.GetOrSet(
-				BlobStoragePersistence.GetThumbnailKey(talkName), 
+				TalkPersistence.GetThumbnailKey(talkName), 
 				() => GetThumbnail(conferenceId, talkName));
 			return view;
 		}

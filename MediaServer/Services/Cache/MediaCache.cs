@@ -54,8 +54,8 @@ namespace MediaServer.Services.Cache
 		}
 
 		public void ClearForThumbnail(Talk talk) {
-			memoryCache.Remove(BlobStoragePersistence.GetThumbnailKey(talk.TalkName));
-			memoryCache.Remove(BlobStoragePersistence.GetThumnnailHashName(talk.TalkName));
+			memoryCache.Remove(TalkPersistence.GetThumbnailKey(talk.TalkName));
+			memoryCache.Remove(TalkPersistence.GetThumnnailHashName(talk.TalkName));
 		}
 
 		public string GetTalkKey(string conferenceId, string talkName)

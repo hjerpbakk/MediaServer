@@ -61,7 +61,10 @@ namespace MediaServer
 
             services.AddSingleton<IFileProvider>(new PhysicalFileProvider(Directory.GetCurrentDirectory()));
 			services.AddSingleton<IBlogStorageConfig>(config);
-			services.AddSingleton<BlobStoragePersistence>();
+
+			services.AddSingleton<ThumbnailPersistence>();
+			services.AddSingleton<ConferencePersistence>();                  
+			services.AddSingleton<TalkPersistence>();
             
 			services.AddSingleton<TalkService>();
 			services.AddSingleton<ThumbnailService>();
