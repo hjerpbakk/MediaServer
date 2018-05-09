@@ -7,10 +7,10 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace MediaServer.Controllers {
 	public abstract class NavigateableController : Controller {
-		protected readonly IDictionary<string, Conference> conferences;
+		protected readonly Dictionary<string, Conference> conferences;
         
 		// TODO: Inject or something #singleton         
-		protected NavigateableController(IDictionary<string, Conference> conferences) {
+		protected NavigateableController(Dictionary<string, Conference> conferences) {
 			this.conferences = conferences;
 			var navigations = new List<Navigation>(conferences.Count + 1) {
 				new Navigation(Conference.CreateLatestTalks(), "Home")

@@ -16,7 +16,7 @@ namespace MediaServer.Controllers
 		readonly Users users;
 		readonly ISlackClient slackClient;
 
-		public SpeakerController(IDictionary<string, Conference> conferences, ConferenceService conferenceService, MediaCache talkCache, Users users, ISlackClient slackClient)
+		public SpeakerController(Dictionary<string, Conference> conferences, ConferenceService conferenceService, MediaCache talkCache, Users users, ISlackClient slackClient)
 			: base(conferences)
 		{
 			this.conferenceService = conferenceService;

@@ -9,7 +9,7 @@ namespace SlackIntegration.Controllers {
 	[Route("[controller]")]
     [ApiController]
     public class SlackController : ControllerBase {
-		readonly IDictionary<string, Conference> conferences;
+		readonly Dictionary<string, Conference> conferences;
 		readonly SlackService slackService;
 
 		public SlackController(ConferenceConfig conferenceConfig, SlackService slackService) {

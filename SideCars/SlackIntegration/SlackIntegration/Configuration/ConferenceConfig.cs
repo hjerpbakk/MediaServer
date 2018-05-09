@@ -5,11 +5,11 @@ namespace SlackIntegration.Configuration
 {
 	public class ConferenceConfig
     {
-        public ConferenceConfig(IDictionary<string, Conference> conferences)
+        public ConferenceConfig(Dictionary<string, Conference> conferences)
         {
             Conferences = conferences;
         }
 
-        public IDictionary<string, Conference> Conferences { get; }
+        public Dictionary<string, Conference> Conferences { get; }
     }
 }

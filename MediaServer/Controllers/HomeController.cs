@@ -14,7 +14,7 @@ namespace MediaServer.Controllers
 		readonly ConferenceService conferenceService;
 		readonly MediaCache cache;
         
-		public HomeController(IDictionary<string, Conference> conferences, ConferenceService conferenceService, MediaCache talkCache) 
+		public HomeController(Dictionary<string, Conference> conferences, ConferenceService conferenceService, MediaCache talkCache) 
 			: base(conferences) {
 			this.conferenceService = conferenceService;
 			this.cache = talkCache;

@@ -12,7 +12,7 @@ namespace MediaServer.Services
 		readonly ThumbnailService thumbnailService;
 		readonly ConferencePersistence conferencePersistence;
         
-		public ConferenceService(IDictionary<string, Conference> conferences, ThumbnailService thumbnailService, ConferencePersistence conferencePersistence) {
+		public ConferenceService(Dictionary<string, Conference> conferences, ThumbnailService thumbnailService, ConferencePersistence conferencePersistence) {
 			this.conferences = conferences.Values;
 			this.thumbnailService = thumbnailService;
 			this.conferencePersistence = conferencePersistence;

@@ -26,7 +26,7 @@ namespace MediaServer.Controllers
 		readonly MediaCache cache;
 		readonly Users users;
         
-		public ConferenceController(IDictionary<string, Conference> conferences, TalkService talkService, ContentService contentService, ISlackClient slackClient, ConferenceService conferenceService, ThumbnailService thumbnailService, MediaCache cache, Users users)
+		public ConferenceController(Dictionary<string, Conference> conferences, TalkService talkService, ContentService contentService, ISlackClient slackClient, ConferenceService conferenceService, ThumbnailService thumbnailService, MediaCache cache, Users users)
 			: base(conferences)
 		{
 			// TODO: Too many services, move around?         
