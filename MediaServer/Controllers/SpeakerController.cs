@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using MediaServer.Clients;
 using MediaServer.Models;
@@ -29,6 +30,7 @@ namespace MediaServer.Controllers
 		[HttpGet("/[controller]/{speakerName}")]
 		public async Task<IActionResult> Index(string speakerName)
 		{
+			Console.WriteLine("GetTalksForSpeaker " + speakerName);
 			var view = await talkCache.GetOrSet(
 				speakerName, 
 				() => GetViewForSpeaker(speakerName));         

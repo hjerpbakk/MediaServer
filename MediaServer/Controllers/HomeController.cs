@@ -5,6 +5,7 @@ using MediaServer.Models;
 using MediaServer.Services;
 using MediaServer.Services.Cache;
 using System.Collections.Generic;
+using System;
 
 namespace MediaServer.Controllers
 {
@@ -21,6 +22,7 @@ namespace MediaServer.Controllers
         
 		[ResponseCache(NoStore = true)]      
         public async Task<IActionResult> Index() {
+			Console.WriteLine("GetLatestTalks ");
 			var view = await cache.GetOrSet(MediaCache.LatestTalksKey, GetView);
             return view;
         }

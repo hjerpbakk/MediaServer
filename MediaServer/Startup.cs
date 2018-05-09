@@ -16,6 +16,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Net.Http.Headers;
+using Polly;
 
 namespace MediaServer
 {
@@ -36,45 +37,42 @@ namespace MediaServer
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
-        {
+		{
 			// TODO: Support tags, comma separated
 			// TODO: Support multiple speakers pr talk, comma separated
-            services.AddMemoryCache();
-            services.AddResponseCaching();
+			services.AddMemoryCache();
+			services.AddResponseCaching();
 			services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
-            var config = Configuration.Get<AppConfig>();         
+			var config = Configuration.Get<AppConfig>();
 			var conferenceConfiguration = new ConferenceConfiguration(config);
 			var conferences = conferenceConfiguration.GetConferences().GetAwaiter().GetResult();
 			services.AddSingleton(conferences);
 			services.AddSingleton<Paths>();
-         
+
 			var httpClient = new HttpClient();
-			var slackIntegrationClient = new SlackIntegrationClient(httpClient);
-			slackIntegrationClient.PopulateMetaData().GetAwaiter().GetResult();
-			var slackUsers = slackIntegrationClient.GetUsers().GetAwaiter().GetResult();
-			var users = new Users(slackUsers);
 			services.AddSingleton(httpClient);
-			services.AddSingleton(users); 
-			services.AddSingleton<ISlackClient>(slackIntegrationClient);
+			AddSlackIntegrationClient(services, httpClient);
 			services.AddSingleton<CacheWarmerClient>();
 
-            services.AddSingleton<IFileProvider>(new PhysicalFileProvider(Directory.GetCurrentDirectory()));
+			services.AddSingleton<IFileProvider>(new PhysicalFileProvider(Directory.GetCurrentDirectory()));
 			services.AddSingleton<IBlogStorageConfig>(config);
 
 			services.AddSingleton<ThumbnailPersistence>();
-			services.AddSingleton<ConferencePersistence>();                  
+			services.AddSingleton<ConferencePersistence>();
 			services.AddSingleton<TalkPersistence>();
-            
+
 			services.AddSingleton<TalkService>();
 			services.AddSingleton<ThumbnailService>();
-            services.AddSingleton<ConferenceService>();
-            services.AddSingleton<ContentService>();    
+			services.AddSingleton<ConferenceService>();
+			services.AddSingleton<ContentService>();
 			services.AddSingleton<MediaCache>();
-        }
+		}
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+
+
+		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+		public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             if (env.IsDevelopment())
             {
@@ -117,6 +115,44 @@ namespace MediaServer
             app.UseMvc(routes => {
                 routes.MapRoute("default", "{controller=Home}/{action=Index}/{id?}");
             });
+        }
+
+		static void AddSlackIntegrationClient(IServiceCollection services, HttpClient httpClient)
+        {
+            var slackIntegrationClient = new SlackIntegrationClient(httpClient);
+            var policyResult = Policy
+                        .Handle<Exception>()
+                        .WaitAndRetryAsync(new[] {
+                            TimeSpan.FromSeconds(1),
+                            TimeSpan.FromSeconds(2),
+                            TimeSpan.FromSeconds(4)
+            }).ExecuteAndCaptureAsync(slackIntegrationClient.PopulateMetaData).GetAwaiter().GetResult();
+
+            if (policyResult.FinalException != null)
+            {
+                Console.WriteLine($"Failed to populate metadata in slackIntegrationClient {policyResult.FinalException}");
+            }
+
+            var usersResult = Policy
+                        .Handle<Exception>()
+                        .WaitAndRetryAsync(new[] {
+                            TimeSpan.FromSeconds(1),
+                            TimeSpan.FromSeconds(2),
+                            TimeSpan.FromSeconds(4)
+            }).ExecuteAndCaptureAsync(slackIntegrationClient.GetUsers).GetAwaiter().GetResult();
+
+            if (policyResult.FinalException == null)
+            {
+                var users = new Users(usersResult.Result);
+                services.AddSingleton(users);
+            }
+            else
+            {
+                Console.WriteLine($"Failed to populate metadata in slackIntegrationClient {policyResult.FinalException}");
+                services.AddSingleton(new Users(new User[0]));
+            }
+
+            services.AddSingleton<ISlackClient>(slackIntegrationClient);
         }
     }
 }

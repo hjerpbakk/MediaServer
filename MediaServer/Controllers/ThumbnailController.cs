@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using MediaServer.Models;
 using MediaServer.Services;
@@ -23,6 +24,7 @@ namespace MediaServer.Controllers
 		[HttpGet("/Conference/{conferenceId}/Thumbnails/{talkName}")]
         public async Task<IActionResult> GetTalkThumbnail(string conferenceId, string talkName)
 		{
+			Console.WriteLine($"GetTalkThumbnail {conferenceId} {talkName}");
 			var view = await cache.GetOrSet(
 				TalkPersistence.GetThumbnailKey(talkName), 
 				() => GetThumbnail(conferenceId, talkName));

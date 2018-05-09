@@ -44,6 +44,7 @@ namespace MediaServer.Controllers
 		[HttpGet("/Conference/{conferenceId}")]      
 		public async Task<IActionResult> GetConferenceView(string conferenceId)
 		{
+			Console.WriteLine("GetConferenceView " + conferenceId);
 			// TODO: User visible view count...
 			var view = await cache.GetOrSet(
 				conferenceId,
@@ -55,6 +56,7 @@ namespace MediaServer.Controllers
 		[HttpGet("/Conference/{conferenceId}/{talkName}")]
 		public async Task<IActionResult> GetTalkView(string conferenceId, string talkName)
 		{
+			Console.WriteLine($"GetTalkView {conferenceId} {talkName}");
 			var view = await cache.GetOrSet(
 				cache.GetTalkViewKey(conferenceId, talkName),
 				() => GetTalkViewFromService(conferenceId, talkName));
@@ -65,6 +67,7 @@ namespace MediaServer.Controllers
 		[HttpGet("/Conference/{conferenceId}/{talkName}/Edit")]
 		public async Task<IActionResult> GetEditView(string conferenceId, string talkName)
 		{
+			Console.WriteLine($"GetEditView {conferenceId} {talkName}");
             // TODO: SpeakerDeck dissapears if not from PDF
 			if (!ConferenceExists(conferenceId))
             {
@@ -98,6 +101,7 @@ namespace MediaServer.Controllers
 		[HttpGet("/Conference/{conferenceId}/Save")]
 		public async Task<IActionResult> GetSaveView(string conferenceId)
 		{
+			Console.WriteLine("GetSaveView " + conferenceId);
             // TODO: Support choosing speaker name from Slack...
 			// TODO: Support uploading slides
 			// TODO: Support uploading video
