@@ -145,6 +145,7 @@ namespace MediaServer.Controllers
             // TODO: Client verification also
 			// TODO: proper replace here
 			talk.TalkName = talk.TalkName.Replace("?", "").Replace(":", " - ").Replace("/", "-").Replace("\"", "-").Replace("#", "");
+			talk.ConferenceId = conferenceId;
 			contentService.VerifySlides(talk);
 			await talkService.SaveTalkFromConference(conference, talk);
 			await thumbnailService.SaveThumbnail(conference, talk, oldName);
