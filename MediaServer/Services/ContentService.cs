@@ -34,6 +34,10 @@ namespace MediaServer.Services
         }
 
 		public void VerifySlides(Talk talk) {
+			if (talk.SpeakerDeck == null) {
+				return;
+			}
+
 			if (talk.SpeakerDeck.StartsWith("http", StringComparison.Ordinal)) {
 				return;        
 			}

@@ -20,7 +20,7 @@ namespace MediaServer.Services
 
 		public async Task<IEnumerable<TalkSummary>> GetLatestTalks() {
 			var talks = await conferencePersistence.GetTalksFromConferences(conferences);         
-			var orderedTalks = talks.OrderByDescending(t => t.TimeStamp).Take(9);
+			var orderedTalks = talks.OrderByDescending(t => t.TimeStamp).Take(9).ToArray();
 			var orderedSummaries = await CreateTalkSummaries(orderedTalks);
 			return orderedSummaries;
 		}

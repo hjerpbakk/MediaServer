@@ -65,19 +65,7 @@ namespace MediaServer.Services.Persistence
                 await talkReference.DeleteAsync();
             }
 
-			var thumbnailReference = containerForConference.GetBlockBlobReference(talk.TalkName);  
-			if (await thumbnailReference.ExistsAsync()) {
-				await thumbnailReference.DeleteAsync();
-            }
-
-			var hashName = GetThumnnailHashName(talk.TalkName);
-            var hashReference = containerForConference.GetBlockBlobReference(hashName);
-			if (await hashReference.ExistsAsync()) {
-				await hashReference.DeleteAsync();
-            }
-
-			cache.ClearCache(talk);
-            cache.ClearForThumbnail(talk);
+            cache.ClearCache(talk);
         }
 
 		// TODO: Where to put these really

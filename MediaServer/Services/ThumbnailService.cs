@@ -34,9 +34,8 @@ namespace MediaServer.Services {
 		}
 
 		public async Task SaveThumbnail(Conference conference, Talk talk, string oldNameOfTalk = null) {
-			cache.ClearForThumbnail(talk);
             if (talk.ThumbnailImageFile == null) {
-				if (oldNameOfTalk != null) {
+				if (oldNameOfTalk != null && oldNameOfTalk != talk.TalkName) {
 					await thumbnailPersistence.RenameThumbnail(conference, oldNameOfTalk, talk.TalkName);
                 }            
 

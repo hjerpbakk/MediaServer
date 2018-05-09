@@ -48,14 +48,11 @@ namespace MediaServer.Services.Cache
             memoryCache.Remove(talk.Speaker);
             memoryCache.Remove(talk.ConferenceId);
 			memoryCache.Remove(GetConferenceTalksKey(talk.ConferenceId));
-			memoryCache.Remove(GetTalkViewKey(talk.ConferenceId, talk.TalkName));         
+			memoryCache.Remove(GetTalkViewKey(talk.ConferenceId, talk.TalkName));
+			memoryCache.Remove(TalkPersistence.GetThumbnailKey(talk.TalkName));
+            memoryCache.Remove(TalkPersistence.GetThumnnailHashName(talk.TalkName));
             memoryCache.Remove(talkKey);
 			return talkKey;
-		}
-
-		public void ClearForThumbnail(Talk talk) {
-			memoryCache.Remove(TalkPersistence.GetThumbnailKey(talk.TalkName));
-			memoryCache.Remove(TalkPersistence.GetThumnnailHashName(talk.TalkName));
 		}
 
 		public string GetTalkKey(string conferenceId, string talkName)

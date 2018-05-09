@@ -128,7 +128,7 @@ namespace MediaServer.Controllers
 		[HttpPost("/Conference/{conferenceId}/Save")]
         public async Task<IActionResult> SaveTalk(string conferenceId, [FromQuery] string oldName, [Bind("VideoName, Description, Speaker, SpeakerDeck, ThumbnailImageFile, TalkName, DateOfTalkString")] Talk talk)
 		{
-			// TODO: Get thumbnail from speaker notes or video if not set
+            // TODO: Get thumbnail from speaker notes or video if not set
 			if (!ConferenceExists(conferenceId))
             {
                 return NotFound();
@@ -146,6 +146,7 @@ namespace MediaServer.Controllers
 			// TODO: proper replace here
 			talk.TalkName = talk.TalkName.Replace("?", "").Replace(":", " - ").Replace("/", "-").Replace("\"", "-").Replace("#", "");
 			talk.ConferenceId = conferenceId;
+			talk.TimeStamp = DateTimeOffset.UtcNow;
 			contentService.VerifySlides(talk);
 			await talkService.SaveTalkFromConference(conference, talk);
 			await thumbnailService.SaveThumbnail(conference, talk, oldName);

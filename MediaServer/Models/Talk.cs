@@ -43,5 +43,7 @@ namespace MediaServer.Models
 
 		[JsonIgnore]
 		public DateTimeOffset TimeStamp { get; set; }
-    }
+
+		public override string ToString() => TalkName;      
+	}
 }
