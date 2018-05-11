@@ -22,8 +22,9 @@ namespace MediaServer.Configuration {
 		// TODO: Code special words like Conference only once
 		// TODO: Use this everywhere
 		// TODO: Make less brittle
+		// TODO: Remember that we have Navigation
 		public static string GetConferenceUrl(string conferenceId)
-		    => $"/{Conference}/{conferenceId}/";
+		    => "/" + Conference + "/" + conferenceId + "/";
 
 		public static string GetThumbnailUrl(Talk talk)
 		    => GetConferenceUrl(talk.ConferenceId) + "Thumbnails/" + talk.TalkName;
@@ -32,6 +33,6 @@ namespace MediaServer.Configuration {
 		    => GetConferenceUrl(talk.ConferenceId) + talk.TalkName;
 
 		public static string GetFullPath(HttpContext httpContext, string urlPart)
-		    => $"{httpContext.Request.Scheme}://{httpContext.Request.Host}{urlPart}";
+		    => httpContext.Request.Scheme + "://" + httpContext.Request.Host + urlPart;
     }
 }

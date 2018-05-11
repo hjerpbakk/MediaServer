@@ -25,7 +25,7 @@ namespace MediaServer.Services
             }
 
 			var talkNames = await conferenceService.GetTalkNamesFromConference(conference);
-            var candidateFiles = directory.EnumerateFiles($"*{Video.SupportedVideoFileType}");
+            var candidateFiles = directory.EnumerateFiles("*" + Video.SupportedVideoFileType);
             var availableVideos = candidateFiles
                 .Where(f => !talkNames.Contains(f.Name))
                 .Select(f => new Video(f.Name))

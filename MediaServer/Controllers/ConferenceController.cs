@@ -56,7 +56,7 @@ namespace MediaServer.Controllers
 		[HttpGet("/Conference/{conferenceId}/{talkName}")]
 		public async Task<IActionResult> GetTalkView(string conferenceId, string talkName)
 		{
-			Console.WriteLine($"GetTalkView {conferenceId} {talkName}");
+			Console.WriteLine("GetTalkView " + conferenceId + " " + talkName);
 			var view = await cache.GetOrSet(
 				cache.GetTalkViewKey(conferenceId, talkName),
 				() => GetTalkViewFromService(conferenceId, talkName));
@@ -67,7 +67,7 @@ namespace MediaServer.Controllers
 		[HttpGet("/Conference/{conferenceId}/{talkName}/Edit")]
 		public async Task<IActionResult> GetEditView(string conferenceId, string talkName)
 		{
-			Console.WriteLine($"GetEditView {conferenceId} {talkName}");
+			Console.WriteLine("GetEditView " + conferenceId + " " + talkName);
             // TODO: SpeakerDeck dissapears if not from PDF
 			if (!ConferenceExists(conferenceId))
             {
@@ -83,7 +83,7 @@ namespace MediaServer.Controllers
                 return NotFound();
             }
 
-			SetCurrentNavigation(conference, $"Edit {talk.TalkName}");
+			SetCurrentNavigation(conference, "Edit " + talk.TalkName);
 
 			talk.Thumbnail = await thumbnailService.GetThumbnailUrl(talk);
             var controllerName = ControllerContext.RouteData.Values["controller"].ToString();
