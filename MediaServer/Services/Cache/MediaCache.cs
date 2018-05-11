@@ -28,7 +28,7 @@ namespace MediaServer.Services.Cache
         {
 			if (!memoryCache.TryGetValue(key, out T view))
             {
-				Console.WriteLine($"Cache miss for {key}");
+				Console.WriteLine("Cache miss for " + key);
 				view = await create();
 				memoryCache.Set(key, view, options);
             }
@@ -54,7 +54,7 @@ namespace MediaServer.Services.Cache
             memoryCache.Remove(talkKey);
 			return talkKey;
 		}
-
+             
 		public string GetTalkKey(string conferenceId, string talkName)
 		    => talkName + conferenceId;
 

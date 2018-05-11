@@ -26,5 +26,7 @@ namespace MediaServer.Models {
 		public static Conference CreateLatestTalks() => new Conference("Index", "Latest Talks");
 
 		public bool Equals(Conference other) => Id == other.Id;
+		public override bool Equals(object obj) => obj is Conference && Equals((Conference)obj);          
+		public override int GetHashCode() => Id.GetHashCode();   
 	}
 }

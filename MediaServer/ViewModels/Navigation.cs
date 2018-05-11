@@ -13,6 +13,8 @@ namespace MediaServer.ViewModels {
 		public string Title { get; }
 		public string Controller { get; }
         
-		public bool Equals(Navigation other) => Slug == other.Slug;     
+		public bool Equals(Navigation other) => Slug == other.Slug;    
+		public override bool Equals(object obj) => obj is Navigation && Equals((Navigation)obj);          
+		public override int GetHashCode() => Slug.GetHashCode();     
 	}
 }

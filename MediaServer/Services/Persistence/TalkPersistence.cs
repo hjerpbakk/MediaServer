@@ -11,19 +11,20 @@ using Newtonsoft.Json;
 namespace MediaServer.Services.Persistence
 {
 	public class TalkPersistence {
-		const string DbFileExtension = ".json";      
+        protected const string TalkPrefix = "dips.talk.";
+		const string DbFileExtension = ".json";   
+		static readonly int talkNameStartIndex;
+		static readonly int talkNameLengthModifier;
 
-		protected const string TalkPrefix = "dips.talk.";      
 		protected const string HashExtension = ".txt";
 		protected const string HashContentType = "text/plain";
-
-		protected static readonly char[] talkPrefix;
-
+        
 		protected readonly CloudBlobClient cloudBlobClient;
 		protected readonly MediaCache cache;
 
 		static TalkPersistence() {
-			talkPrefix = TalkPrefix.ToCharArray();
+			talkNameStartIndex = TalkPrefix.Length;
+			talkNameLengthModifier = talkNameStartIndex + DbFileExtension.Length;
 		}
 
 		public TalkPersistence(IBlogStorageConfig blobStorageConfig, MediaCache cache) {
@@ -69,10 +70,17 @@ namespace MediaServer.Services.Persistence
         }
 
 		// TODO: Where to put these really
-        public static string GetThumbnailKey(string talkName) => "thumb" + talkName;
-		public static string GetThumnnailHashName(string talkName) => talkName + HashExtension;
+        public static string GetThumbnailKey(string talkName) 
+		    => "thumb" + talkName;
 
-		string GetBlobNameFromTalkName(string talkName) => TalkPrefix + talkName + DbFileExtension;
+		public static string GetThumnnailHashName(string talkName) 
+		    => talkName + HashExtension;
+
+		string GetBlobNameFromTalkName(string talkName) 
+		    => TalkPrefix + talkName + DbFileExtension;
+
+		protected string GetTalkNameFromCloudBlobName(string cloudBlobName)
+		    => cloudBlobName.Substring(talkNameStartIndex, cloudBlobName.Length - talkNameLengthModifier);
         
 		protected async Task<CloudBlobContainer> GetContainerForConference(Conference conference) {
             var containerId = conference.Id.ToLower();
@@ -81,9 +89,9 @@ namespace MediaServer.Services.Persistence
 			return containerForConference;
         }    
 
-        protected async Task<Talk> GetTalkFromBlob(CloudBlob cloudBlob, string name, string conferenceId) {
+		protected async Task<Talk> GetTalkFromBlob(CloudBlob cloudBlob, string talkName, string conferenceId) {
 			return await cache.GetOrSet(
-				cache.GetTalkKey(conferenceId, name),
+				cache.GetTalkKey(conferenceId, talkName),
 				() => GetTalk());
 			
 			async Task<Talk> GetTalk() {

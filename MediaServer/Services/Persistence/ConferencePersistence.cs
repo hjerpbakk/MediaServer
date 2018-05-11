@@ -35,14 +35,14 @@ namespace MediaServer.Services.Persistence
                     var results = await containerForConference.ListBlobsSegmentedAsync(TalkPrefix, blobContinuationToken);
                     blobContinuationToken = results.ContinuationToken;
                     foreach (var cloudBlob in results.Results.Cast<CloudBlockBlob>()) {
-                        var talkName = Path.GetFileNameWithoutExtension(cloudBlob.Name).TrimStart(talkPrefix);
-                        var talk = await GetTalkFromBlob(cloudBlob, talkName, conference.Id);
-                        talks.Add(talk);
-                    }
-                } while (blobContinuationToken != null);
+						string talkName = GetTalkNameFromCloudBlobName(cloudBlob.Name);
+						var talk = await GetTalkFromBlob(cloudBlob, talkName, conference.Id);
+						talks.Add(talk);
+					}
+				} while (blobContinuationToken != null);
 
                 return talks;
             }         
         }
-    }
+	}
 }

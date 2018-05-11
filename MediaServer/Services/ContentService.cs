@@ -28,9 +28,10 @@ namespace MediaServer.Services
             var candidateFiles = directory.EnumerateFiles($"*{Video.SupportedVideoFileType}");
             var availableVideos = candidateFiles
                 .Where(f => !talkNames.Contains(f.Name))
-                .Select(f => new Video(f.Name));
+                .Select(f => new Video(f.Name))
+				.ToArray();
 
-            return availableVideos.ToArray();
+			return availableVideos;
         }
 
 		public void VerifySlides(Talk talk) {
