@@ -82,11 +82,14 @@ namespace MediaServer.Services.Persistence
 		protected string GetTalkNameFromCloudBlobName(string cloudBlobName)
 		    => cloudBlobName.Substring(talkNameStartIndex, cloudBlobName.Length - talkNameLengthModifier);
         
-		protected async Task<CloudBlobContainer> GetContainerForConference(Conference conference) {
-            var containerId = conference.Id.ToLower();
+		protected async Task<CloudBlobContainer> GetContainerForConference(Conference conference)
+		    => await GetContainerForConference(conference.Id);
+
+		protected async Task<CloudBlobContainer> GetContainerForConference(string conferenceId) {
+			var containerId = conferenceId.ToLower();
 			var containerForConference = cloudBlobClient.GetContainerReference(containerId);
-			await containerForConference.CreateIfNotExistsAsync();
-			return containerForConference;
+            await containerForConference.CreateIfNotExistsAsync();
+            return containerForConference;
         }    
 
 		protected async Task<Talk> GetTalkFromBlob(CloudBlob cloudBlob, string talkName, string conferenceId) {
