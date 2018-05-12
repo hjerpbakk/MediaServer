@@ -11,9 +11,16 @@
         </div>
     </div>
     <div class="media mb-2">
-        <img class="mr-3 img-thumbnail b-lazy" width="100" height="100" src="/Transparent.gif" data-src="@talk.ProfileImageUrl" alt="@talk.Speaker" title="@talk.Speaker">
+        <img class="mr-3 img-thumbnail b-lazy" width="100" height="100" src="/Transparent.gif" data-src="@talk.ProfileImageUrl" alt="@talk.Speakers[0]" title="@talk.Speakers[0]">
         <div class="media-body">
-            <h4 class="text-muted mt-2"><a class="text-muted" href="/Speaker/@talk.Speaker">@talk.Speaker</a>, @talk.ZonedTimeStamp</h4>
+            <h4 class="text-muted mt-2">
+                @for (int i = 0; i < talk.Speakers.Length; i++)
+                {
+                    var speaker = talk.Speakers[i];
+                    <a class="text-muted" href="/Speaker/@speaker">@speaker</a><span>@(i < talk.Speakers.Length - 1 ? "," : "")</span>
+                }
+                <span> - @talk.ZonedTimeStamp</span>
+            </h4>
             <p class="font-weight-normal">@talk.Description</p>
         </div>
     </div>

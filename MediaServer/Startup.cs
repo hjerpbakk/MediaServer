@@ -39,7 +39,6 @@ namespace MediaServer
         public void ConfigureServices(IServiceCollection services)
 		{
 			// TODO: Support tags, comma separated
-			// TODO: Support multiple speakers pr talk, comma separated
 			services.AddMemoryCache();
 			services.AddResponseCaching();
 			services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
