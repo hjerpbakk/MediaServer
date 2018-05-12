@@ -41,10 +41,16 @@ namespace MediaServer.Services {
 
 				return;
             }
-                    
-            // TODO: Protect against other filetypes and set a max size. Can maxsize be checked i JS too?
-            // https://blogs.msdn.microsoft.com/dotnet/2017/01/19/net-core-image-processing/
+            
             var imageFile = talk.ThumbnailImageFile;
+			if (imageFile.Length > 300_000L) {
+				return;
+			}
+
+			if (imageFile.ContentType.Substring(0, 5) != "image") {
+				return;
+			}
+
             var extension = Path.GetExtension(imageFile.FileName);
 			byte[] imageData;
 			using (var readStream = imageFile.OpenReadStream()) {
@@ -71,7 +77,7 @@ namespace MediaServer.Services {
                 return baseThumbnailUrl;
             }
 
-            var thumbNailUrl = $"{baseThumbnailUrl}?v={hash}";
+            var thumbNailUrl = baseThumbnailUrl + "?v=" + hash;
             return thumbNailUrl;
         }      
 	}
