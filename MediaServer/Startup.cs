@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
 using MediaServer.Clients;
 using MediaServer.Configuration;
@@ -47,6 +48,8 @@ namespace MediaServer
 			var conferenceConfiguration = new ConferenceConfiguration(config);
 			var conferences = conferenceConfiguration.GetConferences().GetAwaiter().GetResult();
 			services.AddSingleton(conferences);
+			var conferenceIds = conferences.Values.Select(c => c.Id).ToArray();
+			services.AddSingleton(conferenceIds);         
 			services.AddSingleton<Paths>();
 
 			var httpClient = new HttpClient();
@@ -64,6 +67,7 @@ namespace MediaServer
 			services.AddSingleton<TalkService>();
 			services.AddSingleton<ThumbnailService>();
 			services.AddSingleton<ConferenceService>();
+			services.AddSingleton<SpeakerService>();
 			services.AddSingleton<ContentService>();
 			services.AddSingleton<MediaCache>();
 		}

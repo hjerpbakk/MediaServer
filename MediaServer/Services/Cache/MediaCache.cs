@@ -10,6 +10,7 @@ namespace MediaServer.Services.Cache
 	public class MediaCache
     {
 		public const string LatestTalksKey = "latesttalks";
+		public const string SpeakersKey = "speakers";
 
 		readonly IMemoryCache memoryCache;      
 
@@ -51,6 +52,7 @@ namespace MediaServer.Services.Cache
 			memoryCache.Remove(GetTalkViewKey(talk.ConferenceId, talk.TalkName));
 			memoryCache.Remove(TalkPersistence.GetThumbnailKey(talk.TalkName));
             memoryCache.Remove(TalkPersistence.GetThumnnailHashName(talk.TalkName));
+			memoryCache.Remove(SpeakersKey);
             memoryCache.Remove(talkKey);
 			return talkKey;
 		}

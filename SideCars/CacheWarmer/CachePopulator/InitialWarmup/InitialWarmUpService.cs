@@ -34,9 +34,10 @@ namespace CachePopulator.InitialWarmup
 				endpoints.Add($"{mediaServerConfig.ConferenceUrl}/{conference.Id}/Save");
 			}
 
-			await TouchEndpoints(endpoints);
-
+			await TouchEndpoints(endpoints);         
 			endpoints.Clear();
+
+			await careFreeHttpClient.TouchEndpointWithRetry($"{mediaServerConfig.SpeakerUrl}/List");
 			foreach (var speaker in speakers)
 			{
 				endpoints.Add($"{mediaServerConfig.SpeakerUrl}/{speaker}");

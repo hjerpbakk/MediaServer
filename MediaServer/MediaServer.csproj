@@ -17,5 +17,11 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Models\Helpers\" />
+    <Folder Include="Views\Speaker\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="wwwroot\VERSION.txt">
+      <Link>VERSION.txt</Link>
+    </None>
   </ItemGroup>
 </Project>

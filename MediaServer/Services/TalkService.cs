@@ -6,7 +6,7 @@ namespace MediaServer.Services {
 	public class TalkService {
 		readonly TalkPersistence talkPersistence;
       
-		public TalkService(TalkPersistence talkPersistence) {
+		public TalkService(TalkPersistence talkPersistence, ConferencePersistence conferencePersistence) {
 			this.talkPersistence = talkPersistence;
 		}
 

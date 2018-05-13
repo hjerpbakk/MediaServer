@@ -9,6 +9,13 @@ namespace MediaServer.ViewModels {
 			Controller = controllerName;
         }
 
+		public Navigation(string slug, string title, string controller)
+        {
+            Slug = slug;
+            Title = title;
+			Controller = controller;
+        }
+
 		public string Slug { get; }    
 		public string Title { get; }
 		public string Controller { get; }

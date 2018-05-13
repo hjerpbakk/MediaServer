@@ -8,12 +8,12 @@ using MediaServer.Services.Persistence;
 namespace MediaServer.Services
 {
 	public class ConferenceService {
-		readonly string[] conferenceIds;      
+		readonly string[] conferenceIds;   
 		readonly ThumbnailService thumbnailService;
 		readonly ConferencePersistence conferencePersistence;
         
-		public ConferenceService(Dictionary<string, Conference> conferences, ThumbnailService thumbnailService, ConferencePersistence conferencePersistence) {
-			conferenceIds = conferences.Values.Select(c => c.Id).ToArray();
+		public ConferenceService(string[] conferenceIds, ThumbnailService thumbnailService, ConferencePersistence conferencePersistence) {
+			this.conferenceIds = conferenceIds;
 			this.thumbnailService = thumbnailService;
 			this.conferencePersistence = conferencePersistence;
         }
@@ -34,7 +34,7 @@ namespace MediaServer.Services
               
 		public async Task<IEnumerable<TalkSummary>> GetTalksBySpeaker(string speakerName) {
 			var talks = await conferencePersistence.GetTalksFromConferences(conferenceIds);
-			var orderedTalks = talks.Where(t => t.Speaker == speakerName).OrderByDescending(t => t.DateOfTalk);
+			var orderedTalks = talks.Where(t => t.Speaker.Contains(speakerName)).OrderByDescending(t => t.DateOfTalk);
 			var orderedSummaries = await CreateTalkSummaries(orderedTalks);         
 			return orderedSummaries;
 		}

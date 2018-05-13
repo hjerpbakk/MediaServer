@@ -25,4 +25,9 @@
     <Compile Remove="Services\FireAndForgetService.cs" />
     <Compile Remove="Extensions\ApplicationBuilderExtensions.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\VERSION.txt">
+      <Link>VERSION.txt</Link>
+    </None>
+  </ItemGroup>
 </Project>
