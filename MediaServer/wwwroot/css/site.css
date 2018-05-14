@@ -25,10 +25,18 @@
     border-color: #C62221
 }
 
+.badge-primary {
+    background-color: #C62221;
+}
+
 .btn-primary:hover, .btn-primary:focus, .btn-primary:active, .btn-primary:not(:disabled):not(.disabled):active {
     color: #fff;
     background-color: #941918;
     border-color: #941918;
+}
+
+a.list, a.list:hover, a.list:focus, a.list:active {
+    color: black;
 }
 
 a {
@@ -62,4 +70,8 @@ li.nav-item.active {
 
 h1 a, h1 a:hover, h1 a:focus {
     color: black !important
+}
+
+.badge {
+    font-size: 1.5rem
 }

@@ -32,19 +32,12 @@ namespace MediaServer.Services
 			return orderedSummaries;
 		}
               
-		public async Task<IEnumerable<TalkSummary>> GetTalksBySpeaker(string speakerName) {
-			var talks = await conferencePersistence.GetTalksFromConferences(conferenceIds);
-			var orderedTalks = talks.Where(t => t.Speaker.Contains(speakerName)).OrderByDescending(t => t.DateOfTalk);
-			var orderedSummaries = await CreateTalkSummaries(orderedTalks);         
-			return orderedSummaries;
-		}
-
 		public async Task<IEnumerable<string>> GetTalkNamesFromConference(Conference conference) {
 			var talks = await conferencePersistence.GetTalksFromConference(conference.Id);
 			return talks.Select(talk => talk.VideoName);
         }
-
-		async Task<IEnumerable<TalkSummary>> CreateTalkSummaries(IEnumerable<Talk> talks) {
+        
+		protected async Task<IEnumerable<TalkSummary>> CreateTalkSummaries(IEnumerable<Talk> talks) {
 			return await Task.WhenAll(talks.Select(CreateTalkSummary));
 
 			async Task<TalkSummary> CreateTalkSummary(Talk talk) {

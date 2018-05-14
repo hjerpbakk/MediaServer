@@ -22,11 +22,14 @@ namespace CachePopulator.Services
             var endpoints = new[] {
                 mediaServerConfig.BaseUrl,
                 $"{mediaServerConfig.ConferenceUrl}/{talkMetadata.Conference}",
-                $"{mediaServerConfig.SpeakerUrl}/{talkMetadata.Speaker}"
+                $"{mediaServerConfig.SpeakerUrl}/{talkMetadata.Speaker}",
+				$"{mediaServerConfig.SpeakerUrl}/List"
             };
-                     
-			var tasks = endpoints.Select(careFreeHttpClient.TouchEndpointWithRetry).ToArray();
-            await Task.WhenAll(tasks);
+            
+			foreach (var endpoint in endpoints)
+			{
+				await careFreeHttpClient.TouchEndpointWithRetry(endpoint);
+			}
         }
     }
 }

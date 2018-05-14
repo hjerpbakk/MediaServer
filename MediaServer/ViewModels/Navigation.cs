@@ -2,6 +2,7 @@
 using MediaServer.Models;
 
 namespace MediaServer.ViewModels {
+	// TODO: This is not a ViewModel in any universe
 	public struct Navigation : IEquatable<Navigation> {
         public Navigation(Conference conference, string controllerName) {
 			Slug = conference.Id;

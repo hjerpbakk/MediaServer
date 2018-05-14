@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MediaServer.Models {
+namespace MediaServer.ViewModels {
 	public struct Speaker : IEquatable<Speaker> {
 		public Speaker(string name, string profileImageUrl, int talkCount) {
 			Name = name;
