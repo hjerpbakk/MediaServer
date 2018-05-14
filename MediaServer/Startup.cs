@@ -77,7 +77,7 @@ namespace MediaServer
 			if (env.IsDevelopment()) {
 				app.UseDeveloperExceptionPage();
 			} else {
-                app.UseExceptionHandler("/Home/Error");
+				app.UseExceptionHandler("/error/");
             }
                      
             const int OneYear = 31536000;
@@ -106,6 +106,8 @@ namespace MediaServer
                     ctx.Context.Response.Headers[HeaderNames.CacheControl] = MaxAgeStaticFiles;
                 }
             });
+
+			app.UseStatusCodePagesWithReExecute("/error/{0}");
 
 			// TODO: Delete and use latest talks in conference controller as deafult
             app.UseMvc(routes => {

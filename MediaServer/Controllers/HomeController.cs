@@ -1,12 +1,10 @@
-﻿using System.Diagnostics;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using MediaServer.Models;
 using MediaServer.Services;
 using MediaServer.Services.Cache;
 using System.Collections.Generic;
 using System;
-using MediaServer.ViewModels;
 
 namespace MediaServer.Controllers
 {
@@ -15,10 +13,10 @@ namespace MediaServer.Controllers
 		readonly ConferenceService conferenceService;
 		readonly MediaCache cache;
         
-		public HomeController(Dictionary<string, Conference> conferences, ConferenceService conferenceService, MediaCache talkCache) 
+		public HomeController(Dictionary<string, Conference> conferences, ConferenceService conferenceService, MediaCache cache) 
 			: base(conferences) {
 			this.conferenceService = conferenceService;
-			this.cache = talkCache;
+			this.cache = cache;
         }
         
 		[ResponseCache(NoStore = true)]      
@@ -27,11 +25,6 @@ namespace MediaServer.Controllers
 			var view = await cache.GetOrSet(MediaCache.LatestTalksKey, GetView);
             return view;
         }
-
-		public IActionResult Error() {
-			SetCurrentNavigation("Error");
-			return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-		}
                   
 		async Task<IActionResult> GetView() {
 			SetCurrentNavigationToHome();         
