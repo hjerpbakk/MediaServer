@@ -44,7 +44,7 @@ namespace MediaServer.Services.Persistence
         
         public async Task<string> GetSavedHashOfThumbnail(Talk talk) {
             var hashName = GetThumnnailHashName(talk.TalkName);
-            var containerForConference = cloudBlobClient.GetContainerForTalk(talk);
+			var containerForConference = await GetContainerForConference(talk.ConferenceId);
             var hashRefrence = containerForConference.GetBlockBlobReference(hashName);
             var exists = await hashRefrence.ExistsAsync();
             if (exists) {
