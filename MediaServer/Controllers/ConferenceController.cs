@@ -6,6 +6,7 @@ using MediaServer.Clients;
 using MediaServer.Models;
 using MediaServer.Services;
 using MediaServer.Services.Cache;
+using MediaServer.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
@@ -37,14 +38,27 @@ namespace MediaServer.Controllers
               
 		[ResponseCache(NoStore = true)]
 		[HttpGet("/Conference/{conferenceId}")]      
-		public async Task<IActionResult> GetConferenceView(string conferenceId)
-		{
+		public async Task<IActionResult> GetConferenceView(string conferenceId) {
 			Console.WriteLine("GetConferenceView " + conferenceId);
 			// TODO: User visible view count...
-			var view = await cache.GetOrSet(
-				conferenceId,
-				() => GetAllTalksFromConferenceView(conferenceId));
-            return view;         
+			return await cache.GetOrSet(conferenceId, GetAllTalksFromConferenceView);
+            
+			async Task<IActionResult> GetAllTalksFromConferenceView() {
+				// TODO: Guard all controllers even before cache
+                if (!ConferenceExists(conferenceId)) {
+                    return PageNotFound();
+                }
+
+                var conference = GetConferenceFromId(conferenceId);
+                SetCurrentNavigation(conference, conference.Name);
+                
+				var talks = await conferenceService.GetTalksForConference(conference);
+				var videoPath = conference.VideoPath;
+                var slackUrl = slackClient.GetChannelLink(conferenceId, conference.SlackChannelId);
+				var conferenceViewModel = new ConferenceViewModel(talks, videoPath, slackUrl);
+
+				return View("Index", conferenceViewModel);
+            }
 		}
 
 		[ResponseCache(NoStore = true)]
@@ -155,25 +169,7 @@ namespace MediaServer.Controllers
             return new RedirectResult(escapedTalkName, false, false);
 		}
         
-		async Task<IActionResult> GetAllTalksFromConferenceView(string conferenceId)
-        {
-            if (!ConferenceExists(conferenceId))
-            {
-				return PageNotFound();
-            }
-
-            var conference = GetConferenceFromId(conferenceId);
-            SetCurrentNavigation(conference, conference.Name);
-
-            // TODO: Create a conference viewmodel and use model binding
-            ViewData["VideoPath"] = conference.VideoPath;
-            ViewData["Talks"] = await conferenceService.GetTalksForConference(conference);
-			ViewData["SlackUrl"] = slackClient.GetChannelLink(conferenceId, conference.SlackChannelId);
-
-            return View("Index");
-        }
-
-		async Task<IActionResult> GetTalkViewFromService(string conferenceId, string talkName)
+        async Task<IActionResult> GetTalkViewFromService(string conferenceId, string talkName)
         {
 			// TODO: Fix this by specify constarint or something in the routing
 			var extension = Path.GetExtension(talkName);         

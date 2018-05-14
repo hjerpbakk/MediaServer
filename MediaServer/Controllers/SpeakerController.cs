@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using MediaServer.Clients;
 using MediaServer.Models;
-using MediaServer.ViewModels;
 using MediaServer.Services;
 using MediaServer.Services.Cache;
 using Microsoft.AspNetCore.Mvc;
 
-namespace MediaServer.Controllers {
+namespace MediaServer.Controllers
+{
 	public class SpeakerController : NavigateableController {
 		readonly MediaCache talkCache;      
 		readonly SpeakerService speakerService;
@@ -23,9 +22,8 @@ namespace MediaServer.Controllers {
 		[HttpGet("/[controller]/{speakerName}")]
 		public async Task<IActionResult> Index(string speakerName) {
 			Console.WriteLine("GetTalksForSpeaker " + speakerName);
-			var view = await talkCache.GetOrSet(speakerName, () => GetViewForSpeaker());
-			return view;
-            
+			return await talkCache.GetOrSet(speakerName, () => GetViewForSpeaker());
+                        
 			async Task<IActionResult> GetViewForSpeaker() {
                 SetCurrentNavigation(speakerName);
 				var talksByUser = await speakerService.GetTalksBySpeaker(speakerName);
@@ -37,9 +35,8 @@ namespace MediaServer.Controllers {
 		[HttpGet("/[controller]/List")]
 		public async Task<IActionResult> List() {
 			Console.WriteLine("GetSpeakers");
-			var view = await talkCache.GetOrSet(MediaCache.SpeakersKey, () => List());
-            return view;
-
+			return await talkCache.GetOrSet(MediaCache.SpeakersKey, () => List());
+            
 			async Task<IActionResult> List() {            
 				SetCurrentNavigationToSpeakerList();            
 				var speakers = await speakerService.GetSpeakers();            

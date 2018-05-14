@@ -5,11 +5,10 @@ using MediaServer.Services;
 using MediaServer.Services.Cache;
 using System.Collections.Generic;
 using System;
+using MediaServer.ViewModels;
 
-namespace MediaServer.Controllers
-{
-	public class HomeController : NavigateableController
-    {
+namespace MediaServer.Controllers {
+	public class HomeController : NavigateableController {
 		readonly ConferenceService conferenceService;
 		readonly MediaCache cache;
         
@@ -22,15 +21,14 @@ namespace MediaServer.Controllers
 		[ResponseCache(NoStore = true)]      
         public async Task<IActionResult> Index() {
 			Console.WriteLine("GetLatestTalks ");
-			var view = await cache.GetOrSet(MediaCache.LatestTalksKey, GetView);
-            return view;
-        }
-                  
-		async Task<IActionResult> GetView() {
-			SetCurrentNavigationToHome();         
-            ViewData["Talks"] = await conferenceService.GetLatestTalks();         
-            // TODO: Use model binding
-            return View();
-		}
+			return await cache.GetOrSet(MediaCache.LatestTalksKey, GetView);
+            
+			async Task<IActionResult> GetView() {
+                SetCurrentNavigationToHome();
+				var talks = await conferenceService.GetLatestTalks();
+				var talksViewModel = new TalksViewModel(talks);            
+				return View(talksViewModel);
+            }
+        }      
     }
 }

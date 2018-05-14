@@ -21,18 +21,18 @@ namespace MediaServer.Services
 			this.conferencePersistence = conferencePersistence;
         }
 
-		public async Task<IEnumerable<TalkSummary>> GetLatestTalks() {
+		public async Task<TalkSummary[]> GetLatestTalks() {
 			var talks = await conferencePersistence.GetTalksFromConferences(conferenceIds);         
-			var orderedTalks = talks.OrderByDescending(t => t.TimeStamp).Take(9).ToArray();
+			var orderedTalks = talks.OrderByDescending(t => t.TimeStamp).Take(9);
 			var orderedSummaries = await CreateTalkSummaries(orderedTalks);
-			return orderedSummaries;
+			return orderedSummaries.ToArray();
 		}
                                                       
-		public async Task<IEnumerable<TalkSummary>> GetTalksForConference(Conference conference) {
+		public async Task<TalkSummary[]> GetTalksForConference(Conference conference) {
 			var talks = await conferencePersistence.GetTalksFromConference(conference.Id);         
 			var orderedTalks = talks.OrderByDescending(t => t.DateOfTalk);
 			var orderedSummaries = await CreateTalkSummaries(orderedTalks);
-			return orderedSummaries;
+			return orderedSummaries.ToArray();
 		}
               
 		public async Task<IEnumerable<string>> GetTalkNamesFromConference(Conference conference) {

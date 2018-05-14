@@ -9,7 +9,5 @@
             <p class="font-weight-normal">@Model.User.Description</p>
         </div>
     </div>
-    @{ ViewData["Talks"] = Model.TalkSummaries; }
-    @{ ViewData["ShowConference"] = true; }
     @await Html.PartialAsync("/Views/Conference/TalkGrid.cshtml")
 </div>

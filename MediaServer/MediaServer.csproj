@@ -24,4 +24,7 @@
       <Link>VERSION.txt</Link>
     </None>
   </ItemGroup>
+  <ItemGroup>
+    <Content Remove="Views\Conference\Save.cshtml" />
+  </ItemGroup>
 </Project>

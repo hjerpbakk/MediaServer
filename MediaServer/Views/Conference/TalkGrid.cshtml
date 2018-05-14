@@ -1,6 +1,6 @@
-﻿@using System.Collections.Generic;
+﻿@model ITalksViewModel
 <div class="row mt-2">
-    @{var talks = (IEnumerable<TalkSummary>)ViewData["Talks"];}
+    @{var talks = Model.Talks;}
     @foreach (var talk in talks)
     {
         <div class="col-lg-4 col-md-6 mb-4">
@@ -18,7 +18,7 @@
                             var speaker = talk.Speakers[i];
                             <a class="text-muted" href="/Speaker/@speaker">@speaker</a><span>@(i < talk.Speakers.Length - 1 ? "," : "")</span>
                         }
-                        @if ((bool)ViewData["ShowConference"])
+                        @if (Model.ShowConference)
                         {
                             <span> - </span>
                             <a class="text-muted" href="@talk.ConferenceUrl">@talk.ConferenceName</a>

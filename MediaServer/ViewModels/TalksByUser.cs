@@ -2,15 +2,17 @@
 using MediaServer.Models;
 
 namespace MediaServer.ViewModels {
-	public struct TalksByUser : IEquatable<TalksByUser> {
-		public TalksByUser(User user, TalkSummary[] talkSummaries, string slackDmLink) {
+	public struct TalksByUser : IEquatable<TalksByUser>, ITalksViewModel {
+		public TalksByUser(User user, TalkSummary[] talks, string slackDmLink) {
 			User = user;
-			TalkSummaries = talkSummaries;
+			Talks = talks;
 			SlackDmLink = slackDmLink;
+			ShowConference = true;
 		}
 
-		public User User { get; }
-		public TalkSummary[] TalkSummaries { get; }
+		public TalkSummary[] Talks { get; }
+        public bool ShowConference { get; }
+		public User User { get; }      
 		public string SlackDmLink { get; }
 
 		public bool Equals(TalksByUser other) => User.Equals(other.User);
