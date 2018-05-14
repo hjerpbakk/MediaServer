@@ -49,8 +49,7 @@ namespace MediaServer
 			var conferences = conferenceConfiguration.GetConferences().GetAwaiter().GetResult();
 			services.AddSingleton(conferences);
 			var conferenceIds = conferences.Values.Select(c => c.Id).ToArray();
-			services.AddSingleton(conferenceIds);         
-			services.AddSingleton<Paths>();
+			services.AddSingleton(conferenceIds);       
 
 			var httpClient = new HttpClient();
 			services.AddSingleton(httpClient);

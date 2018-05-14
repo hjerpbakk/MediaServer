@@ -3,10 +3,13 @@ using System.Linq;
 using MediaServer.Configuration;
 using MediaServer.Models;
 using MediaServer.ViewModels;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MediaServer.Controllers {
 	public abstract class NavigateableController : Controller {
+		public const string Conference = "Conference";
+
 		protected readonly Dictionary<string, Conference> conferences;
 
 		readonly int LastNavigation;      
@@ -61,5 +64,21 @@ namespace MediaServer.Controllers {
 			ViewData["Slug"] = navigation.Slug;
 			ViewData["Navigations"] = Navigations;
 		}
+
+		// TODO: Code special words like Conference only once
+        // TODO: Use this everywhere
+        // TODO: Make less brittle
+        // TODO: Remember that we have Navigation
+        public static string GetConferenceUrl(string conferenceId)
+            => "/" + Conference + "/" + conferenceId + "/";
+
+        public static string GetThumbnailUrl(Talk talk)
+            => GetConferenceUrl(talk.ConferenceId) + "Thumbnails/" + talk.TalkName;
+
+        public static string GetTalkUrl(Talk talk)
+            => GetConferenceUrl(talk.ConferenceId) + talk.TalkName;
+
+        public static string GetFullPath(HttpContext httpContext, string urlPart)
+            => httpContext.Request.Scheme + "://" + httpContext.Request.Host + urlPart;
 	}
 }

@@ -1,6 +1,6 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
-using MediaServer.Configuration;
+using MediaServer.Controllers;
 using MediaServer.Models;
 using MediaServer.Services.Cache;
 using MediaServer.Services.Persistence;
@@ -71,7 +71,7 @@ namespace MediaServer.Services {
 		}
 
 		async Task<string> CreateThumbnailUrl(Talk talk) {
-			var baseThumbnailUrl = Paths.GetThumbnailUrl(talk);
+			var baseThumbnailUrl = NavigateableController.GetThumbnailUrl(talk);
 			var hash = await thumbnailPersistence.GetSavedHashOfThumbnail(talk);
             if (hash == string.Empty) {
                 return baseThumbnailUrl;

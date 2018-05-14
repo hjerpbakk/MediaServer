@@ -3,21 +3,22 @@ using System.Linq;
 using System.IO;
 using MediaServer.Models;
 using System.Threading.Tasks;
-using MediaServer.Configuration;
+using Microsoft.AspNetCore.Hosting;
+using MediaServer.Controllers;
 
 namespace MediaServer.Services
 {
 	public class ContentService {
+		readonly string hostingPath;
 		readonly ConferenceService conferenceService;
-		readonly Paths paths;
-
-		public ContentService(Paths paths, ConferenceService conferenceService) {
-			this.paths = paths;
+        
+		public ContentService(IHostingEnvironment hostingEnvironment, ConferenceService conferenceService) {
+			hostingPath = hostingEnvironment.WebRootPath;
 			this.conferenceService = conferenceService;
         }
         
         public async Task<Video[]> GetVideosFromConference(Conference conference) {
-			var path = paths.GetConferencePath(conference.Id);
+			var path = GetConferencePath(conference.Id);
             var directory = new DirectoryInfo(path);
             if (!directory.Exists) {
                 Console.WriteLine($"Could not find directory for {conference.Id}. Server setup is wrong.");
@@ -43,12 +44,18 @@ namespace MediaServer.Services
 				return;        
 			}
 
-			var pathToSpeakerDeck = paths.GetSpeakerDeckPath(talk.ConferenceId, talk.SpeakerDeck);
+			var pathToSpeakerDeck = GetSpeakerDeckPath(talk.ConferenceId, talk.SpeakerDeck);
 			if (File.Exists(pathToSpeakerDeck)) {
 				return;            
 			}
 
 			talk.SpeakerDeck = null;
 		}
+
+		string GetConferencePath(string conferenceId) 
+            => Path.Combine(hostingPath, NavigateableController.Conference, conferenceId);
+
+        string GetSpeakerDeckPath(string conferenceId, string speakerDeckName)
+            => Path.Combine(hostingPath, NavigateableController.Conference, conferenceId, speakerDeckName);       
     }
 }

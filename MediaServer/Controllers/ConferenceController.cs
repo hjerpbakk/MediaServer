@@ -152,7 +152,7 @@ namespace MediaServer.Controllers
 			await thumbnailService.SaveThumbnail(conference, talk, oldName);
                      
             if (oldName == null) {
-				var talkUrl = Paths.GetFullPath(HttpContext, Paths.GetTalkUrl(talk));
+				var talkUrl = GetFullPath(HttpContext, GetTalkUrl(talk));
 				slackClient.PublishToSlack(talk, talkUrl);
             }
 

@@ -1,4 +1,4 @@
-﻿using MediaServer.Configuration;
+﻿using MediaServer.Controllers;
 
 namespace MediaServer.Models {
 	public class TalkSummary : TalkModel {      
@@ -7,7 +7,7 @@ namespace MediaServer.Models {
 			Url = url;
 			Thumbnail = thumbnail;
 			ConferenceName = conferenceName;
-			ConferenceUrl = Paths.GetConferenceUrl(talk.ConferenceId);
+			ConferenceUrl = NavigateableController.GetConferenceUrl(talk.ConferenceId);
         }
 
         public string Url { get; }
