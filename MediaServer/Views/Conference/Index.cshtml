@@ -10,6 +10,7 @@
             </form>
         </div>
     </div>
+    @{ ViewData["ShowConference"] = false; }
     @await Html.PartialAsync("TalkGrid.cshtml")
     <div class="row ml-0">
         <h5 class="text-muted mb-3">@ViewData["VideoPath"]</h5>

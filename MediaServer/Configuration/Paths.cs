@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 
 namespace MediaServer.Configuration {
+	// TODO: Put file paths and urls in different files
 	public class Paths {
 		const string Conference = "Conference";
 

@@ -2,6 +2,7 @@
     <div class="d-flex">
         <h1 class="mt-4">@ViewData["Title"]</h1>
     </div>
+    @{ ViewData["ShowConference"] = true; }
     @await Html.PartialAsync("/Views/Conference/TalkGrid.cshtml")
 </div>
 

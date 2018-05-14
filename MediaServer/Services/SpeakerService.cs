@@ -15,8 +15,8 @@ namespace MediaServer.Services
 		readonly ConferencePersistence conferencePersistence;
 		readonly ISlackClient slackClient;
 
-		public SpeakerService(string[] conferenceIds, Users users, ConferencePersistence conferencePersistence, ThumbnailService thumbnailService, ISlackClient slackClient)
-			: base(conferenceIds, thumbnailService, conferencePersistence) {
+		public SpeakerService(string[] conferenceIds, Dictionary<string, Conference> conferences, Users users, ConferencePersistence conferencePersistence, ThumbnailService thumbnailService, ISlackClient slackClient)
+			: base(conferenceIds, conferences, thumbnailService, conferencePersistence) {
 			this.conferenceIds = conferenceIds;
 			this.users = users;
 			this.conferencePersistence = conferencePersistence;

@@ -8,12 +8,14 @@ using MediaServer.Services.Persistence;
 namespace MediaServer.Services
 {
 	public class ConferenceService {
-		readonly string[] conferenceIds;   
+		readonly string[] conferenceIds;
+		readonly Dictionary<string, Conference> conferences;
 		readonly ThumbnailService thumbnailService;
 		readonly ConferencePersistence conferencePersistence;
         
-		public ConferenceService(string[] conferenceIds, ThumbnailService thumbnailService, ConferencePersistence conferencePersistence) {
+		public ConferenceService(string[] conferenceIds, Dictionary<string, Conference> conferences, ThumbnailService thumbnailService, ConferencePersistence conferencePersistence) {
 			this.conferenceIds = conferenceIds;
+			this.conferences = conferences;
 			this.thumbnailService = thumbnailService;
 			this.conferencePersistence = conferencePersistence;
         }
@@ -43,7 +45,8 @@ namespace MediaServer.Services
 			async Task<TalkSummary> CreateTalkSummary(Talk talk) {
                 var url = Paths.GetTalkUrl(talk);
                 var thumbnail = await thumbnailService.GetThumbnailUrl(talk);
-                return new TalkSummary(talk, url, thumbnail);
+				var conferenceName = conferences[talk.ConferenceId].Name;
+				return new TalkSummary(talk, url, thumbnail, conferenceName);
             }
 		}      
 	}

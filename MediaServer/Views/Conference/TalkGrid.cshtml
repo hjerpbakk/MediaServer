@@ -18,6 +18,11 @@
                             var speaker = talk.Speakers[i];
                             <a class="text-muted" href="/Speaker/@speaker">@speaker</a><span>@(i < talk.Speakers.Length - 1 ? "," : "")</span>
                         }
+                        @if ((bool)ViewData["ShowConference"])
+                        {
+                            <span> - </span>
+                            <a class="text-muted" href="@talk.ConferenceUrl">@talk.ConferenceName</a>
+                        }
                         <span> - @talk.ZonedTimeStamp</span>
                     </h6>
                     <p class="card-text">@talk.Description</p>

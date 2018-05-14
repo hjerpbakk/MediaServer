@@ -33,7 +33,6 @@ namespace MediaServer.Controllers
 		async Task<IActionResult> GetView() {
 			SetCurrentNavigationToHome();         
             ViewData["Talks"] = await conferenceService.GetLatestTalks();         
-            // TODO: Show conference link on card
             // TODO: Use model binding
             return View();
 		}

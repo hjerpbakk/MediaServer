@@ -10,5 +10,6 @@
         </div>
     </div>
     @{ ViewData["Talks"] = Model.TalkSummaries; }
+    @{ ViewData["ShowConference"] = true; }
     @await Html.PartialAsync("/Views/Conference/TalkGrid.cshtml")
 </div>
