@@ -33,7 +33,6 @@ namespace MediaServer.Controllers
 			this.thumbnailService = thumbnailService;
 			this.cache = cache;
 			this.users = users;
-			// TODO: Need speaker abstraction
 		}
               
 		[ResponseCache(NoStore = true)]
