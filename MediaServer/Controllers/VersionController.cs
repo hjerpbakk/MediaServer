@@ -5,11 +5,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.FileProviders;
 
-namespace MediaServer.Controllers
-{
+namespace MediaServer.Controllers {
 	[Route("/Version")]
-    public class VersionController : Controller
-    {
+    public class VersionController : Controller {
         static bool debugging;
 
         static VersionController() => CheckIfDEBUG();
@@ -23,10 +21,8 @@ namespace MediaServer.Controllers
 		[HttpGet]
 		public async Task<string> Get() {
 			var file = fileProvider.GetFileInfo("wwwroot/VERSION.txt");
-			using (var readStream = file.CreateReadStream())
-			{
-				using (var ms = new MemoryStream())
-				{
+			using (var readStream = file.CreateReadStream()) {
+				using (var ms = new MemoryStream()) {
 					await readStream.CopyToAsync(ms);
 					var bytes = ms.ToArray();
 					var version = Encoding.UTF8.GetString(bytes);

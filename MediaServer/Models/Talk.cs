@@ -29,8 +29,7 @@ namespace MediaServer.Models
             get { return DateOfTalk.GetDateString(); }
             set { DateOfTalk = DateTimeExtensions.GetDateTime(value); }
         }
-
-        // TODO: Get speaker from AD or something with auto-complete
+        
         public string Speaker { get; set; }
         public string SpeakerDeck { get; set; }
         
