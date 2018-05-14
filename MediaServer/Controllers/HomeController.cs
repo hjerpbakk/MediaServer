@@ -6,6 +6,7 @@ using MediaServer.Services;
 using MediaServer.Services.Cache;
 using System.Collections.Generic;
 using System;
+using MediaServer.ViewModels;
 
 namespace MediaServer.Controllers
 {
@@ -27,9 +28,11 @@ namespace MediaServer.Controllers
             return view;
         }
 
-		public IActionResult Error() =>
-            View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-
+		public IActionResult Error() {
+			SetCurrentNavigation("Error");
+			return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+		}
+                  
 		async Task<IActionResult> GetView() {
 			SetCurrentNavigationToHome();         
             ViewData["Talks"] = await conferenceService.GetLatestTalks();         

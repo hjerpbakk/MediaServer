@@ -10,9 +10,8 @@ namespace MediaServer.Controllers {
 	public abstract class NavigateableController : Controller {
 		public const string Conference = "Conference";
 
-		protected readonly Dictionary<string, Conference> conferences;
-
-		readonly int LastNavigation;      
+		protected readonly Dictionary<string, Conference> conferences;      
+		readonly int lastNavigation;      
         
 		// TODO: Inject or something #singleton         
 		protected NavigateableController(Dictionary<string, Conference> conferences) {
@@ -23,7 +22,7 @@ namespace MediaServer.Controllers {
 			navigations.AddRange(conferences.Values.Select(c => new Navigation(c, "Conference")));
 			navigations.Add(new Navigation("List", "Speakers", "Speaker"));
 			Navigations = navigations;
-			LastNavigation = navigations.Count - 1;
+			lastNavigation = navigations.Count - 1;
 		}
 
 		public List<Navigation> Navigations { get; }
@@ -34,7 +33,7 @@ namespace MediaServer.Controllers {
 		}
 
 		protected void SetCurrentNavigationToSpeakerList() {
-			var navigation = Navigations[LastNavigation];
+			var navigation = Navigations[lastNavigation];
             SetCurrentNavigation(navigation);
 		}
 
@@ -52,6 +51,12 @@ namespace MediaServer.Controllers {
 
 		protected bool ConferenceExists(string conferenceId) => conferences.ContainsKey(conferenceId);
 		protected Conference GetConferenceFromId(string conferenceId) => conferences[conferenceId];
+
+		protected IActionResult PageNotFound() {
+			SetCurrentNavigation("Page Not Found");
+            Response.StatusCode = 404;
+            return View("NotFoundView");
+		}
 
 		void SetSlug(Conference conference) => ViewData["Slug"] = conference.Id;
 		void ClearCurrentMenuItem() => ViewData["Slug"] = string.Empty;
@@ -80,5 +85,6 @@ namespace MediaServer.Controllers {
 
         public static string GetFullPath(HttpContext httpContext, string urlPart)
             => httpContext.Request.Scheme + "://" + httpContext.Request.Host + urlPart;
+
 	}
 }

@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using MediaServer.Controllers;
 using MediaServer.Models;
 using MediaServer.Services.Persistence;
+using MediaServer.ViewModels;
 
 namespace MediaServer.Services
 {

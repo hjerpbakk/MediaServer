@@ -1,6 +1,6 @@
 using System;
 
-namespace MediaServer.Models
+namespace MediaServer.ViewModels
 {
     public class ErrorViewModel
     {

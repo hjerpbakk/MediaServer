@@ -1,18 +1,13 @@
 ﻿using System;
-using System.Linq;
-using MediaServer.Configuration;
-using MediaServer.Extensions;
+using System.Collections.Generic;
+using System.IO;
+using System.Threading.Tasks;
+using MediaServer.Clients;
 using MediaServer.Models;
 using MediaServer.Services;
+using MediaServer.Services.Cache;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-using Microsoft.AspNetCore.Http;
-using MediaServer.ViewModels;
-using MediaServer.Services.Cache;
-using System.IO;
-using MediaServer.Clients;
 
 namespace MediaServer.Controllers
 {
@@ -71,7 +66,7 @@ namespace MediaServer.Controllers
             // TODO: SpeakerDeck dissapears if not from PDF
 			if (!ConferenceExists(conferenceId))
             {
-                return NotFound();
+				return PageNotFound();
             }
 
             var conference = GetConferenceFromId(conferenceId);
@@ -80,7 +75,7 @@ namespace MediaServer.Controllers
             var talk = await talkService.GetTalkByName(conference, talkName);
             if (talk == null)
             {
-                return NotFound();
+				return PageNotFound();
             }
 
 			SetCurrentNavigation(conference, "Edit " + talk.TalkName);
@@ -107,7 +102,7 @@ namespace MediaServer.Controllers
 			// TODO: Support uploading video
 			if (!ConferenceExists(conferenceId))
             {
-                return NotFound();
+				return PageNotFound();
             }
 
             var conference = GetConferenceFromId(conferenceId);
@@ -131,7 +126,7 @@ namespace MediaServer.Controllers
             // TODO: Get thumbnail from speaker notes or video if not set
 			if (!ConferenceExists(conferenceId))
             {
-                return NotFound();
+				return PageNotFound();
             }
 
             var conference = GetConferenceFromId(conferenceId);
@@ -164,7 +159,7 @@ namespace MediaServer.Controllers
         {
             if (!ConferenceExists(conferenceId))
             {
-                return NotFound();
+				return PageNotFound();
             }
 
             var conference = GetConferenceFromId(conferenceId);
@@ -183,21 +178,20 @@ namespace MediaServer.Controllers
 			// TODO: Fix this by specify constarint or something in the routing
 			var extension = Path.GetExtension(talkName);         
 			if (extension == Video.SupportedVideoFileType || extension == Talk.DefaultSpeakerDeckFileExtension) {
-				return NotFound();
+				return PageNotFound();
 			}
                      
             // TODO: Show image of speaker from Slack
             if (!ConferenceExists(conferenceId))
             {
-                return NotFound();
+				return PageNotFound();
             }
 
             var conference = GetConferenceFromId(conferenceId);
             var talk = await talkService.GetTalkByName(conference, talkName);
             if (talk == null)
             {
-                // TODO: Lag en fin 404
-                return NotFound();
+				return PageNotFound();
             }
 
             SetCurrentNavigation(conference, talk.TalkName);

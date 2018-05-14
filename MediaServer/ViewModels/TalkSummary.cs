@@ -1,6 +1,7 @@
 ﻿using MediaServer.Controllers;
+using MediaServer.Models;
 
-namespace MediaServer.Models {
+namespace MediaServer.ViewModels {
 	public class TalkSummary : TalkModel {      
         public TalkSummary(Talk talk, string url, string thumbnail, string conferenceName)
 			: base(talk) {
