@@ -7,8 +7,7 @@ using MediaServer.Models.Helpers;
 using MediaServer.Services.Persistence;
 using MediaServer.ViewModels;
 
-namespace MediaServer.Services
-{
+namespace MediaServer.Services {
 	public class SpeakerService : ConferenceService {
 		readonly string[] conferenceIds;
 		readonly Users users;
@@ -16,7 +15,7 @@ namespace MediaServer.Services
 		readonly ISlackClient slackClient;
 
 		public SpeakerService(string[] conferenceIds, Dictionary<string, Conference> conferences, Users users, ConferencePersistence conferencePersistence, ThumbnailService thumbnailService, ISlackClient slackClient)
-			: base(conferenceIds, conferences, thumbnailService, conferencePersistence) {
+			: base(conferenceIds, conferences, thumbnailService, conferencePersistence, slackClient) {
 			this.conferenceIds = conferenceIds;
 			this.users = users;
 			this.conferencePersistence = conferencePersistence;

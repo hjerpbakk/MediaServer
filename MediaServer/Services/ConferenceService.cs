@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using MediaServer.Clients;
 using MediaServer.Controllers;
 using MediaServer.Models;
 using MediaServer.Services.Persistence;
@@ -13,12 +14,14 @@ namespace MediaServer.Services
 		readonly Dictionary<string, Conference> conferences;
 		readonly ThumbnailService thumbnailService;
 		readonly ConferencePersistence conferencePersistence;
+		readonly ISlackClient slackClient;
         
-		public ConferenceService(string[] conferenceIds, Dictionary<string, Conference> conferences, ThumbnailService thumbnailService, ConferencePersistence conferencePersistence) {
+		public ConferenceService(string[] conferenceIds, Dictionary<string, Conference> conferences, ThumbnailService thumbnailService, ConferencePersistence conferencePersistence, ISlackClient slackClient) {
 			this.conferenceIds = conferenceIds;
 			this.conferences = conferences;
 			this.thumbnailService = thumbnailService;
 			this.conferencePersistence = conferencePersistence;
+			this.slackClient = slackClient;
         }
 
 		public async Task<TalkSummary[]> GetLatestTalks() {
@@ -28,11 +31,14 @@ namespace MediaServer.Services
 			return orderedSummaries.ToArray();
 		}
                                                       
-		public async Task<TalkSummary[]> GetTalksForConference(Conference conference) {
+		public async Task<ConferenceViewModel> GetConferenceWithContent(Conference conference) {
 			var talks = await conferencePersistence.GetTalksFromConference(conference.Id);         
 			var orderedTalks = talks.OrderByDescending(t => t.DateOfTalk);
-			var orderedSummaries = await CreateTalkSummaries(orderedTalks);
-			return orderedSummaries.ToArray();
+			var orderedSummaries = (await CreateTalkSummaries(orderedTalks)).ToArray();
+			var videoPath = conference.VideoPath;
+            var slackUrl = slackClient.GetChannelLink(conference.Name, conference.SlackChannelId);
+			var conferenceViewModel = new ConferenceViewModel(orderedSummaries, videoPath, slackUrl);
+			return conferenceViewModel;
 		}
               
 		public async Task<IEnumerable<string>> GetTalkNamesFromConference(Conference conference) {

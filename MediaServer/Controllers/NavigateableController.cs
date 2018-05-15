@@ -83,7 +83,7 @@ namespace MediaServer.Controllers {
         public static string GetTalkUrl(Talk talk)
             => GetConferenceUrl(talk.ConferenceId) + talk.TalkName;
 
-        public static string GetFullPath(HttpContext httpContext, string urlPart)
+        public static string GetUrlToTalk(HttpContext httpContext, string urlPart)
             => httpContext.Request.Scheme + "://" + httpContext.Request.Host + urlPart;
 
 	}

@@ -1,8 +1,9 @@
-﻿using MediaServer.Models.Helpers;
+﻿using MediaServer.Models;
+using MediaServer.Models.Helpers;
 
-namespace MediaServer.Models {
-    public abstract class TalkModel {
-		protected TalkModel(Talk talk) {
+namespace MediaServer.ViewModels {
+    public abstract class TalkViewModelBase {
+		protected TalkViewModelBase(Talk talk) {
 			TalkName = talk.TalkName;
 			Description = talk.Description;
 			ZonedTimeStamp = talk.DateOfTalkString;

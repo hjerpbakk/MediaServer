@@ -16,15 +16,11 @@
     <PackageReference Include="Polly" Version="6.0.1" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Models\Helpers\" />
-    <Folder Include="Views\Speaker\" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="wwwroot\VERSION.txt">
       <Link>VERSION.txt</Link>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Remove="Views\Conference\Save.cshtml" />
+    <None Include="..\docker-compose.yml">
+      <Link>docker-compose.yml</Link>
+    </None>
   </ItemGroup>
 </Project>

@@ -1,7 +1,8 @@
 ﻿using System;
+using MediaServer.Models;
 
-namespace MediaServer.Models {
-	public class TalkViewModel : TalkModel {
+namespace MediaServer.ViewModels {
+	public class TalkViewModel : TalkViewModelBase {
         public TalkViewModel(Talk talk, User user)
 			: base(talk) {
             UriEncodedVideoName = Uri.EscapeUriString(talk.VideoName);

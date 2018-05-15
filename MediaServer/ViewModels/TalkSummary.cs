@@ -2,7 +2,7 @@
 using MediaServer.Models;
 
 namespace MediaServer.ViewModels {
-	public class TalkSummary : TalkModel {      
+	public class TalkSummary : TalkViewModelBase {      
         public TalkSummary(Talk talk, string url, string thumbnail, string conferenceName)
 			: base(talk) {
 			Url = url;
