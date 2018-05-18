@@ -6,7 +6,7 @@ namespace MediaServer.Models {
 		public const string UnknownUser = "This person is a mystery to all beings.";
 
 		[JsonConstructor]
-		public User(string name, string profileImageUrl, string slackId, string description) {
+		public User(string name, string profileImageUrl, string slackId = null, string description = null) {
 			Name = name;
 			ProfileImageUrl = profileImageUrl;
 			SlackId = slackId;
