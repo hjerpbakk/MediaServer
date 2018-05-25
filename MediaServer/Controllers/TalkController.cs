@@ -74,7 +74,7 @@ namespace MediaServer.Controllers {
         [HttpGet("/Conference/{conferenceId}/Save")]
         public async Task<IActionResult> GetSaveView(string conferenceId) {
             Console.WriteLine("GetSaveView " + conferenceId);
-            // TODO: Support choosing speaker name from Slack...
+            // TODO: Support choosing speaker name from Slack... https://leaverou.github.io/awesomplete/
             // TODO: Support uploading slides
             // TODO: Support uploading video
             if (!ConferenceExists(conferenceId)) {
@@ -93,6 +93,7 @@ namespace MediaServer.Controllers {
         [HttpPost("/Conference/{conferenceId}/Save")]
         public async Task<IActionResult> SaveTalk(string conferenceId, [FromQuery] string oldName, [Bind("VideoName, Description, Speaker, SpeakerDeck, ThumbnailImageFile, TalkName, DateOfTalkString")] Talk talk) {
             // TODO: Get thumbnail from speaker notes or video if not set
+            Console.WriteLine("SaveTalk " + conferenceId);
             if (!ConferenceExists(conferenceId)) {
                 return PageNotFound();
             }
