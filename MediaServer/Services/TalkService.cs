@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using MediaServer.Clients;
 using MediaServer.Models;
@@ -80,7 +81,13 @@ namespace MediaServer.Services {
 
             // TODO: Client verification also
             // TODO: proper replace here
-            talk.TalkName = talk.TalkName.Replace("?", "").Replace(":", " - ").Replace("/", "-").Replace("\"", "-").Replace("#", "");
+            var safeTalkName = talk.TalkName
+                .Replace("?", "")
+                .Replace(":", " - ")
+                .Replace("/", "-")
+                .Replace("\"", "-")
+                .Replace("#", "");
+            talk.TalkName = Regex.Replace(safeTalkName, @"\s+", " ").Trim();
 			talk.ConferenceId = conference.Id;
             talk.TimeStamp = DateTimeOffset.UtcNow;
             contentService.VerifySlides(talk);
