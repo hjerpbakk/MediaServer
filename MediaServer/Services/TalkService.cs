@@ -79,6 +79,7 @@ namespace MediaServer.Services {
 				await talkPersistence.DeleteTalk(conference, talk);
             }
 
+            // TODO: new versions of containers...
             // TODO: Client verification also
             // TODO: proper replace here
             var safeTalkName = talk.TalkName
