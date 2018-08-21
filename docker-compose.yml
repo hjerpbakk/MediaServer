@@ -22,6 +22,7 @@ services:
       - "./Utviklerforum:/app/wwwroot/Conference/Utviklerforum"
       - "./External:/app/wwwroot/Conference/External"
       - "./Sprintdemo:/app/wwwroot/Conference/Sprintdemo"
+      - "./TromsoInteresting:/app/wwwroot/Conference/TromsoInteresting"
   slack-integration:
     image: ${repo_pre}dips/slack-integration${slack_tag}
     restart: always
