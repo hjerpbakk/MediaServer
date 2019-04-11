@@ -16,6 +16,7 @@ services:
     depends_on:
       - slack-integration
     volumes:
+      - "./DevDays2019:/app/wwwroot/Conference/DevDays2019"
       - "./DevDays2018:/app/wwwroot/Conference/DevDays2018"
       - "./Interesting:/app/wwwroot/Conference/Interesting"
       - "./OptimusInteresting:/app/wwwroot/Conference/OptimusInteresting"
