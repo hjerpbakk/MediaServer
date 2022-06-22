@@ -13,7 +13,7 @@
 
   <ItemGroup>
     <PackageReference Include="WindowsAzure.Storage" Version="9.1.1" />
-    <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="SlackConnector" Version="4.1.52" />
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.1.0-rc1-final" />
   </ItemGroup>
